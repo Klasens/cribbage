@@ -38,9 +38,27 @@ export default function App() {
   const shownBySeat = state?.shownBySeat ?? {};
   const peggingComplete = !!state?.peggingComplete;
 
+  const winnerSeat = state?.winnerSeat ?? null;
+  const winnerName = state?.winnerName ?? null;
+  const winnerActive = winnerSeat != null;
+
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
       <h1 style={{ marginBottom: 8, fontSize: 36 }}>Cribbage (MVP)</h1>
+
+      {/* Winner banner */}
+      {winnerActive && (
+        <div style={{
+          marginBottom: 12,
+          padding: "10px 12px",
+          border: "1px solid #3a3",
+          borderRadius: 8,
+          background: "#122612",
+          fontWeight: 700
+        }}>
+          🎉 {winnerName} wins at 121!
+        </div>
+      )}
 
       <JoinForm
         roomId={roomId}
@@ -68,6 +86,7 @@ export default function App() {
         isDealer={isDealer}
         onDeal={deal}
         onClearLocal={handleClearLocal}
+        winnerActive={winnerActive} // disable dealing when game over
       />
 
       <MyHand
@@ -79,6 +98,7 @@ export default function App() {
         shownBySeat={shownBySeat}
         mySeatId={mySeatId}
         peggingComplete={peggingComplete}
+        winnerActive={winnerActive}
       />
 
       {joined && (
@@ -87,7 +107,8 @@ export default function App() {
           lastShown={lastShown}
           lastShownByName={lastShownByName}
           onResetRun={resetRun}
-          peggingComplete={peggingComplete}   // ⬅️ pass completion state
+          peggingComplete={peggingComplete}
+          winnerActive={winnerActive}
         />
       )}
 
@@ -98,7 +119,11 @@ export default function App() {
       />
 
       {joined && mySeatId != null && (
-        <ScoreControls onPeg={peg} onPegN={pegN} disabled={!joined || mySeatId == null} />
+        <ScoreControls
+          onPeg={peg}
+          onPegN={pegN}
+          disabled={!joined || mySeatId == null || winnerActive} // freeze scoring at game over
+        />
       )}
 
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>

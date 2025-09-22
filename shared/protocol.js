@@ -48,6 +48,10 @@ exports.createInitialState = function createInitialState() {
 
     // Marks end of pegging (UI hides Show/Reset; move to hand scoring)
     peggingComplete: false,
+
+    // NEW: Winner banner / freeze inputs
+    winnerSeat: null,      // number | null
+    winnerName: null,      // string | null
   };
 };
 

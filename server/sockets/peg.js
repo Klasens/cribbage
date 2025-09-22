@@ -31,8 +31,9 @@ function register(io, socket, joined) {
   socket.on(EVT.PEG_SHOW, ({ roomId, seatId, cardText }) => {
     const room = rooms.get(roomId);
     if (!room) return;
-    if (!room.state.cribLocked) return; // only after crib locks
-    if (room.state.peggingComplete) return; // already done
+    if (!room.state.cribLocked) return;       // only after crib locks
+    if (room.state.peggingComplete) return;   // already done
+    if (room.state.winnerSeat != null) return; // freeze if game over
     if (joined.roomId !== roomId || joined.seatId !== seatId) return;
 
     const cardTxt = String(cardText || "").trim();
@@ -82,7 +83,8 @@ function register(io, socket, joined) {
   socket.on(EVT.PEG_RESET, ({ roomId }) => {
     const room = rooms.get(roomId);
     if (!room) return;
-    if (room.state.peggingComplete) return; // nothing to reset once done
+    if (room.state.peggingComplete) return;    // nothing to reset once done
+    if (room.state.winnerSeat != null) return; // freeze if game over
 
     room.state.runCount = 0;
     room.state.pegPile = [];

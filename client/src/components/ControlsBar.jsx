@@ -6,14 +6,16 @@ export default function ControlsBar({
   isDealer,
   onDeal,
   onClearLocal,
+  winnerActive = false,
 }) {
   return (
     <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
       {joined && isDealer && (
         <button
           onClick={onDeal}
-          style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
-          title="Dealer: deal 6 cards to each player"
+          disabled={winnerActive}
+          style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6, opacity: winnerActive ? 0.6 : 1 }}
+          title={winnerActive ? "Game over — reset/new game to continue" : "Dealer: deal 6 cards to each player"}
         >
           Deal 6
         </button>

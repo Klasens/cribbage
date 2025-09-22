@@ -7,8 +7,27 @@ export default function PeggingPanel({
   lastShownByName = null,
   onResetRun,
   peggingComplete = false,
+  winnerActive = false,
 }) {
   const done = !!peggingComplete;
+
+  if (winnerActive) {
+    return (
+      <div style={{
+        marginTop: 16,
+        padding: 12,
+        border: "1px solid #333",
+        borderRadius: 8,
+        background: "#161616",
+        textAlign: "left"
+      }}>
+        <h3 style={{ marginTop: 0, marginBottom: 8 }}>Pegging</h3>
+        <div style={{ fontSize: 16, fontWeight: 600 }}>
+          🏁 Game over — pegging and scoring are locked.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{

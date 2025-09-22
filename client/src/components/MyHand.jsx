@@ -9,7 +9,8 @@ export default function MyHand({
   onShowCard,            // (cardText) => void
   shownBySeat = {},      // map from server (persists across GO)
   mySeatId = null,       // my seat
-  peggingComplete = false, // ⬅️ NEW
+  peggingComplete = false,
+  winnerActive = false,  // ⬅️ NEW
 }) {
   const [sel, setSel] = useState([]);
 
@@ -40,7 +41,7 @@ export default function MyHand({
 
   if (!cards.length) return null;
 
-  const canShowNow = cribLocked && !peggingComplete;
+  const canShowNow = cribLocked && !peggingComplete && !winnerActive;
 
   return (
     <div style={{ marginTop: 16, textAlign: "left" }}>
@@ -84,7 +85,7 @@ export default function MyHand({
                 {c}
               </button>
 
-              {/* Show button appears only during pegging */}
+              {/* Show button appears only during pegging and not after game over */}
               {canShowNow && (
                 <button
                   onClick={() => onShowCard?.(c)}
