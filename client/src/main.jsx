@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
-import { socket, api, EVT, onStateUpdate } from "./lib/socket";
+import { socket, api, EVT, onStateUpdate, onYourHand } from "./lib/socket";
 
 // Diagnostics
 socket.on("connect", () => console.log("🔌 Connected to server:", socket.id));
@@ -14,7 +14,13 @@ onStateUpdate(({ state }) => {
   window.lastState = state;
 });
 
-// Expose for quick console testing (kept for MVP convenience)
+// NEW: listen for your private hand
+onYourHand(({ cards }) => {
+  console.log("🃏 your hand:", cards.join(" "));
+  window.myHand = cards; // handy for quick inspection
+});
+
+// Expose for quick console testing
 window.socket = socket;
 window.api = api;
 window.EVT = EVT;

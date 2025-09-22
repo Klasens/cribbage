@@ -3,16 +3,36 @@ const { createInitialState } = require("../shared/protocol");
 
 const MAX_PLAYERS = 4;
 
-/** rooms: Map<string, { state: GameState, sockets: Set<string> }> */
+/** rooms: Map<string, { state, sockets:Set<string>, seatSockets:Map<number, Set<string>>, hands: Map<number,string[]> }> */
 const rooms = new Map();
 
 function ensureRoom(roomId) {
   if (!rooms.has(roomId)) {
     const state = createInitialState();
     state.roomId = roomId;
-    rooms.set(roomId, { state, sockets: new Set() });
+    rooms.set(roomId, {
+      state,
+      sockets: new Set(),
+      seatSockets: new Map(), // seatId -> Set(socketId)
+      hands: new Map(), // seatId -> string[]
+    });
   }
   return rooms.get(roomId);
+}
+
+function bindSeatSocket(room, seatId, socketId) {
+  let set = room.seatSockets.get(seatId);
+  if (!set) {
+    set = new Set();
+    room.seatSockets.set(seatId, set);
+  }
+  set.add(socketId);
+}
+
+function unbindSocket(room, socketId) {
+  for (const set of room.seatSockets.values()) {
+    set.delete(socketId);
+  }
 }
 
 function broadcastState(io, roomId) {
@@ -43,6 +63,8 @@ module.exports = {
   rooms,
   MAX_PLAYERS,
   ensureRoom,
+  bindSeatSocket,
+  unbindSocket,
   broadcastState,
   normName,
   roomIsFull,

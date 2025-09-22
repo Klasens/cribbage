@@ -3,11 +3,14 @@ const { EVT } = require("../shared/protocol");
 const {
   rooms,
   ensureRoom,
+  bindSeatSocket,
+  unbindSocket,
   broadcastState,
   normName,
   roomIsFull,
   addPlayer,
 } = require("./rooms");
+const { createDeck, shuffle, cardText } = require("./deck");
 
 function registerSocket(io) {
   io.on("connection", (socket) => {
@@ -26,6 +29,7 @@ function registerSocket(io) {
       const seatId = addPlayer(room.state, displayName);
       if (seatId == null) return;
       joined = { roomId, seatId };
+      bindSeatSocket(room, seatId, socket.id);
 
       broadcastState(io, roomId);
     });
@@ -41,6 +45,7 @@ function registerSocket(io) {
       const seatId = addPlayer(room.state, displayName);
       if (seatId == null) return;
       joined = { roomId, seatId };
+      bindSeatSocket(room, seatId, socket.id);
 
       broadcastState(io, roomId);
     });
@@ -72,9 +77,11 @@ function registerSocket(io) {
       }
 
       joined = { roomId, seatId: resolvedSeatId };
+      bindSeatSocket(room, resolvedSeatId, socket.id);
       broadcastState(io, roomId);
     });
 
+    // Manual scoring
     socket.on(EVT.PEG_ADD, ({ roomId, seatId, delta }) => {
       const room = rooms.get(roomId);
       if (!room) return;
@@ -85,13 +92,45 @@ function registerSocket(io) {
       broadcastState(io, roomId);
     });
 
+    // NEW: dealer starts a deal → private hands to each seat
+    socket.on(EVT.HOST_DEAL, ({ roomId }) => {
+      const room = rooms.get(roomId);
+      if (!room) return;
+
+      // must be dealer
+      const dealer = room.state.dealerSeat ?? 0;
+      if (joined.seatId !== dealer) return;
+
+      // build & shuffle deck
+      const deck = shuffle(createDeck());
+
+      // deal 6 to each player present
+      room.hands.clear();
+      for (const p of room.state.players) {
+        const hand = deck.splice(0, 6).map(cardText);
+        room.hands.set(p.seatId, hand);
+
+        // send privately to all sockets bound to that seat
+        const set = room.seatSockets.get(p.seatId);
+        if (set && set.size) {
+          for (const sid of set) {
+            io.to(sid).emit(EVT.HAND_YOUR, { cards: hand });
+          }
+        }
+      }
+
+      // For now, no public state change is broadcast (hands are private).
+      // Optionally, you could broadcast a toast or "phase change" later.
+    });
+
     socket.on("disconnect", () => {
       console.log("❌ user disconnected:", socket.id);
       if (joined.roomId) {
         const room = rooms.get(joined.roomId);
         if (room) {
           room.sockets.delete(socket.id);
-          // MVP: keep players in memory; no auto-remove
+          unbindSocket(room, socket.id);
+          // MVP: keep players; no auto-remove
         }
       }
     });

@@ -7,6 +7,10 @@ exports.EVT = {
   ROOM_REJOIN: "room:rejoin", // { roomId, seatId, displayName }
   STATE_UPDATE: "state:update", // { state }
   PEG_ADD: "peg:add", // { roomId, seatId, delta }
+
+  // NEW: dealing flow
+  HOST_DEAL: "host:deal", // { roomId } (dealer-only)
+  HAND_YOUR: "hand:your", // { cards: string[] } (private to seat)
 };
 
 // Minimal GameState factory

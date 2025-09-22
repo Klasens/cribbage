@@ -8,6 +8,9 @@ export const EVT = {
   ROOM_REJOIN: "room:rejoin",
   STATE_UPDATE: "state:update",
   PEG_ADD: "peg:add",
+
+  HOST_DEAL: "host:deal",
+  HAND_YOUR: "hand:your",
 };
 
 export const socket = io("http://localhost:3000");
@@ -15,6 +18,11 @@ export const socket = io("http://localhost:3000");
 export function onStateUpdate(fn) {
   socket.on(EVT.STATE_UPDATE, fn);
   return () => socket.off(EVT.STATE_UPDATE, fn);
+}
+
+export function onYourHand(fn) {
+  socket.on(EVT.HAND_YOUR, fn);
+  return () => socket.off(EVT.HAND_YOUR, fn);
 }
 
 export const api = {
@@ -26,4 +34,7 @@ export const api = {
     socket.emit(EVT.ROOM_REJOIN, { roomId, seatId, displayName }),
   peg: (roomId, seatId, delta) =>
     socket.emit(EVT.PEG_ADD, { roomId, seatId, delta }),
+
+  // NEW
+  deal: (roomId) => socket.emit(EVT.HOST_DEAL, { roomId }),
 };
