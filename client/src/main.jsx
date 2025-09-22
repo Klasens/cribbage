@@ -34,7 +34,7 @@ socket.on(EVT.STATE_UPDATE, ({ state }) => {
 /**
  * window.api.create("room123", "Alice")
  * window.api.join("room123", "Bob")
- * window.api.peg("room123", 0, 2)  // +2 for seat 0
+ * window.api.peg("room123", 0, 2)
  */
 window.socket = socket;
 window.api = {
@@ -46,7 +46,7 @@ window.api = {
     socket.emit(EVT.PEG_ADD, { roomId, seatId, delta }),
 };
 
-// ─── Render React scaffold (unchanged UI for now) ────────────────────────────
+// ─── Render React scaffold ───────────────────────────────────────────────────
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
