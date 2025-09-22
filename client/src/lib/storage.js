@@ -21,3 +21,15 @@ export function clearSeat(roomId) {
     localStorage.removeItem(LS_KEY(roomId));
   } catch {}
 }
+
+// NEW: clear all cribbage seat entries across rooms
+export function clearAllSeats() {
+  try {
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("cribbage:seat:")) toRemove.push(k);
+    }
+    toRemove.forEach((k) => localStorage.removeItem(k));
+  } catch {}
+}

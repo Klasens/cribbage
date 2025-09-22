@@ -1,7 +1,7 @@
 // client/src/hooks/useGameClient.js
 import { useEffect, useMemo, useState } from "react";
 import { api, onStateUpdate } from "../lib/socket";
-import { loadSeat, saveSeat, clearSeat } from "../lib/storage";
+import { loadSeat, saveSeat, clearSeat, clearAllSeats } from "../lib/storage";
 
 export function useGameClient() {
   const [state, setState] = useState(() => window.lastState || null);
@@ -58,7 +58,12 @@ export function useGameClient() {
 
   const roomFull = useMemo(() => (state?.players?.length ?? 0) >= 4, [state]);
 
-  // Auto-rejoin: when we have stored room + seat + name and we are not joined
+  const isDealer = useMemo(() => {
+    if (state?.dealerSeat == null) return false;
+    return mySeatId === state.dealerSeat;
+  }, [state, mySeatId]);
+
+  // Auto-rejoin when we have stored room + seat + name and we are not joined
   useEffect(() => {
     if (!joined && roomId && name && Number.isInteger(mySeatId)) {
       api.rejoin(roomId, mySeatId, name);
@@ -89,10 +94,26 @@ export function useGameClient() {
     if (Number.isFinite(n) && n !== 0) peg(n);
   };
 
+  // NEW: Dealer triggers a deal
+  const deal = () => {
+    if (!state?.roomId) return;
+    api.deal(state.roomId);
+  };
+
+  // Existing Reset (clear current room + reload)
   const resetLocal = () => {
     if (!roomId) return;
     clearSeat(roomId);
     location.reload();
+  };
+
+  // NEW: Clear local seat/name without reload (current room or all rooms)
+  const clearLocal = (all = false) => {
+    if (all) clearAllSeats();
+    else if (roomId) clearSeat(roomId);
+    // Soft clear UI
+    setMySeatId(null);
+    // don't blank name automatically — keep it convenient for the user
   };
 
   return {
@@ -107,12 +128,15 @@ export function useGameClient() {
     // derived
     joined,
     roomFull,
+    isDealer,
 
     // actions
     create,
     join,
     peg,
     pegN,
-    resetLocal,
+    deal,
+    resetLocal, // clears + reloads (current room)
+    clearLocal, // clears w/o reload (current room or all)
   };
 }

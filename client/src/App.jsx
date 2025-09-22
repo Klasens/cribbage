@@ -3,6 +3,7 @@ import PlayersList from "./components/PlayersList";
 import ScoreControls from "./components/ScoreControls";
 import JoinForm from "./components/JoinForm";
 import Status from "./components/Status";
+import ControlsBar from "./components/ControlsBar";
 import { useGameClient } from "./hooks/useGameClient";
 
 export default function App() {
@@ -11,8 +12,9 @@ export default function App() {
     roomId, setRoomId,
     name, setName,
     mySeatId,
-    joined, roomFull,
-    create, join, peg, pegN, resetLocal,
+    joined, roomFull, isDealer,
+    create, join, peg, pegN,
+    deal, resetLocal, clearLocal,
   } = useGameClient();
 
   return (
@@ -28,10 +30,17 @@ export default function App() {
         roomFull={roomFull}
         onCreate={create}
         onJoin={join}
-        onReset={resetLocal}
+        onReset={resetLocal}  // existing: clear current room + reload
       />
 
       <Status joined={joined} roomId={state?.roomId} mySeatId={mySeatId} />
+
+      <ControlsBar
+        joined={joined}
+        isDealer={isDealer}
+        onDeal={deal}
+        onClearLocal={clearLocal}
+      />
 
       <PlayersList
         players={state?.players ?? []}
@@ -45,7 +54,7 @@ export default function App() {
 
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
         <div>Open a 2nd tab to see realtime updates.</div>
-        <div>Console helpers: <code>api.create(roomId, name)</code>, <code>api.join(roomId, name)</code>, <code>api.rejoin(roomId, seat, name)</code>, <code>api.peg(roomId, seat, n)</code></div>
+        <div>Console helpers: <code>api.create(roomId, name)</code>, <code>api.join(roomId, name)</code>, <code>api.rejoin(roomId, seat, name)</code>, <code>api.peg(roomId, seat, n)</code>, <code>api.deal(roomId)</code></div>
       </div>
     </div>
   );
