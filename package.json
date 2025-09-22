@@ -1,0 +1,27 @@
+{
+  "name": "cribbage",
+  "version": "1.0.0",
+  "description": "Minimal, trust-based cribbage you can play in a browser. No accounts. Manual scoring. Fast to run and share.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "nodemon server/index.js",
+    "dev:client": "cd client && vite --host",
+    "build": "npm run build:client",
+    "build:client": "cd client && vite build",
+    "start": "node server/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
+    "vite": "^7.1.6"
+  }
+}
+
