@@ -4,8 +4,9 @@
 exports.EVT = {
   ROOM_CREATE: "room:create", // { roomId, displayName }
   ROOM_JOIN: "room:join", // { roomId, displayName }
+  ROOM_REJOIN: "room:rejoin", // { roomId, seatId, displayName }
   STATE_UPDATE: "state:update", // { state }
-  PEG_ADD: "peg:add", // { roomId, seatId, delta }  (+1/+2/+3/+N or negative)
+  PEG_ADD: "peg:add", // { roomId, seatId, delta }
 };
 
 // Minimal GameState factory

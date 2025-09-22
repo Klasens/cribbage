@@ -9,8 +9,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // serve built client in prod
@@ -73,11 +73,43 @@ io.on("connection", (socket) => {
     broadcastState(roomId);
   });
 
+  // NEW: reclaim seat after refresh or reconnects
+  socket.on(EVT.ROOM_REJOIN, ({ roomId, seatId, displayName }) => {
+    if (!roomId) return;
+    const room = ensureRoom(roomId);
+    socket.join(roomId);
+    room.sockets.add(socket.id);
+
+    let resolvedSeatId = null;
+    // 1) Try by seatId
+    const bySeat = room.state.players.find((p) => p.seatId === seatId);
+    if (bySeat) {
+      resolvedSeatId = bySeat.seatId;
+      // Optionally refresh name if provided
+      if (displayName && bySeat.name !== displayName) bySeat.name = displayName;
+    } else {
+      // 2) Try by name (avoid dupes if only the name persisted)
+      const byName = room.state.players.find((p) => p.name === displayName);
+      if (byName) {
+        resolvedSeatId = byName.seatId;
+      }
+    }
+
+    // 3) If seat not found (e.g., server restarted), treat as join if space
+    if (resolvedSeatId == null) {
+      if (room.state.players.length >= 4) return; // room full; ignore
+      resolvedSeatId = addPlayer(room.state, displayName || "Player");
+    }
+
+    joined = { roomId, seatId: resolvedSeatId };
+    broadcastState(roomId);
+  });
+
   // Manual scoring delta (+1/+2/+3/+N or negative)
   socket.on(EVT.PEG_ADD, ({ roomId, seatId, delta }) => {
     const room = rooms.get(roomId);
     if (!room) return;
-    const p = room.state.players.find(p => p.seatId === seatId);
+    const p = room.state.players.find((p) => p.seatId === seatId);
     if (!p) return;
     const n = Number(delta) || 0;
     p.score += n;
@@ -100,4 +132,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
