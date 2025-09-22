@@ -11,6 +11,9 @@ export const EVT = {
 
   HOST_DEAL: "host:deal",
   HAND_YOUR: "hand:your",
+
+  // NEW
+  PLAYER_CRIB_SELECT: "player:cribSelect",
 };
 
 export const socket = io("http://localhost:3000");
@@ -35,6 +38,9 @@ export const api = {
   peg: (roomId, seatId, delta) =>
     socket.emit(EVT.PEG_ADD, { roomId, seatId, delta }),
 
-  // NEW
   deal: (roomId) => socket.emit(EVT.HOST_DEAL, { roomId }),
+
+  // NEW
+  cribSelect: (roomId, seatId, cards /* length 2 */) =>
+    socket.emit(EVT.PLAYER_CRIB_SELECT, { roomId, seatId, cards }),
 };

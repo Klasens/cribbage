@@ -16,16 +16,18 @@ export default function App() {
     mySeatId,
     joined, roomFull, isDealer,
     create, join, peg, pegN,
-    deal, resetLocal, clearLocal,
+    deal, sendCrib, resetLocal, clearLocal,
   } = useGameClient();
 
   const { hand, clearHand } = useHand();
 
-  // Keep Clear Local button clearing the hand too (no reload)
   const handleClearLocal = (all = false) => {
     clearLocal(all);
     clearHand();
   };
+
+  const cribCount = state?.cribCount ?? 0;
+  const cribLocked = !!state?.cribLocked;
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
@@ -40,10 +42,16 @@ export default function App() {
         roomFull={roomFull}
         onCreate={create}
         onJoin={join}
-        onReset={resetLocal}  // existing: clear current room + reload
+        onReset={resetLocal}
       />
 
-      <Status joined={joined} roomId={state?.roomId} mySeatId={mySeatId} />
+      <Status
+        joined={joined}
+        roomId={state?.roomId}
+        mySeatId={mySeatId}
+        cribCount={cribCount}
+        cribLocked={cribLocked}
+      />
 
       <ControlsBar
         joined={joined}
@@ -52,7 +60,12 @@ export default function App() {
         onClearLocal={handleClearLocal}
       />
 
-      <MyHand cards={hand} />
+      <MyHand
+        cards={hand}
+        cribLocked={cribLocked}
+        cribCount={cribCount}
+        onSendCrib={sendCrib}
+      />
 
       <PlayersList
         players={state?.players ?? []}

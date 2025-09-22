@@ -3,7 +3,15 @@ const { createInitialState } = require("../shared/protocol");
 
 const MAX_PLAYERS = 4;
 
-/** rooms: Map<string, { state, sockets:Set<string>, seatSockets:Map<number, Set<string>>, hands: Map<number,string[]> }> */
+/** rooms: Map<string, {
+ *    state,
+ *    sockets:Set<string>,
+ *    seatSockets:Map<number, Set<string>>,
+ *    hands: Map<number,string[]>,
+ *    crib: string[],
+ *    cribBySeat: Set<number>
+ * }>
+ */
 const rooms = new Map();
 
 function ensureRoom(roomId) {
@@ -15,6 +23,8 @@ function ensureRoom(roomId) {
       sockets: new Set(),
       seatSockets: new Map(), // seatId -> Set(socketId)
       hands: new Map(), // seatId -> string[]
+      crib: [], // running crib pile as card text
+      cribBySeat: new Set(), // seats that already submitted their 2 cards
     });
   }
   return rooms.get(roomId);
