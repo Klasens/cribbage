@@ -3,6 +3,7 @@ const roomHandlers = require("./room");
 const scoringHandlers = require("./scoring");
 const dealHandlers = require("./deal");
 const cribHandlers = require("./crib");
+const pegHandlers = require("./peg");          // ⬅️ NEW
 const connectionHandlers = require("./lifecycle");
 
 function registerSocket(io) {
@@ -17,8 +18,10 @@ function registerSocket(io) {
     scoringHandlers.register(io, socket, joined);
     dealHandlers.register(io, socket, joined);
     cribHandlers.register(io, socket, joined);
+    pegHandlers.register(io, socket, joined);  // ⬅️ NEW
     connectionHandlers.register(io, socket, joined);
   });
 }
 
 module.exports = { registerSocket };
+

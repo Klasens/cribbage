@@ -5,6 +5,7 @@ import JoinForm from "./components/JoinForm";
 import Status from "./components/Status";
 import ControlsBar from "./components/ControlsBar";
 import MyHand from "./components/MyHand";
+import PeggingPanel from "./components/PeggingPanel";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
 
@@ -17,6 +18,7 @@ export default function App() {
     joined, roomFull, isDealer,
     create, join, peg, pegN,
     deal, sendCrib, resetLocal, clearLocal,
+    showCard, resetRun,
   } = useGameClient();
 
   const { hand, clearHand } = useHand();
@@ -28,7 +30,13 @@ export default function App() {
 
   const cribCount = state?.cribCount ?? 0;
   const cribLocked = !!state?.cribLocked;
-  const cutCard = state?.cutCard ?? null; // NEW
+  const cutCard = state?.cutCard ?? null;
+
+  const runCount = state?.runCount ?? 0;
+  const lastShown = state?.lastShown ?? null;
+  const lastShownByName = state?.lastShownByName ?? null;
+  const shownBySeat = state?.shownBySeat ?? {};
+  const peggingComplete = !!state?.peggingComplete;
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
@@ -52,7 +60,7 @@ export default function App() {
         mySeatId={mySeatId}
         cribCount={cribCount}
         cribLocked={cribLocked}
-        cutCard={cutCard}     // NEW
+        cutCard={cutCard}
       />
 
       <ControlsBar
@@ -67,7 +75,21 @@ export default function App() {
         cribLocked={cribLocked}
         cribCount={cribCount}
         onSendCrib={sendCrib}
+        onShowCard={showCard}
+        shownBySeat={shownBySeat}
+        mySeatId={mySeatId}
+        peggingComplete={peggingComplete}
       />
+
+      {joined && (
+        <PeggingPanel
+          runCount={runCount}
+          lastShown={lastShown}
+          lastShownByName={lastShownByName}
+          onResetRun={resetRun}
+          peggingComplete={peggingComplete}   // ⬅️ pass completion state
+        />
+      )}
 
       <PlayersList
         players={state?.players ?? []}
@@ -81,7 +103,17 @@ export default function App() {
 
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
         <div>Open a 2nd tab to see realtime updates.</div>
-        <div>Console helpers: <code>api.create(roomId, name)</code>, <code>api.join(roomId, name)</code>, <code>api.rejoin(roomId, seat, name)</code>, <code>api.peg(roomId, seat, n)</code>, <code>api.deal(roomId)</code></div>
+        <div>
+          Console helpers:
+          {" "}
+          <code>api.create(roomId, name)</code>,{" "}
+          <code>api.join(roomId, name)</code>,{" "}
+          <code>api.rejoin(roomId, seat, name)</code>,{" "}
+          <code>api.peg(roomId, seat, n)</code>,{" "}
+          <code>api.deal(roomId)</code>,{" "}
+          <code>api.pegShow(roomId, seat, card)</code>,{" "}
+          <code>api.pegReset(roomId)</code>
+        </div>
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ export function makeActions(ctx) {
     setPendingSelfAssign(true);
   };
 
+  // Manual scoreboard points (separate from run-to-31)
   const peg = (delta) => {
     if (!state?.roomId || mySeatId == null) return;
     api.peg(state.roomId, mySeatId, delta);
@@ -47,6 +48,19 @@ export function makeActions(ctx) {
     api.cribSelect(state.roomId, mySeatId, cards);
   };
 
+  // --- Pegging (run-to-31) ---
+  const showCard = (cardText) => {
+    if (!state?.roomId || mySeatId == null) return;
+    if (!cardText) return;
+    api.pegShow(state.roomId, mySeatId, String(cardText));
+  };
+
+  const resetRun = () => {
+    if (!state?.roomId) return;
+    api.pegReset(state.roomId);
+  };
+
+  // Local helpers
   const resetLocal = () => {
     if (!roomId) return;
     clearSeat(roomId);
@@ -60,5 +74,17 @@ export function makeActions(ctx) {
     // keep name in input for convenience
   };
 
-  return { create, join, peg, pegN, deal, sendCrib, resetLocal, clearLocal };
+  return {
+    create,
+    join,
+    peg,
+    pegN,
+    deal,
+    sendCrib,
+    showCard,  // ⬅️ NEW
+    resetRun,  // ⬅️ NEW
+    resetLocal,
+    clearLocal,
+  };
 }
+

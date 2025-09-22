@@ -16,8 +16,17 @@ function register(io, socket, joined) {
     room.cribBySeat = new Set();
     room.state.cribCount = 0;
     room.state.cribLocked = false;
-    room.state.cutCard = null; // NEW: clear previous starter
-    room.deck = []; // NEW: clear previous deck
+    room.state.cutCard = null;
+    room.deck = [];
+
+    // Reset pegging *session* state
+    room.state.runCount = 0;
+    room.state.pegPile = [];
+    room.state.lastShown = null;
+    room.state.lastShownBySeat = null;
+    room.state.lastShownByName = null;
+    room.state.shownBySeat = {};
+    room.state.peggingComplete = false;
 
     // Build & shuffle deck (objects)
     const deck = shuffle(createDeck());
@@ -40,9 +49,10 @@ function register(io, socket, joined) {
     // Keep the remaining deck for starter flip
     room.deck = deck;
 
-    // Let clients see crib reset / starter cleared
+    // Let clients see resets
     broadcastState(io, roomId);
   });
 }
 
 module.exports = { register };
+

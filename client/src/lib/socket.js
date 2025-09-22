@@ -7,13 +7,18 @@ export const EVT = {
   ROOM_JOIN: "room:join",
   ROOM_REJOIN: "room:rejoin",
   STATE_UPDATE: "state:update",
-  PEG_ADD: "peg:add",
+
+  PEG_ADD: "peg:add", // scoreboard increments (separate from run-to-31)
 
   HOST_DEAL: "host:deal",
   HAND_YOUR: "hand:your",
 
-  // NEW
+  // Crib flow
   PLAYER_CRIB_SELECT: "player:cribSelect",
+
+  // Pegging run
+  PEG_SHOW: "peg:show",
+  PEG_RESET: "peg:reset",
 };
 
 export const socket = io("http://localhost:3000");
@@ -35,12 +40,22 @@ export const api = {
     socket.emit(EVT.ROOM_JOIN, { roomId, displayName }),
   rejoin: (roomId, seatId, displayName = "Player") =>
     socket.emit(EVT.ROOM_REJOIN, { roomId, seatId, displayName }),
+
+  // Manual scoreboard points
   peg: (roomId, seatId, delta) =>
     socket.emit(EVT.PEG_ADD, { roomId, seatId, delta }),
 
+  // Dealing
   deal: (roomId) => socket.emit(EVT.HOST_DEAL, { roomId }),
 
-  // NEW
+  // Crib
   cribSelect: (roomId, seatId, cards /* length 2 */) =>
     socket.emit(EVT.PLAYER_CRIB_SELECT, { roomId, seatId, cards }),
+
+  // Pegging run (manual)
+  pegShow: (roomId, seatId, cardText) =>
+    socket.emit(EVT.PEG_SHOW, { roomId, seatId, cardText }),
+  pegReset: (roomId) =>
+    socket.emit(EVT.PEG_RESET, { roomId }),
 };
+
