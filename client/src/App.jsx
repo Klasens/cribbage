@@ -4,7 +4,9 @@ import ScoreControls from "./components/ScoreControls";
 import JoinForm from "./components/JoinForm";
 import Status from "./components/Status";
 import ControlsBar from "./components/ControlsBar";
+import MyHand from "./components/MyHand";
 import { useGameClient } from "./hooks/useGameClient";
+import { useHand } from "./hooks/useHand";
 
 export default function App() {
   const {
@@ -16,6 +18,14 @@ export default function App() {
     create, join, peg, pegN,
     deal, resetLocal, clearLocal,
   } = useGameClient();
+
+  const { hand, clearHand } = useHand();
+
+  // Keep Clear Local button clearing the hand too (no reload)
+  const handleClearLocal = (all = false) => {
+    clearLocal(all);
+    clearHand();
+  };
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
@@ -39,8 +49,10 @@ export default function App() {
         joined={joined}
         isDealer={isDealer}
         onDeal={deal}
-        onClearLocal={clearLocal}
+        onClearLocal={handleClearLocal}
       />
+
+      <MyHand cards={hand} />
 
       <PlayersList
         players={state?.players ?? []}
