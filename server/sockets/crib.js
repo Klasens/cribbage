@@ -1,6 +1,7 @@
 // server/sockets/crib.js
 const { EVT } = require("../../shared/protocol");
 const { rooms, broadcastState } = require("../rooms");
+const { cardText } = require("../deck"); // NEW: to format starter card
 
 function register(io, socket, joined) {
   socket.on(EVT.PLAYER_CRIB_SELECT, ({ roomId, seatId, cards }) => {
@@ -25,8 +26,19 @@ function register(io, socket, joined) {
     room.cribBySeat.add(seatId);
 
     room.state.cribCount = room.crib.length;
-    if (room.state.cribCount >= 4) room.state.cribLocked = true;
 
+    // Lock crib and auto-flip starter when we reach 4
+    if (room.state.cribCount >= 4) {
+      room.state.cribLocked = true;
+
+      // Flip starter from the remaining deck if not already flipped
+      if (!room.state.cutCard && Array.isArray(room.deck) && room.deck.length) {
+        const next = room.deck.shift(); // object {r,s}
+        if (next) room.state.cutCard = cardText(next); // e.g., "5♣"
+      }
+    }
+
+    // send updated private hand back to this seat
     const seatSockets = room.seatSockets.get(seatId);
     if (seatSockets && seatSockets.size) {
       for (const sid of seatSockets) {
@@ -34,6 +46,7 @@ function register(io, socket, joined) {
       }
     }
 
+    // notify room of crib progress/lock/starter
     broadcastState(io, roomId);
   });
 }

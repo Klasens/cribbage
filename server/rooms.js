@@ -9,7 +9,8 @@ const MAX_PLAYERS = 4;
  *    seatSockets:Map<number, Set<string>>,
  *    hands: Map<number,string[]>,
  *    crib: string[],
- *    cribBySeat: Set<number>
+ *    cribBySeat: Set<number>,
+ *    deck: Array<{r:string,s:string}>   // NEW: remaining deck (objects) after deal
  * }>
  */
 const rooms = new Map();
@@ -25,6 +26,7 @@ function ensureRoom(roomId) {
       hands: new Map(), // seatId -> string[]
       crib: [], // running crib pile as card text
       cribBySeat: new Set(), // seats that already submitted their 2 cards
+      deck: [], // remaining deck after deal (objects), used to flip starter
     });
   }
   return rooms.get(roomId);

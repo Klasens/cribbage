@@ -12,7 +12,7 @@ exports.EVT = {
   HOST_DEAL: "host:deal", // { roomId } (dealer-only)
   HAND_YOUR: "hand:your", // { cards: string[] } (private to seat)
 
-  // NEW: crib flow
+  // Crib flow
   PLAYER_CRIB_SELECT: "player:cribSelect", // { roomId, seatId, cards:[string,string] }
 };
 
@@ -23,8 +23,11 @@ exports.createInitialState = function createInitialState() {
     players: [], // [{ seatId, name, score }]
     dealerSeat: null, // number | null
 
-    // NEW: crib progress (public, safe to show)
+    // Crib progress (public)
     cribCount: 0, // 0..4
     cribLocked: false, // becomes true when cribCount === 4
+
+    // NEW: public starter (cut) card once crib locks
+    cutCard: null, // string like "5♣" | null
   };
 };

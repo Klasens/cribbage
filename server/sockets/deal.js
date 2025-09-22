@@ -11,30 +11,36 @@ function register(io, socket, joined) {
     const dealer = room.state.dealerSeat ?? 0;
     if (joined.seatId !== dealer) return;
 
-    // Reset crib state
+    // Reset crib & starter state
     room.crib = [];
     room.cribBySeat = new Set();
     room.state.cribCount = 0;
     room.state.cribLocked = false;
+    room.state.cutCard = null; // NEW: clear previous starter
+    room.deck = []; // NEW: clear previous deck
 
-    // Build & shuffle deck
+    // Build & shuffle deck (objects)
     const deck = shuffle(createDeck());
 
-    // Deal 6 each
+    // Deal 6 each (send text to clients, keep objects in deck)
     room.hands.clear();
     for (const p of room.state.players) {
-      const hand = deck.splice(0, 6).map(cardText);
-      room.hands.set(p.seatId, hand);
+      const six = deck.splice(0, 6);
+      const handText = six.map(cardText);
+      room.hands.set(p.seatId, handText);
 
       const set = room.seatSockets.get(p.seatId);
       if (set && set.size) {
         for (const sid of set) {
-          io.to(sid).emit(EVT.HAND_YOUR, { cards: hand });
+          io.to(sid).emit(EVT.HAND_YOUR, { cards: handText });
         }
       }
     }
 
-    // Let clients see crib reset
+    // Keep the remaining deck for starter flip
+    room.deck = deck;
+
+    // Let clients see crib reset / starter cleared
     broadcastState(io, roomId);
   });
 }

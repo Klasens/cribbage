@@ -28,6 +28,7 @@ export default function App() {
 
   const cribCount = state?.cribCount ?? 0;
   const cribLocked = !!state?.cribLocked;
+  const cutCard = state?.cutCard ?? null; // NEW
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
@@ -51,6 +52,7 @@ export default function App() {
         mySeatId={mySeatId}
         cribCount={cribCount}
         cribLocked={cribLocked}
+        cutCard={cutCard}     // NEW
       />
 
       <ControlsBar
