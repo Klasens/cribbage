@@ -3,92 +3,75 @@
 ## Goal
 A family-friendly, trust-based cribbage web app. Minimal rules enforcement; fast to build and easy to host.
 
-## MVP Scope
-- 2–4 players join a room via link + display name.
-- Manual scoring: peg via +1/+2/+3/+N.
-- Deal 6 each; each player selects 2 to crib.
-- Auto-step when crib has 4 cards: lock → move to crib pile → flip starter card.
-- Shared pegging counter to 31 (manual reset).
-- Dealer marker & “Next Hand” (rotate dealer, keep scores).
-- No accounts, no persistence, no strict validation.
+## Current Status (MVP-in-progress)
+- Realtime backbone with rooms and live state  
+- Create, Join, and Rejoin (seat and name restored from local storage)  
+- Manual scoring with +1, +2, +3, and custom increment per seat  
+- Dealer-only dealing: six cards privately sent to each player  
+- Each player selects two cards to the crib; server collects and tracks progress  
+- When the crib reaches four cards, the crib locks and a starter card automatically flips  
+- UI shows each player’s private hand and public room state (crib progress, starter card)
+
+## MVP Scope (target)
+- Two to four players join a room with a display name  
+- Manual scoring via per-seat buttons  
+- Deal six cards each; each player selects two to send to the crib  
+- Auto-step when crib has four cards: lock the crib and flip a starter card  
+- Pegging handled manually: players show a card and increment a shared count toward thirty-one  
+- Dealer marker and a Next Hand action to rotate dealer and keep scores  
+- No accounts, no persistence, and no strict rule validation
 
 ## Tech Overview
-- **Frontend:** React + Vite + Tailwind (simple, fast).
-- **Realtime:** Socket.IO.
-- **Backend:** Node.js (Express or Fastify) + Socket.IO, in-memory per-room state.
-- **Deploy (simple):** single Node service on Render/Railway/Fly (serves client + websockets).
+- **Frontend:** React with Vite  
+- **Realtime:** Socket.IO  
+- **Backend:** Node.js with Socket.IO and in-memory per-room state  
+- **Deploy:** single Node service that serves the client app and websockets on the same origin
 
 ## Build Strategy (inside-out)
-1. Realtime backbone + live state renderer.
-2. Manual score controls (+1/+2/+3/+N).
-3. Deal & private hands (text cards).
-4. Crib flow auto-step + starter card.
-5. Pegging counter to 31 (manual).
-6. Dealer rotation & Next Hand.
-7. Light polish (invites, toasts, basic reconnect).
+1. Realtime backbone and live state renderer (complete)  
+2. Manual score controls for per-seat pegging totals (complete)  
+3. Dealing and private hands as text cards (complete)  
+4. Crib flow with auto-lock and starter card flip (complete)  
+5. **Pegging (manual show):** shared count to thirty-one driven by cards shown (**next**)  
+6. Dealer rotation and Next Hand control  
+7. Light polish (invites, toasts, basic reconnect behavior)
 
-## Data Model (minimal)
-```ts
-type Seat = 'P1'|'P2'|'P3'|'P4';
-type Card = { r: 1|2|...|13; s: 'C'|'D'|'H'|'S'; id: string };
-type Phase = 'Lobby'|'Deal'|'Discard'|'Cut'|'Peg'|'Show'|'End';
+## Data Model (high level)
+- Seats are numbered zero through three  
+- A player has a seat identifier, name, and score  
+- Public state includes the room identifier, list of players, dealer seat, crib progress count, crib locked flag, and the starter card when present  
+- Server room internals (not exposed to clients) include private hands per seat, a remaining deck after dealing, the crib pile, and a set of seats that have already submitted to the crib
 
-type Player = { id: string; name: string; seat: Seat; connected: boolean };
-type GameState = {
-  id: string; phase: Phase; dealer: Seat;
-  players: Player[];
-  deck: Card[]; hands: Record<Seat, Card[]>;
-  crib: Card[]; cribLocked: boolean; cutCard?: Card;
-  pegCount: Record<Seat, number>;
-  runCount: number; // 0–31 manual counter
-  log: { t:number; msg:string }[];
-};
-````
-
-## Socket Events (sketch)
+## Socket Events (current)
 
 **Client → Server**  
-- `room:create`  
-- `room:join`  
-- `player:rename`  
-- `host:deal`  
-- `player:cribSelect`  
-- `host:flipStarter`  
-- `peg:add`  
-- `run:add`  
-- `run:reset`  
-- `host:nextHand`  
+- Create room with room identifier and display name  
+- Join room with room identifier and display name  
+- Rejoin room with room identifier, seat identifier, and display name  
+- Per-seat manual score increment  
+- Dealer requests a deal for the room  
+- Player submits exactly two cards to the crib  
 
 **Server → Client**  
-- `state:update`  
-- `error`  
-- `toast`  
-
----
+- Room state updates  
+- Private hand messages to the owning seat
 
 ## Acceptance Checklist
-- Two tabs join same room and see each other  
-- Scoreboard pegging syncs instantly  
-- Deal shows private hands per tab  
-- Each selects 2 to crib → auto-step moves crib + shows starter  
-- Shared “count to 31” works; reset works  
-- Dealer rotates on Next Hand; scores persist across hands  
+- Two tabs can join the same room and see each other  
+- Manual score changes appear instantly across clients  
+- Dealing shows each player their private hand  
+- Each player submits two crib cards; when total reaches four, the crib locks and the starter card is visible  
+- **Pegging show-card flow advances a shared count to thirty-one and can be reset (next)**  
+- Dealer rotates on Next Hand while scores persist across hands
 
----
-
-## Deployment (Option A: single service)
-1. Build client → copy to `server/public`  
-2. Node serves static + Socket.IO on same origin  
-3. Deploy to **Render/Railway**:  
-   - Set `PORT`  
-   - Enable websockets  
-   - Add subdomain  
-4. Share URL with family  
-
----
+## Deployment (single service)
+- Build the client so it can be served by the Node server  
+- Serve static assets and Socket.IO from the same origin  
+- Deploy to a simple host and ensure websockets are enabled  
+- Share the deployment URL
 
 ## What We’re Skipping (for speed)
-- Rules enforcement, auto-scoring hands/crib  
-- Accounts/auth/persistence  
-- Fancy pegboard; animations; mobile polish  
+- Full rules enforcement or automatic hand/crib scoring  
+- Accounts or persistent storage  
+- Rich animations, a graphical pegboard, or mobile polish
 

@@ -5,52 +5,45 @@ No accounts. Manual scoring. Fast to run and share.
 
 ---
 
-## Features (MVP)
-- 2–4 players join via link + name  
-- Deal 6 cards to each player; select 2 to crib  
-- Auto-step when crib full: crib locks, starter card flips  
-- Manual scoring: +1 / +2 / +3 / +N buttons  
-- Shared count-to-31 with Reset (manual control)  
-- Dealer marker + Next Hand (rotate dealer, keep scores)  
+## Features (current)
+- Two to four players join via link and display name  
+- Dealer deals six cards to each player; each player selects two to the crib  
+- When the crib reaches four cards, the crib locks and a starter card flips automatically  
+- Manual scoring with per-seat buttons for quick increments  
+- Rejoin flow restores seat and name from local storage  
+
+> Pegging (count-to-31) is up next — we’ll keep it manual: players show a card to add its value to a shared count.
 
 ---
 
 ## Tech
-- Frontend: React + Vite + Tailwind  
-- Backend: Node.js + Socket.IO  
-- Deploy: single service (serves client + websockets)  
+- Frontend: React with Vite  
+- Backend: Node.js with Socket.IO  
+- Deployment: single service that serves both the client and websockets  
 
 ---
 
 ## Local Development
-1. Install dependencies: `pnpm install` (or `npm install` / `yarn install`)  
-2. Run dev mode: `pnpm dev` (runs server and client together)  
-3. Open two browser tabs at the dev URL to test multiplayer  
+- Install dependencies  
+- Run the development servers for client and server  
+- Open two browser tabs, create a room in one, and join from the other  
+- As the dealer, deal six cards; each player selects two to the crib  
+- When the crib hits four cards, it locks and the starter card appears  
 
 ---
 
-## Scripts (suggested)
-- `pnpm dev` – run server and client in dev mode with proxy  
-- `pnpm build` – build client and copy to `server/public`  
-- `pnpm start` – run Node server (serves built client)  
-
----
-
-## Deploy (simple)
-1. Build client (`pnpm build`) so it’s served by Node  
-2. Deploy Node app to Render or Railway  
-3. Set `PORT` environment variable  
-4. Ensure websockets are enabled (default is fine)  
-5. App serves both static client and Socket.IO on the same origin  
-6. Share the generated URL with family  
+## Scripts
+- Development script to run server and client together  
+- Build script to compile the client  
+- Start script to run the Node server (serving the built client if present)  
 
 ---
 
 ## Roadmap (short)
-- Toast log (e.g., “Rob +2”, “Cut 5♣”)  
-- Basic reconnect (same name reclaims seat)  
-- Optional: save finished game summaries  
-- Optional: partner rules for 3–4 players  
+- **Pegging (manual):** show-card UX and a shared count to thirty-one  
+- Dealer marker and Next Hand rotation  
+- Toast-style room log (short messages like “Rob +2” or “Cut 5♣”)  
+- Reconnect polish  
 
 ---
 
