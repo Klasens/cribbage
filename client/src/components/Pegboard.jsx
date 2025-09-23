@@ -6,6 +6,10 @@ import { slotX } from "../lib/pegboardMath";
  * Back peg = previous score; front peg = current score.
  * Commit 11: smooth peg transitions (client is a renderer; values come from server)
  * Commit 12: winner highlight on the winning lane
+ * Commit 13: board polish + responsiveness
+ *  - Major tick labels use chip-style backgrounds for readability
+ *  - Minor tick density adapts to available width (5/10/15 step)
+ *  - Compact layout under ~520px; axis padding adapts with width
  */
 
 const SLOTS = 122; // 0..121 inclusive
@@ -25,9 +29,13 @@ function colorForSeat(seatId = 0) {
   return SEAT_COLORS[i];
 }
 
-function useSlotWidth() {
+/**
+ * Measure container width → derive slot width and expose containerW.
+ */
+function useSlotMetrics() {
   const ref = useRef(null);
   const [slotW, setSlotW] = useState(12);
+  const [containerW, setContainerW] = useState(0);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -38,8 +46,11 @@ function useSlotWidth() {
         const w = e.contentRect?.width ?? el.clientWidth ?? 0;
         if (!Number.isFinite(w) || w <= 0) continue;
 
-        // leave some padding left/right (~48px)
-        const usable = Math.max(0, w - 96);
+        setContainerW(w);
+
+        // leave padding left/right; adapt with width
+        const leftRightPad = w < 560 ? 72 : 96;
+        const usable = Math.max(0, w - leftRightPad);
         const raw = usable / SLOTS;
         const clamped = Math.max(SLOTW_MIN, Math.min(SLOTW_MAX, raw));
         setSlotW(clamped);
@@ -50,7 +61,7 @@ function useSlotWidth() {
     return () => ro.disconnect();
   }, []);
 
-  return { ref, slotW };
+  return { ref, slotW, containerW };
 }
 
 function MajorTick({ x, label }) {
@@ -59,20 +70,27 @@ function MajorTick({ x, label }) {
       style={{
         position: "absolute",
         left: x,
-        bottom: 28,
+        bottom: 26,
         width: 1,
-        height: 10,
-        background: "#777",
+        height: 12,
+        background: "#7b8798",
       }}
       aria-hidden
     >
       <div
         style={{
           position: "absolute",
-          top: 10,
+          top: 12,
           transform: "translateX(-50%)",
-          fontSize: 12,
-          color: "#cfcfcf",
+          fontSize: 11,
+          color: "#dfe6ee",
+          background: "rgba(8,12,17,0.9)",
+          border: "1px solid #273241",
+          borderRadius: 6,
+          padding: "2px 6px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.35)",
+          userSelect: "none",
+          whiteSpace: "nowrap",
         }}
       >
         {label}
@@ -90,8 +108,8 @@ function MinorTick({ x }) {
         bottom: 30,
         width: 1,
         height: 6,
-        background: "#555",
-        opacity: 0.8,
+        background: "#556072",
+        opacity: 0.85,
       }}
       aria-hidden
     />
@@ -161,7 +179,6 @@ function Peg({ x = 0, y = 0, color = "#fff", size = 10, stroke = "#000" }) {
 
   useEffect(() => {
     mountedRef.current = true;
-    // no cleanup required; once mounted, keep transitions on
   }, []);
 
   const pegStyle = {
@@ -186,41 +203,46 @@ export default function Pegboard({
   winnerSeat = null,
   peggingComplete = false,
 }) {
-  // --- width → slotW (px)
-  const { ref, slotW } = useSlotWidth();
+  // --- container & slot metrics
+  const { ref, slotW, containerW } = useSlotMetrics();
 
-  const axisLeftPad = 48;
-  const axisRightPad = 48;
+  // axis padding adapts with width
+  const axisLeftPad = containerW < 560 ? 36 : 48;
+  const axisRightPad = containerW < 560 ? 36 : 48;
+
+  // minor tick density derived from slot width
+  const minorStep = slotW >= 15 ? 5 : slotW >= 12 ? 10 : 15;
 
   const majors = useMemo(() => [0, 30, 60, 90, 121], []);
   const minors = useMemo(() => {
-    const m = [];
-    for (let i = 5; i < 121; i += 5) {
-      if (!majors.includes(i)) m.push(i);
+    const arr = [];
+    for (let i = minorStep; i < 121; i += minorStep) {
+      if (!majors.includes(i)) arr.push(i);
     }
-    return m;
-  }, [majors]);
+    return arr;
+  }, [majors, minorStep]);
 
-  const showMinors =
-    typeof window !== "undefined" ? window.innerWidth >= 520 : true;
+  const showMinors = slotW >= 11; // hide minors when extremely tight
+  const compact = containerW < 520;
 
   const lanes = Array.isArray(players) ? players : [];
 
   return (
     <div style={{ marginTop: 16, textAlign: "left" }}>
-      <h2 style={{ margin: 0, marginBottom: 6 }}>Scoreboard</h2>
-
       <div
         style={{
           display: "flex",
-          gap: 16,
+          gap: 12,
           alignItems: "center",
           flexWrap: "wrap",
-          fontSize: 12,
-          opacity: 0.9,
-          marginBottom: 8,
+          fontSize: compact ? 11 : 12,
+          opacity: 0.95,
+          marginBottom: 6,
         }}
       >
+        <h2 style={{ margin: 0, marginRight: 6, fontSize: compact ? 18 : 20 }}>
+          Scoreboard
+        </h2>
         <div>
           <span style={{ opacity: 0.7 }}>Dealer:</span>{" "}
           <strong>
@@ -240,9 +262,11 @@ export default function Pegboard({
           <span style={{ opacity: 0.7 }}>Pegging:</span>{" "}
           <strong>{peggingComplete ? "Complete" : "In progress"}</strong>
         </div>
-        <div style={{ marginLeft: "auto", opacity: 0.6, fontSize: 11 }}>
-          slotW {Math.round(slotW)}px
-        </div>
+        {!compact && (
+          <div style={{ marginLeft: "auto", opacity: 0.55, fontSize: 11 }}>
+            slotW {Math.round(slotW)}px
+          </div>
+        )}
       </div>
 
       {/* Axis + ticks + lanes */}
@@ -254,7 +278,7 @@ export default function Pegboard({
           border: "1px solid #333",
           background: "#0f1216",
           borderRadius: 10,
-          padding: "18px 0 24px 0",
+          padding: compact ? "14px 0 20px 0" : "18px 0 24px 0",
         }}
       >
         {/* axis line */}
@@ -282,11 +306,12 @@ export default function Pegboard({
         </div>
 
         {/* lanes */}
-        <div style={{ padding: "6px 10px 10px" }}>
+        <div style={{ padding: compact ? "6px 8px 8px" : "6px 10px 10px" }}>
           {lanes.map((p) => {
             const color = colorForSeat(p.seatId);
             const isDealer = p.seatId === dealerSeat;
-            const isWinner = Number.isInteger(winnerSeat) && p.seatId === winnerSeat;
+            const isWinner =
+              Number.isInteger(winnerSeat) && p.seatId === winnerSeat;
 
             // Back peg uses prevScore (fallback to score) — server-provided
             const backScore =
@@ -303,7 +328,7 @@ export default function Pegboard({
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <div
                     style={{
-                      fontSize: 12,
+                      fontSize: compact ? 11 : 12,
                       opacity: 0.9,
                       minWidth: 68,
                       display: "flex",
@@ -313,7 +338,15 @@ export default function Pegboard({
                   >
                     {isDealer ? "👑 " : null}
                     <span>[Seat {p.seatId}]</span>
-                    <strong>{p.name}</strong>
+                    <strong
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {p.name}
+                    </strong>
                   </div>
                   <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
                     <div
@@ -321,8 +354,11 @@ export default function Pegboard({
                         fontVariantNumeric: "tabular-nums",
                         fontWeight: 700,
                         color: isWinner ? "#f2e29b" : "#eaeaea",
-                        textShadow: isWinner ? "0 0 10px rgba(255,215,0,0.25)" : "none",
-                        transition: "color 150ms ease, text-shadow 150ms ease",
+                        textShadow: isWinner
+                          ? "0 0 10px rgba(255,215,0,0.25)"
+                          : "none",
+                        transition:
+                          "color 150ms ease, text-shadow 150ms ease",
                       }}
                     >
                       {p.score}
@@ -334,31 +370,22 @@ export default function Pegboard({
                 <div
                   style={{
                     position: "relative",
-                    height: 48,
+                    height: compact ? 42 : 48,
                     marginTop: 6,
                     borderRadius: 6,
                     background: isWinner ? "#1c232c" : "#19202a",
                     border: `1px solid ${isWinner ? "#3d4a5c" : "#233042"}`,
-                    transition: "background 200ms ease, border-color 200ms ease",
-                    filter: isWinner ? "drop-shadow(0 4px 20px rgba(255,215,0,0.16))" : "none",
+                    transition:
+                      "background 200ms ease, border-color 200ms ease",
+                    filter: isWinner
+                      ? "drop-shadow(0 4px 20px rgba(255,215,0,0.16))"
+                      : "none",
                   }}
                 >
                   {/* back peg (previous score) */}
-                  <Peg
-                    x={xBack}
-                    y={lanePegBaseY}
-                    size={12}
-                    color={color}
-                    stroke="#000"
-                  />
+                  <Peg x={xBack} y={lanePegBaseY} size={12} color={color} stroke="#000" />
                   {/* front peg (current score) */}
-                  <Peg
-                    x={xFront}
-                    y={lanePegBaseY - 8}
-                    size={12}
-                    color="#eaeaea"
-                    stroke="#000"
-                  />
+                  <Peg x={xFront} y={lanePegBaseY - 8} size={12} color="#eaeaea" stroke="#000" />
                 </div>
               </LaneRow>
             );
