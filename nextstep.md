@@ -75,35 +75,11 @@ We’ve shipped realtime rooms, manual scoring, dealing, crib selection with aut
 
 ---
 
-## Pegging Rules (implemented)
-- **Values:** A=1; 2–10=face; J/Q/K=10
-- **Run:** shared `runCount` clamped to 31
-- **Show:** appends to `pegPile`, updates `lastShown`, `lastShownBySeat/Name`, tracks per-seat `shownBySeat`
-- **Reset (GO):** clears transient run fields; retains `shownBySeat`
-- **Auto-complete:** when every active seat has shown 4 unique cards, set `peggingComplete=true`, clear transient run & checkmarks, prompt to count hands
-- **Trust-based:** no turn order enforcement; players self-manage
-
----
-
 ## Build Rules (we’re following these)
 1. **Micro-steps only** — land small, testable changes end-to-end.
 2. **Trust-first UX** — minimal enforcement; avoid heavy rules engine.
 3. **Server is the source of truth** — client is a renderer/emitter.
-4. **Freeze on winner** — no scoring/pegging after victory (explicit guards).
-5. **Deterministic, stable IDs** for logs — **server-assigned** (`now-seq`), prevent key collisions.
-6. **Cap unbounded lists** — room log stores a fixed-size tail.
-7. **No silent branching** — every meaningful state transition emits `state:update`.
-8. **Name normalization & bounds** — trim, shorten, default (“Player”).
-9. **Dealer actions gated** — e.g., only dealer can deal.
-10. **Separation of concerns** — sockets are modular and focused.
-
----
-
-## Known Omissions (intentional)
-- Strict rule validation (turn order, runs, 15s/31 scoring, pegging legality)
-- Auto scoring of hands/crib
-- Accounts/persistence
-- **Reconnect polish** (left out of this artifact by request)
+4. **File Writing** — anytime you touch a file, write the file out in full omitting nothing.
 
 ---
 
@@ -115,18 +91,4 @@ We’re ready to move from mechanics to visuals.
 - 2–4 lanes (one per seat), **two pegs per player** (front/back) mapped to their score
 - Basic movement animation when a score changes
 - Dealer indicator near lane label
-
-### Micro-steps to ship it
-1. **Data mapping:** transform `players[].score` → peg positions.
-2. **Render track:** simple SVG/Canvas/DOM track with tick labels.
-3. **Render pegs:** colored pegs per seat; place at score; dual peg spacing.
-4. **Animate:** small translate animation on score updates.
-5. **Polish:** highlight dealer lane; responsive sizes; dark-theme contrast.
-
----
-
-## Process Note
-We are building this project in **micro steps**.  
-Each step should be small, testable, and integrated before moving on.  
-We will **not jump ahead** or take on too many steps at once — this ensures stability, clarity, and easier debugging as we grow the codebase.
 

@@ -28,7 +28,7 @@ export const EVT = {
 };
 
 // export const socket = io("http://localhost:3000");
-export const socket = io();
+export const socket = io("http://localhost:3000");
 
 export function onStateUpdate(fn) {
   socket.on(EVT.STATE_UPDATE, fn);

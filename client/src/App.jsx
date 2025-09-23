@@ -7,6 +7,7 @@ import ControlsBar from "./components/ControlsBar";
 import MyHand from "./components/MyHand";
 import PeggingPanel from "./components/PeggingPanel";
 import LogModal from "./components/LogModal";
+import Pegboard from "./components/Pegboard";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
 
@@ -43,6 +44,7 @@ export default function App() {
   const peggingComplete = !!state?.peggingComplete;
 
   const dealerSeat = state?.dealerSeat ?? null;
+  const winnerSeat = state?.winnerSeat ?? null;
 
   // Winner present -> hard lock UI, enable "New Game"
   const winnerActive = state?.winnerSeat != null;
@@ -113,6 +115,14 @@ export default function App() {
         mySeatId={mySeatId}
         full={roomFull}
         dealerSeat={dealerSeat}
+      />
+
+      {/* NEW: Render-only Pegboard scaffold (no logic yet) */}
+      <Pegboard
+        players={state?.players ?? []}
+        dealerSeat={dealerSeat}
+        winnerSeat={winnerSeat}
+        peggingComplete={peggingComplete}
       />
 
       {joined && mySeatId != null && (
