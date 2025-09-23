@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { slotIndex, slotX } from "../lib/pegboardMath";
 
 /**
- * Pegboard: ruler + lanes + (new) peg primitives at slot 0.
+ * Pegboard: ruler + lanes + pegs bound to player scores (no anim yet).
  * Server remains source of truth; this is render-only.
  */
 
@@ -254,8 +254,9 @@ export default function Pegboard({
             const color = colorForSeat(p.seatId);
             const isDealer = p.seatId === dealerSeat;
 
-            // --- Peg primitives (Commit 8): two pegs at slot 0
-            const x0 = axisLeftPad + slotX(0, slotW);
+            // --- Pegs bound to score (Commit 9): both pegs at score X (no leapfrog yet)
+            const score = Number.isFinite(p.score) ? p.score : 0;
+            const xScore = axisLeftPad + slotX(score, slotW);
             const lanePegBaseY = 34; // relative inside the lane container
 
             return (
@@ -276,16 +277,6 @@ export default function Pegboard({
                     <strong>{p.name}</strong>
                   </div>
                   <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        opacity: 0.8,
-                        alignSelf: "center",
-                        marginRight: 4,
-                      }}
-                    >
-                      {p.score != null ? "" : "—"}
-                    </div>
                     <div
                       style={{
                         fontVariantNumeric: "tabular-nums",
@@ -310,7 +301,7 @@ export default function Pegboard({
                 >
                   {/* back peg */}
                   <Peg
-                    x={x0}
+                    x={xScore}
                     y={lanePegBaseY}
                     size={12}
                     color={color}
@@ -318,7 +309,7 @@ export default function Pegboard({
                   />
                   {/* front peg (slight vertical offset so they don't perfectly overlap) */}
                   <Peg
-                    x={x0}
+                    x={xScore}
                     y={lanePegBaseY - 8}
                     size={12}
                     color="#eaeaea"
