@@ -71,7 +71,16 @@ function register(io, socket, joined) {
     if (allSeatsShownFour(room)) {
       room.state.peggingComplete = true;
 
-      // Clear transient run state and checkmarks
+      // 🔓 Publicly reveal all hands + crib for manual counting.
+      // Convert Map -> plain object for serialization.
+      const revealHands = {};
+      for (const [seat, cards] of room.hands.entries()) {
+        revealHands[seat] = Array.isArray(cards) ? [...cards] : [];
+      }
+      room.state.revealHands = revealHands;
+      room.state.revealCrib = Array.isArray(room.crib) ? [...room.crib] : [];
+
+      // Clear transient pegging run state and checkmarks
       room.state.runCount = 0;
       room.state.pegPile = [];
       room.state.lastShown = null;
@@ -79,7 +88,7 @@ function register(io, socket, joined) {
       room.state.lastShownByName = null;
       room.state.shownBySeat = {};
 
-      pushLog(room, "peg-complete", "Pegging complete — count hands");
+      pushLog(room, "peg-complete", "Pegging complete — count hands (revealed)");
     }
 
     broadcastState(io, roomId);

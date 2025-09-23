@@ -8,6 +8,7 @@ import MyHand from "./components/MyHand";
 import PeggingPanel from "./components/PeggingPanel";
 import LogModal from "./components/LogModal";
 import Pegboard from "./components/Pegboard";
+import RevealPanel from "./components/RevealPanel";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
 
@@ -45,6 +46,10 @@ export default function App() {
 
   const dealerSeat = state?.dealerSeat ?? null;
   const winnerSeat = state?.winnerSeat ?? null;
+
+  // NEW: public reveal payloads after pegging
+  const revealHands = state?.revealHands ?? null;
+  const revealCrib = state?.revealCrib ?? null;
 
   // Winner present -> hard lock UI, enable "New Game"
   const winnerActive = state?.winnerSeat != null;
@@ -84,7 +89,7 @@ export default function App() {
         onOpenLog={() => setLogOpen(true)}
         onNewGame={newGame}
         canNewGame={winnerActive}
-        winnerActive={winnerActive}         // ⬅️ tell bar to disable buttons
+        winnerActive={winnerActive}
       />
 
       <MyHand
@@ -96,7 +101,7 @@ export default function App() {
         shownBySeat={shownBySeat}
         mySeatId={mySeatId}
         peggingComplete={peggingComplete}
-        winnerActive={winnerActive}         // ⬅️ hide/disable actions
+        winnerActive={winnerActive}
       />
 
       {joined && (
@@ -106,7 +111,18 @@ export default function App() {
           lastShownByName={lastShownByName}
           onResetRun={resetRun}
           peggingComplete={peggingComplete}
-          winnerActive={winnerActive}       // ⬅️ show “game over” banner
+          winnerActive={winnerActive}
+        />
+      )}
+
+      {/* 🔓 Public reveal after pegging completes */}
+      {peggingComplete && (
+        <RevealPanel
+          players={state?.players ?? []}
+          revealHands={revealHands}
+          revealCrib={revealCrib}
+          cutCard={cutCard}
+          dealerSeat={dealerSeat}
         />
       )}
 
@@ -117,7 +133,6 @@ export default function App() {
         dealerSeat={dealerSeat}
       />
 
-      {/* NEW: Render-only Pegboard scaffold (no logic yet) */}
       <Pegboard
         players={state?.players ?? []}
         dealerSeat={dealerSeat}
@@ -129,7 +144,7 @@ export default function App() {
         <ScoreControls
           onPeg={peg}
           onPegN={pegN}
-          disabled={!joined || mySeatId == null || winnerActive}  // ⬅️ lock points
+          disabled={!joined || mySeatId == null || winnerActive}
         />
       )}
 

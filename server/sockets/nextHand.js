@@ -50,6 +50,10 @@ function register(io, socket, joined) {
     room.state.shownBySeat = {};
     room.state.peggingComplete = false;
 
+    // 🔒 Clear public reveals for the new hand
+    room.state.revealHands = null;
+    room.state.revealCrib = null;
+
     const dealerName =
       players.find((p) => p.seatId === nextSeat)?.name ?? `Seat ${nextSeat}`;
 

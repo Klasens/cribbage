@@ -31,6 +31,10 @@ function register(io, socket, joined) {
     room.state.shownBySeat = {};
     room.state.peggingComplete = false;
 
+    // 🔒 Clear any previous reveals
+    room.state.revealHands = null;
+    room.state.revealCrib = null;
+
     // Build & shuffle deck (objects)
     const deck = shuffle(createDeck());
 

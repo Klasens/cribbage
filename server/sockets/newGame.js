@@ -53,6 +53,10 @@ function register(io, socket, joined) {
     state.shownBySeat = {};
     state.peggingComplete = false;
 
+    // 🔒 Clear public reveals
+    state.revealHands = null;
+    state.revealCrib = null;
+
     // Log it
     pushLog(room, "new-game", "🔄 New game started — scores reset, dealer is Seat 0");
 

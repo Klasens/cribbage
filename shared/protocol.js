@@ -55,6 +55,10 @@ exports.createInitialState = function createInitialState() {
     // Marks end of pegging (UI hides Show/Reset; move to hand scoring)
     peggingComplete: false,
 
+    // 🔓 Public reveal after pegging (for manual counting)
+    revealHands: null,     // { [seatId:number]: string[] } | null
+    revealCrib: null,      // string[] | null
+
     // Winner metadata
     winnerSeat: null,
     winnerName: null,
