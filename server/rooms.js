@@ -2,6 +2,7 @@
 const { createInitialState } = require("../shared/protocol");
 
 const MAX_PLAYERS = 4;
+const MAX_LOG = 200; // cap log length to avoid unbounded growth
 
 /** rooms: Map<string, {
  *    state,
@@ -19,6 +20,11 @@ function ensureRoom(roomId) {
   if (!rooms.has(roomId)) {
     const state = createInitialState();
     state.roomId = roomId;
+
+    // NEW: log entries and per-room sequence for stable unique IDs
+    state.log = [];
+    state.logSeq = 0;
+
     rooms.set(roomId, {
       state,
       sockets: new Set(),
@@ -71,17 +77,25 @@ function addPlayer(state, rawName) {
   return seatId;
 }
 
-/** Append a log entry, capping at the last 60 items. */
-function addLog(room, text) {
-  try {
-    const entry = { text: String(text || "").slice(0, 160), ts: Date.now() };
-    const prev = Array.isArray(room.state.logs) ? room.state.logs : [];
-    const next = [...prev, entry];
-    // Cap to last 60 entries to avoid unbounded growth
-    room.state.logs = next.length > 60 ? next.slice(next.length - 60) : next;
-  } catch {
-    // ignore logging failures
-  }
+/**
+ * NEW: pushLog — add a server-assigned unique log entry
+ * @param {object} room
+ * @param {string} kind short category (e.g., 'winner', 'next-hand', 'deal')
+ * @param {string} text human text for UI
+ * @param {object} extra optional extra fields to store with entry
+ * @returns {object|undefined} the created entry
+ */
+function pushLog(room, kind, text, extra = {}) {
+  if (!room || !room.state) return;
+  const now = Date.now();
+  const seq = (room.state.logSeq = (room.state.logSeq || 0) + 1);
+  const id = `${now}-${seq}`; // <= unique even if same ms; stable and string
+  const entry = { id, ts: now, kind, text, ...extra };
+  const list = Array.isArray(room.state.log) ? room.state.log : [];
+  const next = [...list, entry];
+  if (next.length > MAX_LOG) next.splice(0, next.length - MAX_LOG);
+  room.state.log = next;
+  return entry;
 }
 
 module.exports = {
@@ -94,6 +108,7 @@ module.exports = {
   normName,
   roomIsFull,
   addPlayer,
-  addLog, // ⬅️ export
+  // NEW export:
+  pushLog,
 };
 

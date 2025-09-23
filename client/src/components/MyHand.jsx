@@ -5,10 +5,10 @@ export default function MyHand({
   cards = [],
   cribLocked = false,
   cribCount = 0,
-  onSendCrib,            // (cards[2]) => void
-  onShowCard,            // (cardText) => void
-  shownBySeat = {},      // map from server (persists across GO)
-  mySeatId = null,       // my seat
+  onSendCrib,
+  onShowCard,
+  shownBySeat = {},
+  mySeatId = null,
   peggingComplete = false,
   winnerActive = false,
 }) {
@@ -17,9 +17,12 @@ export default function MyHand({
   // Clear selection whenever the hand changes
   useEffect(() => {
     setSel([]);
-  }, [cards.join("|")]); // stable enough for MVP
+  }, [cards.join("|")]);
 
-  const canSend = useMemo(() => sel.length === 2 && !cribLocked, [sel, cribLocked]);
+  const canSend = useMemo(
+    () => sel.length === 2 && !cribLocked && !winnerActive, // ⬅️ lock on winner
+    [sel, cribLocked, winnerActive]
+  );
 
   const toggle = (c) => {
     setSel((prev) => {
@@ -50,6 +53,7 @@ export default function MyHand({
         <div style={{ fontSize: 12, opacity: 0.8 }}>
           Crib: <strong>{cribCount}/4</strong> {cribLocked ? "• Locked" : ""}
           {peggingComplete ? " • Pegging complete" : ""}
+          {winnerActive ? " • Game over" : ""}
         </div>
       </div>
 
@@ -62,6 +66,7 @@ export default function MyHand({
             <div key={`${c}-${i}`} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <button
                 onClick={() => toggle(c)}
+                disabled={winnerActive}
                 style={{
                   padding: "6px 10px",
                   borderRadius: 8,
@@ -71,21 +76,22 @@ export default function MyHand({
                   transition: "box-shadow 120ms, background 120ms, border-color 120ms",
                   fontWeight: 600,
                   letterSpacing: 0.2,
-                  cursor: "pointer",
+                  cursor: winnerActive ? "not-allowed" : "pointer",
                   minWidth: 64,
                 }}
                 title={
-                  shown
-                    ? "You showed this card this pegging session"
-                    : cribLocked
-                    ? picked ? "Unselect" : "Select for crib"
-                    : picked ? "Unselect" : "Select for crib"
+                  winnerActive
+                    ? "Game over — actions are locked"
+                    : shown
+                      ? "You showed this card this pegging session"
+                      : cribLocked
+                        ? picked ? "Unselect" : "Select for crib"
+                        : picked ? "Unselect" : "Select for crib"
                 }
               >
                 {c}
               </button>
 
-              {/* Show button appears only during pegging and not after game over */}
               {canShowNow && (
                 <button
                   onClick={() => onShowCard?.(c)}
@@ -111,7 +117,15 @@ export default function MyHand({
           onClick={() => onSendCrib?.(sel)}
           disabled={!canSend}
           style={{ padding: "8px 12px" }}
-          title={cribLocked ? "Crib is locked" : sel.length !== 2 ? "Pick 2 cards" : "Send to crib"}
+          title={
+            winnerActive
+              ? "Game over — actions are locked"
+              : cribLocked
+                ? "Crib is locked"
+                : sel.length !== 2
+                  ? "Pick 2 cards"
+                  : "Send to crib"
+          }
         >
           Send 2 to crib
         </button>

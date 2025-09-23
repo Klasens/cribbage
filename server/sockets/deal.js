@@ -1,12 +1,15 @@
 // server/sockets/deal.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState, addLog } = require("../rooms");
+const { rooms, broadcastState, pushLog } = require("../rooms");
 const { createDeck, shuffle, cardText } = require("../deck");
 
 function register(io, socket, joined) {
   socket.on(EVT.HOST_DEAL, ({ roomId }) => {
     const room = rooms.get(roomId);
     if (!room) return;
+
+    // ⬅️ do not allow dealing if the game is over
+    if (room.state.winnerSeat != null) return;
 
     const dealer = room.state.dealerSeat ?? 0;
     if (joined.seatId !== dealer) return;
@@ -49,9 +52,10 @@ function register(io, socket, joined) {
     // Keep the remaining deck for starter flip
     room.deck = deck;
 
-    // Log
-    const dealerName = (room.state.players.find(p => p.seatId === dealer) || {}).name || `Seat ${dealer}`;
-    addLog(room, `Dealt 6 each by ${dealerName}`);
+    // Log the deal (server-assigned unique id)
+    const dealerName =
+      room.state.players.find((p) => p.seatId === dealer)?.name ?? `Seat ${dealer}`;
+    pushLog(room, "deal", `🃏 Dealt 6 each by ${dealerName}`);
 
     // Let clients see resets
     broadcastState(io, roomId);

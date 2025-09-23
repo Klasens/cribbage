@@ -8,16 +8,28 @@ export default function ControlsBar({
   onClearLocal,
   onNextHand,
   canNextHand = false,
-  onNewGame,           // ⬅️ NEW
-  canNewGame = false,  // ⬅️ NEW
+  onOpenLog,
+  onNewGame,
+  canNewGame = false,
+  // NEW: for disabling controls on game over
+  winnerActive = false,
 }) {
+  const btnStyle = {
+    padding: "8px 12px",
+    background: "#222",
+    color: "#eaeaea",
+    border: "1px solid #333",
+    borderRadius: 6,
+  };
+
   return (
     <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
       {joined && isDealer && (
         <button
           onClick={onDeal}
-          style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
-          title="Dealer: deal 6 cards to each player"
+          disabled={winnerActive}
+          style={btnStyle}
+          title={winnerActive ? "Game over — start a New Game" : "Dealer: deal 6 cards to each player"}
         >
           Deal 6
         </button>
@@ -25,30 +37,42 @@ export default function ControlsBar({
 
       <button
         onClick={() => onClearLocal(false)}
-        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
+        style={btnStyle}
         title="Clear saved seat/name for this room (no reload)"
       >
         Clear Local
       </button>
 
-      {/* Anyone can trigger Next Hand after pegging is complete */}
       <button
         onClick={onNextHand}
-        disabled={!canNextHand}
-        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
-        title={canNextHand ? "Rotate dealer and start next hand" : "Available after pegging complete"}
+        disabled={!canNextHand || winnerActive}
+        style={btnStyle}
+        title={
+          winnerActive
+            ? "Game over — start a New Game"
+            : canNextHand
+              ? "Rotate dealer and start next hand"
+              : "Available after pegging complete"
+        }
       >
         Next Hand
       </button>
 
-      {/* New Game appears when a winner exists */}
       <button
         onClick={onNewGame}
         disabled={!canNewGame}
-        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
-        title={canNewGame ? "Reset scores and start a fresh game" : "Available after a winner is declared"}
+        style={btnStyle}
+        title={canNewGame ? "Reset scores and start a fresh game" : "Appears after a winner is declared"}
       >
         New Game
+      </button>
+
+      <button
+        onClick={onOpenLog}
+        style={btnStyle}
+        title="Show room log"
+      >
+        Log
       </button>
     </div>
   );

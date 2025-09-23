@@ -1,6 +1,6 @@
 // server/sockets/newGame.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState } = require("../rooms");
+const { rooms, broadcastState, pushLog } = require("../rooms");
 
 /**
  * Reset / New Game:
@@ -51,6 +51,9 @@ function register(io, socket, joined) {
     state.lastShownByName = null;
     state.shownBySeat = {};
     state.peggingComplete = false;
+
+    // Log it
+    pushLog(room, "new-game", "🔄 New game started — scores reset, dealer is Seat 0");
 
     broadcastState(io, roomId);
   });

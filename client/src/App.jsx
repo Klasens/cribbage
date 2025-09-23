@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PlayersList from "./components/PlayersList";
 import ScoreControls from "./components/ScoreControls";
 import JoinForm from "./components/JoinForm";
@@ -6,7 +6,7 @@ import Status from "./components/Status";
 import ControlsBar from "./components/ControlsBar";
 import MyHand from "./components/MyHand";
 import PeggingPanel from "./components/PeggingPanel";
-import ToastLog from "./components/ToastLog";
+import LogModal from "./components/LogModal";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
 
@@ -19,10 +19,13 @@ export default function App() {
     joined, roomFull, isDealer,
     create, join, peg, pegN,
     deal, sendCrib, resetLocal, clearLocal,
-    showCard, resetRun, nextHand,
+    showCard, resetRun, nextHand, newGame,
   } = useGameClient();
 
   const { hand, clearHand } = useHand();
+
+  // Modal open/close state
+  const [logOpen, setLogOpen] = useState(false);
 
   const handleClearLocal = (all = false) => {
     clearLocal(all);
@@ -41,7 +44,8 @@ export default function App() {
 
   const dealerSeat = state?.dealerSeat ?? null;
 
-  const logs = state?.logs ?? [];
+  // Winner present -> hard lock UI, enable "New Game"
+  const winnerActive = state?.winnerSeat != null;
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
@@ -74,7 +78,11 @@ export default function App() {
         onDeal={deal}
         onClearLocal={handleClearLocal}
         onNextHand={nextHand}
-        canNextHand={peggingComplete}
+        canNextHand={peggingComplete && !winnerActive}
+        onOpenLog={() => setLogOpen(true)}
+        onNewGame={newGame}
+        canNewGame={winnerActive}
+        winnerActive={winnerActive}         // ⬅️ tell bar to disable buttons
       />
 
       <MyHand
@@ -86,6 +94,7 @@ export default function App() {
         shownBySeat={shownBySeat}
         mySeatId={mySeatId}
         peggingComplete={peggingComplete}
+        winnerActive={winnerActive}         // ⬅️ hide/disable actions
       />
 
       {joined && (
@@ -95,6 +104,7 @@ export default function App() {
           lastShownByName={lastShownByName}
           onResetRun={resetRun}
           peggingComplete={peggingComplete}
+          winnerActive={winnerActive}       // ⬅️ show “game over” banner
         />
       )}
 
@@ -106,7 +116,11 @@ export default function App() {
       />
 
       {joined && mySeatId != null && (
-        <ScoreControls onPeg={peg} onPegN={pegN} disabled={!joined || mySeatId == null} />
+        <ScoreControls
+          onPeg={peg}
+          onPegN={pegN}
+          disabled={!joined || mySeatId == null || winnerActive}  // ⬅️ lock points
+        />
       )}
 
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
@@ -121,11 +135,16 @@ export default function App() {
           <code>api.deal(roomId)</code>,{" "}
           <code>api.pegShow(roomId, seat, card)</code>,{" "}
           <code>api.pegReset(roomId)</code>,{" "}
-          <code>api.nextHand(roomId)</code>
+          <code>api.nextHand(roomId)</code>,{" "}
+          <code>api.newGame(roomId)</code>
         </div>
       </div>
 
-      <ToastLog logs={logs} />
+      <LogModal
+        open={logOpen}
+        onClose={() => setLogOpen(false)}
+        entries={state?.log ?? []}
+      />
     </div>
   );
 }

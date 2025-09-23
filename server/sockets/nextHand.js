@@ -1,6 +1,6 @@
 // server/sockets/nextHand.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState, addLog } = require("../rooms");
+const { rooms, broadcastState, pushLog } = require("../rooms");
 
 /**
  * Rotate dealer clockwise and reset all per-hand state
@@ -12,6 +12,10 @@ function register(io, socket, joined) {
     const room = rooms.get(roomId);
     if (!room) return;
 
+    // ⬅️ lock the table after a winner
+    if (room.state.winnerSeat != null) return;
+
+    // Only allow after pegging complete to keep flow clean
     if (!room.state.peggingComplete) return;
 
     const players = room.state.players || [];
@@ -21,7 +25,7 @@ function register(io, socket, joined) {
     const cur = Number.isInteger(room.state.dealerSeat)
       ? room.state.dealerSeat
       : 0;
-    const seatIds = players.map(p => p.seatId).sort((a,b) => a-b);
+    const seatIds = players.map((p) => p.seatId).sort((a, b) => a - b);
     const idx = Math.max(0, seatIds.indexOf(cur));
     const nextSeat = seatIds[(idx + 1) % seatIds.length];
     room.state.dealerSeat = nextSeat;
@@ -46,8 +50,10 @@ function register(io, socket, joined) {
     room.state.shownBySeat = {};
     room.state.peggingComplete = false;
 
-    const nextName = (players.find(p => p.seatId === nextSeat) || {}).name || `Seat ${nextSeat}`;
-    addLog(room, `Next hand — dealer: ${nextName}`);
+    const dealerName =
+      players.find((p) => p.seatId === nextSeat)?.name ?? `Seat ${nextSeat}`;
+
+    pushLog(room, "next-hand", `➡️ Next hand — dealer: ${dealerName}`);
 
     broadcastState(io, roomId);
   });

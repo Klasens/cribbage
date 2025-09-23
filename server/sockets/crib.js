@@ -1,12 +1,13 @@
 // server/sockets/crib.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState, addLog } = require("../rooms");
+const { rooms, broadcastState, pushLog } = require("../rooms");
 const { cardText } = require("../deck");
 
 function register(io, socket, joined) {
   socket.on(EVT.PLAYER_CRIB_SELECT, ({ roomId, seatId, cards }) => {
     const room = rooms.get(roomId);
     if (!room) return;
+    if (room.state.winnerSeat != null) return;  // ⬅️ lock when game over
     if (room.state.cribLocked) return;
     if (joined.roomId !== roomId || joined.seatId !== seatId) return;
 
@@ -37,12 +38,12 @@ function register(io, socket, joined) {
         if (next) {
           const txt = cardText(next);
           room.state.cutCard = txt;
-          addLog(room, `Crib locked • Cut card: ${txt}`);
+          pushLog(room, "crib", `Crib locked • Cut card: ${txt}`);
         } else {
-          addLog(room, "Crib locked");
+          pushLog(room, "crib", "Crib locked");
         }
       } else {
-        addLog(room, "Crib locked");
+        pushLog(room, "crib", "Crib locked");
       }
     }
 

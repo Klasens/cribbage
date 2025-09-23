@@ -1,6 +1,6 @@
 // server/sockets/peg.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState, addLog } = require("../rooms");
+const { rooms, broadcastState, pushLog } = require("../rooms");
 
 /** Map a "cardText" like "A♣", "10♦", "J♠" to pegging value. */
 function pegValue(cardText) {
@@ -65,7 +65,7 @@ function register(io, socket, joined) {
     }
 
     // Log the show
-    addLog(room, `${displayName} showed ${cardTxt} (count ${next})`);
+    pushLog(room, "peg-show", `${displayName} showed ${cardTxt} (count ${next})`);
 
     // If everyone has shown 4 cards, pegging is complete.
     if (allSeatsShownFour(room)) {
@@ -79,7 +79,7 @@ function register(io, socket, joined) {
       room.state.lastShownByName = null;
       room.state.shownBySeat = {};
 
-      addLog(room, "Pegging complete — count hands");
+      pushLog(room, "peg-complete", "Pegging complete — count hands");
     }
 
     broadcastState(io, roomId);
@@ -98,7 +98,7 @@ function register(io, socket, joined) {
     room.state.lastShownBySeat = null;
     room.state.lastShownByName = null;
 
-    addLog(room, "Count reset (GO)");
+    pushLog(room, "peg-reset", "Count reset (GO)");
 
     broadcastState(io, roomId);
   });
