@@ -21,8 +21,11 @@ exports.EVT = {
   PEG_SHOW: "peg:show",   // { roomId, seatId, cardText }
   PEG_RESET: "peg:reset", // { roomId }
 
-  // NEW: Next Hand rotation (dealer passes clockwise)
-  NEXT_HAND: "hand:next", // { roomId }
+  // Next Hand rotation
+  NEXT_HAND: "hand:next",
+
+  // NEW: Reset / New Game
+  NEW_GAME: "game:new",
 };
 
 // Minimal GameState factory
@@ -52,7 +55,7 @@ exports.createInitialState = function createInitialState() {
     // Marks end of pegging (UI hides Show/Reset; move to hand scoring)
     peggingComplete: false,
 
-    // Winner (optional future usage)
+    // Winner
     winnerSeat: null,
     winnerName: null,
   };

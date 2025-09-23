@@ -10,7 +10,7 @@ export default function MyHand({
   shownBySeat = {},      // map from server (persists across GO)
   mySeatId = null,       // my seat
   peggingComplete = false,
-  winnerActive = false,  // ⬅️ NEW
+  winnerActive = false,
 }) {
   const [sel, setSel] = useState([]);
 

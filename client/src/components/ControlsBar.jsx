@@ -6,8 +6,10 @@ export default function ControlsBar({
   isDealer,
   onDeal,
   onClearLocal,
-  onNextHand,        // ⬅️ NEW
-  canNextHand = false, // ⬅️ NEW
+  onNextHand,
+  canNextHand = false,
+  onNewGame,           // ⬅️ NEW
+  canNewGame = false,  // ⬅️ NEW
 }) {
   return (
     <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -37,6 +39,16 @@ export default function ControlsBar({
         title={canNextHand ? "Rotate dealer and start next hand" : "Available after pegging complete"}
       >
         Next Hand
+      </button>
+
+      {/* New Game appears when a winner exists */}
+      <button
+        onClick={onNewGame}
+        disabled={!canNewGame}
+        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
+        title={canNewGame ? "Reset scores and start a fresh game" : "Available after a winner is declared"}
+      >
+        New Game
       </button>
     </div>
   );

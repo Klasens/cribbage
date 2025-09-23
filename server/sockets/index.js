@@ -4,7 +4,8 @@ const scoringHandlers = require("./scoring");
 const dealHandlers = require("./deal");
 const cribHandlers = require("./crib");
 const pegHandlers = require("./peg");
-const nextHandHandlers = require("./nextHand"); // ⬅️ NEW
+const nextHandHandlers = require("./nextHand");
+const newGameHandlers = require("./newGame"); // ⬅️ NEW
 const connectionHandlers = require("./lifecycle");
 
 function registerSocket(io) {
@@ -20,7 +21,8 @@ function registerSocket(io) {
     dealHandlers.register(io, socket, joined);
     cribHandlers.register(io, socket, joined);
     pegHandlers.register(io, socket, joined);
-    nextHandHandlers.register(io, socket, joined); // ⬅️ NEW
+    nextHandHandlers.register(io, socket, joined);
+    newGameHandlers.register(io, socket, joined); // ⬅️ NEW
     connectionHandlers.register(io, socket, joined);
   });
 }

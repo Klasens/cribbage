@@ -66,6 +66,12 @@ export function makeActions(ctx) {
     api.nextHand(state.roomId);
   };
 
+  // --- New Game ---
+  const newGame = () => {
+    if (!state?.roomId) return;
+    api.newGame(state.roomId);
+  };
+
   // Local helpers
   const resetLocal = () => {
     if (!roomId) return;
@@ -89,7 +95,8 @@ export function makeActions(ctx) {
     sendCrib,
     showCard,
     resetRun,
-    nextHand,  // ⬅️ NEW
+    nextHand,
+    newGame,    // ⬅️ NEW
     resetLocal,
     clearLocal,
   };

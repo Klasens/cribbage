@@ -22,6 +22,9 @@ export const EVT = {
 
   // Next Hand rotation
   NEXT_HAND: "hand:next",
+
+  // New Game
+  NEW_GAME: "game:new",
 };
 
 export const socket = io("http://localhost:3000");
@@ -64,5 +67,9 @@ export const api = {
   // Next Hand (rotate dealer, reset per-hand state)
   nextHand: (roomId) =>
     socket.emit(EVT.NEXT_HAND, { roomId }),
+
+  // New Game (full reset to fresh game)
+  newGame: (roomId) =>
+    socket.emit(EVT.NEW_GAME, { roomId }),
 };
 

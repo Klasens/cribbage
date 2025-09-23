@@ -18,7 +18,7 @@ export default function App() {
     joined, roomFull, isDealer,
     create, join, peg, pegN,
     deal, sendCrib, resetLocal, clearLocal,
-    showCard, resetRun, nextHand,   // ⬅️ NEW
+    showCard, resetRun, nextHand, newGame,   // ⬅️ NEW
   } = useGameClient();
 
   const { hand, clearHand } = useHand();
@@ -40,9 +40,28 @@ export default function App() {
 
   const dealerSeat = state?.dealerSeat ?? null;
 
+  const winnerSeat = state?.winnerSeat ?? null;
+  const winnerName = state?.winnerName ?? null;
+  const winnerActive = winnerSeat != null;
+
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
       <h1 style={{ marginBottom: 8, fontSize: 36 }}>Cribbage (MVP)</h1>
+
+      {/* Winner banner */}
+      {winnerActive && (
+        <div style={{
+          marginBottom: 10,
+          padding: 10,
+          border: "1px solid #333",
+          borderRadius: 8,
+          background: "#191919",
+          textAlign: "left",
+          fontWeight: 600
+        }}>
+          🏁 Winner: {winnerName} (seat {winnerSeat})
+        </div>
+      )}
 
       <JoinForm
         roomId={roomId}
@@ -70,8 +89,10 @@ export default function App() {
         isDealer={isDealer}
         onDeal={deal}
         onClearLocal={handleClearLocal}
-        onNextHand={nextHand}             // ⬅️ NEW
-        canNextHand={peggingComplete}     // ⬅️ NEW
+        onNextHand={nextHand}
+        canNextHand={peggingComplete}
+        onNewGame={newGame}               
+        canNewGame={winnerActive}         
       />
 
       <MyHand
@@ -83,6 +104,7 @@ export default function App() {
         shownBySeat={shownBySeat}
         mySeatId={mySeatId}
         peggingComplete={peggingComplete}
+        winnerActive={winnerActive}       // ⬅️ NEW
       />
 
       {joined && (
@@ -92,6 +114,7 @@ export default function App() {
           lastShownByName={lastShownByName}
           onResetRun={resetRun}
           peggingComplete={peggingComplete}
+          winnerActive={winnerActive}     // ⬅️ NEW
         />
       )}
 
@@ -99,7 +122,7 @@ export default function App() {
         players={state?.players ?? []}
         mySeatId={mySeatId}
         full={roomFull}
-        dealerSeat={dealerSeat}          // ⬅️ NEW
+        dealerSeat={dealerSeat}
       />
 
       {joined && mySeatId != null && (
@@ -118,7 +141,8 @@ export default function App() {
           <code>api.deal(roomId)</code>,{" "}
           <code>api.pegShow(roomId, seat, card)</code>,{" "}
           <code>api.pegReset(roomId)</code>,{" "}
-          <code>api.nextHand(roomId)</code> {/* ⬅️ NEW */}
+          <code>api.nextHand(roomId)</code>,{" "}
+          <code>api.newGame(roomId)</code> {/* ⬅️ NEW */}
         </div>
       </div>
     </div>
