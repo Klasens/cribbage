@@ -6,6 +6,7 @@ import Status from "./components/Status";
 import ControlsBar from "./components/ControlsBar";
 import MyHand from "./components/MyHand";
 import PeggingPanel from "./components/PeggingPanel";
+import ToastLog from "./components/ToastLog";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
 
@@ -18,7 +19,7 @@ export default function App() {
     joined, roomFull, isDealer,
     create, join, peg, pegN,
     deal, sendCrib, resetLocal, clearLocal,
-    showCard, resetRun, nextHand, newGame,   // ⬅️ NEW
+    showCard, resetRun, nextHand,
   } = useGameClient();
 
   const { hand, clearHand } = useHand();
@@ -40,28 +41,11 @@ export default function App() {
 
   const dealerSeat = state?.dealerSeat ?? null;
 
-  const winnerSeat = state?.winnerSeat ?? null;
-  const winnerName = state?.winnerName ?? null;
-  const winnerActive = winnerSeat != null;
+  const logs = state?.logs ?? [];
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
       <h1 style={{ marginBottom: 8, fontSize: 36 }}>Cribbage (MVP)</h1>
-
-      {/* Winner banner */}
-      {winnerActive && (
-        <div style={{
-          marginBottom: 10,
-          padding: 10,
-          border: "1px solid #333",
-          borderRadius: 8,
-          background: "#191919",
-          textAlign: "left",
-          fontWeight: 600
-        }}>
-          🏁 Winner: {winnerName} (seat {winnerSeat})
-        </div>
-      )}
 
       <JoinForm
         roomId={roomId}
@@ -91,8 +75,6 @@ export default function App() {
         onClearLocal={handleClearLocal}
         onNextHand={nextHand}
         canNextHand={peggingComplete}
-        onNewGame={newGame}               
-        canNewGame={winnerActive}         
       />
 
       <MyHand
@@ -104,7 +86,6 @@ export default function App() {
         shownBySeat={shownBySeat}
         mySeatId={mySeatId}
         peggingComplete={peggingComplete}
-        winnerActive={winnerActive}       // ⬅️ NEW
       />
 
       {joined && (
@@ -114,7 +95,6 @@ export default function App() {
           lastShownByName={lastShownByName}
           onResetRun={resetRun}
           peggingComplete={peggingComplete}
-          winnerActive={winnerActive}     // ⬅️ NEW
         />
       )}
 
@@ -141,10 +121,11 @@ export default function App() {
           <code>api.deal(roomId)</code>,{" "}
           <code>api.pegShow(roomId, seat, card)</code>,{" "}
           <code>api.pegReset(roomId)</code>,{" "}
-          <code>api.nextHand(roomId)</code>,{" "}
-          <code>api.newGame(roomId)</code> {/* ⬅️ NEW */}
+          <code>api.nextHand(roomId)</code>
         </div>
       </div>
+
+      <ToastLog logs={logs} />
     </div>
   );
 }

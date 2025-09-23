@@ -1,7 +1,7 @@
 // server/sockets/crib.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState } = require("../rooms");
-const { cardText } = require("../deck"); // NEW: to format starter card
+const { rooms, broadcastState, addLog } = require("../rooms");
+const { cardText } = require("../deck");
 
 function register(io, socket, joined) {
   socket.on(EVT.PLAYER_CRIB_SELECT, ({ roomId, seatId, cards }) => {
@@ -34,7 +34,15 @@ function register(io, socket, joined) {
       // Flip starter from the remaining deck if not already flipped
       if (!room.state.cutCard && Array.isArray(room.deck) && room.deck.length) {
         const next = room.deck.shift(); // object {r,s}
-        if (next) room.state.cutCard = cardText(next); // e.g., "5♣"
+        if (next) {
+          const txt = cardText(next);
+          room.state.cutCard = txt;
+          addLog(room, `Crib locked • Cut card: ${txt}`);
+        } else {
+          addLog(room, "Crib locked");
+        }
+      } else {
+        addLog(room, "Crib locked");
       }
     }
 
@@ -52,3 +60,4 @@ function register(io, socket, joined) {
 }
 
 module.exports = { register };
+

@@ -1,6 +1,6 @@
 // server/sockets/nextHand.js
 const { EVT } = require("../../shared/protocol");
-const { rooms, broadcastState } = require("../rooms");
+const { rooms, broadcastState, addLog } = require("../rooms");
 
 /**
  * Rotate dealer clockwise and reset all per-hand state
@@ -12,8 +12,6 @@ function register(io, socket, joined) {
     const room = rooms.get(roomId);
     if (!room) return;
 
-    // Optional guard: only allow after pegging complete
-    // (keeps flow clean; you can relax this if you want)
     if (!room.state.peggingComplete) return;
 
     const players = room.state.players || [];
@@ -23,7 +21,6 @@ function register(io, socket, joined) {
     const cur = Number.isInteger(room.state.dealerSeat)
       ? room.state.dealerSeat
       : 0;
-    // Find the next valid seat in players list
     const seatIds = players.map(p => p.seatId).sort((a,b) => a-b);
     const idx = Math.max(0, seatIds.indexOf(cur));
     const nextSeat = seatIds[(idx + 1) % seatIds.length];
@@ -49,8 +46,8 @@ function register(io, socket, joined) {
     room.state.shownBySeat = {};
     room.state.peggingComplete = false;
 
-    // Winner flags (from prior game) do not auto-clear here.
-    // They'll be cleared on explicit "new game" later.
+    const nextName = (players.find(p => p.seatId === nextSeat) || {}).name || `Seat ${nextSeat}`;
+    addLog(room, `Next hand — dealer: ${nextName}`);
 
     broadcastState(io, roomId);
   });

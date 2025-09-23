@@ -10,7 +10,7 @@ const MAX_PLAYERS = 4;
  *    hands: Map<number,string[]>,
  *    crib: string[],
  *    cribBySeat: Set<number>,
- *    deck: Array<{r:string,s:string}>   // NEW: remaining deck (objects) after deal
+ *    deck: Array<{r:string,s:string}>
  * }>
  */
 const rooms = new Map();
@@ -71,6 +71,19 @@ function addPlayer(state, rawName) {
   return seatId;
 }
 
+/** Append a log entry, capping at the last 60 items. */
+function addLog(room, text) {
+  try {
+    const entry = { text: String(text || "").slice(0, 160), ts: Date.now() };
+    const prev = Array.isArray(room.state.logs) ? room.state.logs : [];
+    const next = [...prev, entry];
+    // Cap to last 60 entries to avoid unbounded growth
+    room.state.logs = next.length > 60 ? next.slice(next.length - 60) : next;
+  } catch {
+    // ignore logging failures
+  }
+}
+
 module.exports = {
   rooms,
   MAX_PLAYERS,
@@ -81,4 +94,6 @@ module.exports = {
   normName,
   roomIsFull,
   addPlayer,
+  addLog, // ⬅️ export
 };
+
