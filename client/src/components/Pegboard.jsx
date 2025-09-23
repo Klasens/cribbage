@@ -4,6 +4,8 @@ import { slotX } from "../lib/pegboardMath";
 /**
  * Pegboard: ruler + lanes + pegs.
  * Back peg = previous score; front peg = current score.
+ * Commit 11: smooth peg transitions (client is a renderer; values come from server)
+ * Commit 12: winner highlight on the winning lane
  */
 
 const SLOTS = 122; // 0..121 inclusive
@@ -96,16 +98,20 @@ function MinorTick({ x }) {
   );
 }
 
-function LaneRow({ children, color }) {
+function LaneRow({ children, color, isWinner = false }) {
   return (
     <div
       style={{
         position: "relative",
         marginTop: 8,
         padding: "10px 12px",
-        borderRadius: 8,
-        background: "#101419",
-        border: "1px solid #1e2530",
+        borderRadius: 10,
+        background: isWinner ? "linear-gradient(180deg,#12140f,#101419)" : "#101419",
+        border: `1px solid ${isWinner ? "#8f7a27" : "#1e2530"}`,
+        boxShadow: isWinner
+          ? "0 0 0 2px rgba(255,215,0,0.18), 0 8px 30px rgba(0,0,0,0.35)"
+          : "none",
+        transition: "box-shadow 200ms ease, border-color 200ms ease, background 200ms ease",
       }}
     >
       <div
@@ -121,12 +127,43 @@ function LaneRow({ children, color }) {
         }}
         aria-hidden
       />
+      {isWinner && (
+        <div
+          style={{
+            position: "absolute",
+            top: -8,
+            right: 10,
+            padding: "2px 8px",
+            borderRadius: 6,
+            background: "rgba(255,215,0,0.12)",
+            border: "1px solid rgba(255,215,0,0.35)",
+            fontSize: 11,
+            fontWeight: 700,
+            color: "#f2e29b",
+            backdropFilter: "blur(2px)",
+          }}
+        >
+          🏁 Winner
+        </div>
+      )}
       {children}
     </div>
   );
 }
 
+/**
+ * Peg with smooth left-position transitions.
+ * We disable the transition on the very first paint to avoid
+ * pegs flying in from the origin (micro animation polish).
+ */
 function Peg({ x = 0, y = 0, color = "#fff", size = 10, stroke = "#000" }) {
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    // no cleanup required; once mounted, keep transitions on
+  }, []);
+
   const pegStyle = {
     position: "absolute",
     left: x,
@@ -137,6 +174,8 @@ function Peg({ x = 0, y = 0, color = "#fff", size = 10, stroke = "#000" }) {
     background: color,
     boxShadow: `0 0 0 1px ${stroke}`,
     transform: "translate(-50%, -50%)",
+    transition: mountedRef.current ? "left 220ms cubic-bezier(.2,.7,.2,1)" : "none",
+    willChange: "left",
   };
   return <div style={pegStyle} aria-hidden />;
 }
@@ -247,8 +286,9 @@ export default function Pegboard({
           {lanes.map((p) => {
             const color = colorForSeat(p.seatId);
             const isDealer = p.seatId === dealerSeat;
+            const isWinner = Number.isInteger(winnerSeat) && p.seatId === winnerSeat;
 
-            // Back peg uses prevScore (fallback to score)
+            // Back peg uses prevScore (fallback to score) — server-provided
             const backScore =
               typeof p.prevScore === "number" ? p.prevScore : p.score || 0;
             const frontScore = p.score || 0;
@@ -259,7 +299,7 @@ export default function Pegboard({
             const lanePegBaseY = 34;
 
             return (
-              <LaneRow key={p.seatId} color={color}>
+              <LaneRow key={p.seatId} color={color} isWinner={isWinner}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <div
                     style={{
@@ -280,6 +320,9 @@ export default function Pegboard({
                       style={{
                         fontVariantNumeric: "tabular-nums",
                         fontWeight: 700,
+                        color: isWinner ? "#f2e29b" : "#eaeaea",
+                        textShadow: isWinner ? "0 0 10px rgba(255,215,0,0.25)" : "none",
+                        transition: "color 150ms ease, text-shadow 150ms ease",
                       }}
                     >
                       {p.score}
@@ -294,8 +337,10 @@ export default function Pegboard({
                     height: 48,
                     marginTop: 6,
                     borderRadius: 6,
-                    background: "#19202a",
-                    border: "1px solid #233042",
+                    background: isWinner ? "#1c232c" : "#19202a",
+                    border: `1px solid ${isWinner ? "#3d4a5c" : "#233042"}`,
+                    transition: "background 200ms ease, border-color 200ms ease",
+                    filter: isWinner ? "drop-shadow(0 4px 20px rgba(255,215,0,0.16))" : "none",
                   }}
                 >
                   {/* back peg (previous score) */}
