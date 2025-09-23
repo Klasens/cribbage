@@ -19,6 +19,9 @@ export const EVT = {
   // Pegging run
   PEG_SHOW: "peg:show",
   PEG_RESET: "peg:reset",
+
+  // Next Hand rotation
+  NEXT_HAND: "hand:next",
 };
 
 export const socket = io("http://localhost:3000");
@@ -57,5 +60,9 @@ export const api = {
     socket.emit(EVT.PEG_SHOW, { roomId, seatId, cardText }),
   pegReset: (roomId) =>
     socket.emit(EVT.PEG_RESET, { roomId }),
+
+  // Next Hand (rotate dealer, reset per-hand state)
+  nextHand: (roomId) =>
+    socket.emit(EVT.NEXT_HAND, { roomId }),
 };
 

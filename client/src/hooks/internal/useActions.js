@@ -60,6 +60,12 @@ export function makeActions(ctx) {
     api.pegReset(state.roomId);
   };
 
+  // --- Next Hand rotation ---
+  const nextHand = () => {
+    if (!state?.roomId) return;
+    api.nextHand(state.roomId);
+  };
+
   // Local helpers
   const resetLocal = () => {
     if (!roomId) return;
@@ -81,8 +87,9 @@ export function makeActions(ctx) {
     pegN,
     deal,
     sendCrib,
-    showCard,  // ⬅️ NEW
-    resetRun,  // ⬅️ NEW
+    showCard,
+    resetRun,
+    nextHand,  // ⬅️ NEW
     resetLocal,
     clearLocal,
   };
