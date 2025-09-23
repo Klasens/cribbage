@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { slotIndex, slotX } from "../lib/pegboardMath";
+import { slotX } from "../lib/pegboardMath";
 
 /**
- * Pegboard: ruler + lanes + pegs bound to player scores (no anim yet).
- * Server remains source of truth; this is render-only.
+ * Pegboard: ruler + lanes + pegs.
+ * Back peg = previous score; front peg = current score.
  */
 
 const SLOTS = 122; // 0..121 inclusive
@@ -127,7 +127,6 @@ function LaneRow({ children, color }) {
 }
 
 function Peg({ x = 0, y = 0, color = "#fff", size = 10, stroke = "#000" }) {
-  const r = size / 2;
   const pegStyle = {
     position: "absolute",
     left: x,
@@ -151,13 +150,8 @@ export default function Pegboard({
   // --- width → slotW (px)
   const { ref, slotW } = useSlotWidth();
 
-  // --- ruler positions
   const axisLeftPad = 48;
   const axisRightPad = 48;
-  const boardPx = useMemo(
-    () => axisLeftPad + SLOTS * slotW + axisRightPad,
-    [slotW]
-  );
 
   const majors = useMemo(() => [0, 30, 60, 90, 121], []);
   const minors = useMemo(() => {
@@ -168,9 +162,9 @@ export default function Pegboard({
     return m;
   }, [majors]);
 
-  const showMinors = typeof window !== "undefined" ? window.innerWidth >= 520 : true;
+  const showMinors =
+    typeof window !== "undefined" ? window.innerWidth >= 520 : true;
 
-  // --- lanes
   const lanes = Array.isArray(players) ? players : [];
 
   return (
@@ -198,8 +192,8 @@ export default function Pegboard({
           <span style={{ opacity: 0.7 }}>Winner:</span>{" "}
           <strong>
             {Number.isInteger(winnerSeat)
-              ? (players.find((p) => p.seatId === winnerSeat)?.name ??
-                `Seat ${winnerSeat}`)
+              ? players.find((p) => p.seatId === winnerSeat)?.name ??
+                `Seat ${winnerSeat}`
               : "—"}
           </strong>
         </div>
@@ -212,7 +206,7 @@ export default function Pegboard({
         </div>
       </div>
 
-      {/* Axis + ticks */}
+      {/* Axis + ticks + lanes */}
       <div
         ref={ref}
         style={{
@@ -254,10 +248,15 @@ export default function Pegboard({
             const color = colorForSeat(p.seatId);
             const isDealer = p.seatId === dealerSeat;
 
-            // --- Pegs bound to score (Commit 9): both pegs at score X (no leapfrog yet)
-            const score = Number.isFinite(p.score) ? p.score : 0;
-            const xScore = axisLeftPad + slotX(score, slotW);
-            const lanePegBaseY = 34; // relative inside the lane container
+            // Back peg uses prevScore (fallback to score)
+            const backScore =
+              typeof p.prevScore === "number" ? p.prevScore : p.score || 0;
+            const frontScore = p.score || 0;
+
+            const xBack = axisLeftPad + slotX(backScore, slotW);
+            const xFront = axisLeftPad + slotX(frontScore, slotW);
+
+            const lanePegBaseY = 34;
 
             return (
               <LaneRow key={p.seatId} color={color}>
@@ -299,17 +298,17 @@ export default function Pegboard({
                     border: "1px solid #233042",
                   }}
                 >
-                  {/* back peg */}
+                  {/* back peg (previous score) */}
                   <Peg
-                    x={xScore}
+                    x={xBack}
                     y={lanePegBaseY}
                     size={12}
                     color={color}
                     stroke="#000"
                   />
-                  {/* front peg (slight vertical offset so they don't perfectly overlap) */}
+                  {/* front peg (current score) */}
                   <Peg
-                    x={xScore}
+                    x={xFront}
                     y={lanePegBaseY - 8}
                     size={12}
                     color="#eaeaea"

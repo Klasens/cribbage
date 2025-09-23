@@ -72,7 +72,8 @@ function addPlayer(state, rawName) {
   if (roomIsFull(state)) return null;
   const name = normName(rawName);
   const seatId = state.players.length; // 0..3
-  state.players.push({ seatId, name, score: 0 });
+  // Track prevScore for leapfrog pegs
+  state.players.push({ seatId, name, score: 0, prevScore: 0 });
   if (state.dealerSeat === null) state.dealerSeat = 0;
   return seatId;
 }

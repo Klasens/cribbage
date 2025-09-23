@@ -16,8 +16,9 @@ function register(io, socket, joined) {
 
     const state = room.state;
 
-    // Reset scores
+    // Reset scores (and prevScore for leapfrog baseline)
     for (const p of state.players || []) {
+      p.prevScore = 0;
       p.score = 0;
     }
 

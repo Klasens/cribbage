@@ -14,6 +14,10 @@ function register(io, socket, joined) {
     if (!p) return;
 
     const n = Number(delta) || 0;
+
+    // NEW: capture previous score for leapfrog rendering
+    p.prevScore = p.score;
+
     p.score += n;
 
     // Winner detection (>= 121)
