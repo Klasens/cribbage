@@ -1,0 +1,8 @@
+.rmodal { display: grid; gap: 10px; }
+.rmodal__label { font-size: 12px; opacity: 0.75; }
+.rmodal__value { font-weight: 700; }
+.rmodal__row { display: flex; align-items: center; gap: 8px; }
+.rmodal__actions { margin-top: 8px; }
+.rmodal__btn { padding: 8px 12px; }
+.rmodal__dim { opacity: 0.6; }
+

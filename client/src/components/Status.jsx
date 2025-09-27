@@ -1,5 +1,6 @@
 // client/src/components/Status.jsx
 import React from "react";
+import "./status.css";
 
 export default function Status({
   joined,
@@ -7,10 +8,10 @@ export default function Status({
   mySeatId,
   cribCount = 0,
   cribLocked = false,
-  cutCard = null, // NEW
+  cutCard = null,
 }) {
   return (
-    <div style={{ marginTop: 12, fontSize: 14, opacity: 0.85, textAlign: "left" }}>
+    <div className="status">
       {joined ? (
         <>
           <div>Room: <strong>{roomId}</strong></div>
@@ -19,7 +20,7 @@ export default function Status({
           {cutCard ? (
             <div>Starter: <strong>{cutCard}</strong></div>
           ) : (
-            <div>Starter: <span style={{ opacity: 0.7 }}>—</span></div>
+            <div>Starter: <span className="status__dim">—</span></div>
           )}
         </>
       ) : (

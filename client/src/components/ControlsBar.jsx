@@ -3,6 +3,7 @@ import React from "react";
 import Button from "../ui/Button";
 import Toolbar from "../ui/Toolbar";
 import { useUI } from "../context/UIContext";
+import "./controls-bar.css";
 
 export default function ControlsBar({
   joined,

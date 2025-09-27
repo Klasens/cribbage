@@ -1,34 +1,11 @@
+// client/src/ui/Chip.jsx
 import React from "react";
+import "./chip.css";
 
-export default function Chip({ children, tone = "default", style, ...rest }) {
-  const colors = {
-    default: {
-      bg: "rgba(255,255,255,0.06)",
-      bd: "var(--c-border)",
-      ink: "var(--c-text)",
-    },
-    success: {
-      bg: "var(--c-success-bg)",
-      bd: "rgba(168,224,109,0.35)",
-      ink: "var(--c-success-ink)",
-    },
-  }[tone];
-
-  const base = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "2px 8px",
-    borderRadius: "var(--r-xs)",
-    background: colors.bg,
-    border: `1px solid ${colors.bd}`,
-    color: colors.ink,
-    fontSize: 12,
-    fontWeight: 700,
-    whiteSpace: "nowrap",
-  };
-
+export default function Chip({ children, tone = "default", className = "", style, ...rest }) {
+  const classes = ["ui-chip", `ui-chip--${tone}`, className].filter(Boolean).join(" ");
   return (
-    <span style={{ ...base, ...style }} {...rest}>
+    <span className={classes} style={style} {...rest}>
       {children}
     </span>
   );

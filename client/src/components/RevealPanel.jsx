@@ -1,15 +1,14 @@
+// client/src/components/RevealPanel.jsx
 import React, { useMemo } from "react";
+import "./reveal.css";
 
 /**
- * Public reveals shown after peggingComplete:
- * - Each player's hand (by seat/name)
- * - Crib cards
- * Trust-first display: server sends arrays of card text.
+ * Public reveals shown after peggingComplete.
  */
 export default function RevealPanel({
   players = [],
-  revealHands = null,   // { [seatId]: string[] } | null
-  revealCrib = null,    // string[] | null
+  revealHands = null,
+  revealCrib = null,
   cutCard = null,
   dealerSeat = null,
 }) {
@@ -27,88 +26,47 @@ export default function RevealPanel({
   );
 
   return (
-    <div style={{
-      marginTop: 16,
-      padding: 12,
-      border: "1px solid #333",
-      borderRadius: 8,
-      background: "#171a1f",
-      textAlign: "left"
-    }}>
-      <h3 style={{ marginTop: 0, marginBottom: 8 }}>
+    <div className="reveal">
+      <h3 className="reveal__title">
         Revealed hands {cutCard ? `• Starter: ${cutCard}` : ""}
       </h3>
 
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="reveal__grid">
         {seatOrder.map((seat) => {
           const p = players.find((x) => x.seatId === seat);
           const cards = bySeat[seat] || [];
           return (
-            <div key={seat} style={{
-              padding: "8px 10px",
-              border: "1px solid #263041",
-              borderRadius: 8,
-              background: "#10141a"
-            }}>
-              <div style={{ fontSize: 12, opacity: 0.85, marginBottom: 6 }}>
+            <div key={seat} className="reveal__block">
+              <div className="reveal__blockHeader">
                 {seat === dealerSeat ? "👑 " : ""}[Seat {seat}] {p?.name ?? "Player"}
               </div>
               {cards.length ? (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div className="reveal__cards">
                   {cards.map((c, i) => (
-                    <span
-                      key={`${seat}-${c}-${i}`}
-                      style={{
-                        padding: "6px 10px",
-                        borderRadius: 8,
-                        border: "1px solid #333",
-                        background: "#1b1f26",
-                        fontWeight: 600,
-                        minWidth: 48,
-                        textAlign: "center"
-                      }}
-                    >
+                    <span key={`${seat}-${c}-${i}`} className="reveal__chip">
                       {c}
                     </span>
                   ))}
                 </div>
               ) : (
-                <div style={{ opacity: 0.6 }}>—</div>
+                <div className="reveal__none">—</div>
               )}
             </div>
           );
         })}
 
-        <div style={{
-          padding: "8px 10px",
-          border: "1px solid #3a2b2b",
-          borderRadius: 8,
-          background: "#1a1414"
-        }}>
-          <div style={{ fontSize: 12, opacity: 0.9, marginBottom: 6 }}>
-            🧺 Crib
-          </div>
+        <div className="reveal__block reveal__crib">
+          <div className="reveal__blockHeader">🧺 Crib</div>
           {Array.isArray(revealCrib) && revealCrib.length ? (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div className="reveal__cards">
               {revealCrib.map((c, i) => (
-                <span
-                  key={`crib-${c}-${i}`}
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: 8,
-                    border: "1px solid #333",
-                    background: "#221a1a",
-                    fontWeight: 600,
-                    minWidth: 48,
-                    textAlign: "center"
-                  }}
-                >
+                <span key={`crib-${c}-${i}`} className="reveal__chip reveal__chip--crib">
                   {c}
                 </span>
               ))}
             </div>
           ) : (
-            <div style={{ opacity: 0.6 }}>—</div>
+            <div className="reveal__none">—</div>
           )}
         </div>
       </div>

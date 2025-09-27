@@ -1,6 +1,8 @@
+// client/src/components/overlays/RoomDetailsModal.jsx
 import React from "react";
 import Modal from "../../ui/Modal";
 import Chip from "../../ui/Chip";
+import "./room-details.css";
 
 export default function RoomDetailsModal({
   open,
@@ -14,33 +16,33 @@ export default function RoomDetailsModal({
 }) {
   return (
     <Modal open={open} onClose={onClose} title="Room Details" width={520}>
-      <div style={{ display: "grid", gap: 10 }}>
+      <div className="rmodal">
         <div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>Room</div>
-          <div style={{ fontWeight: 700 }}>{roomId || "—"}</div>
+          <div className="rmodal__label">Room</div>
+          <div className="rmodal__value">{roomId || "—"}</div>
         </div>
         <div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>Dealer</div>
-          <div style={{ fontWeight: 600 }}>
+          <div className="rmodal__label">Dealer</div>
+          <div className="rmodal__value">
             {Number.isInteger(dealerSeat) ? `Seat ${dealerSeat}` : "—"}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>Crib</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="rmodal__label">Crib</div>
+          <div className="rmodal__row">
             <Chip>{cribCount}/4</Chip>
             {cribLocked ? <Chip tone="success">Locked</Chip> : null}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>Starter</div>
-          <div>{cutCard ? <Chip>{cutCard}</Chip> : <span style={{ opacity: 0.6 }}>—</span>}</div>
+          <div className="rmodal__label">Starter</div>
+          <div>{cutCard ? <Chip>{cutCard}</Chip> : <span className="rmodal__dim">—</span>}</div>
         </div>
 
-        <div style={{ marginTop: 8 }}>
+        <div className="rmodal__actions">
           <button
             onClick={onOpenLog}
-            style={{ padding: "8px 12px" }}
+            className="rmodal__btn"
             title="Open the room event log"
           >
             Open Log

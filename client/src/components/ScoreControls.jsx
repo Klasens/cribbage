@@ -1,19 +1,20 @@
 // client/src/components/ScoreControls.jsx
 import React from "react";
 import { useUI } from "../context/UIContext";
+import "./score-controls.css";
 
 export default function ScoreControls({ onPeg, disabled }) {
   const ui = useUI();
 
   return (
-    <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-      <button onClick={() => onPeg(1)} disabled={disabled} style={{ padding: "8px 12px" }}>+1</button>
-      <button onClick={() => onPeg(2)} disabled={disabled} style={{ padding: "8px 12px" }}>+2</button>
-      <button onClick={() => onPeg(3)} disabled={disabled} style={{ padding: "8px 12px" }}>+3</button>
+    <div className="score">
+      <button onClick={() => onPeg(1)} disabled={disabled} className="score__btn">+1</button>
+      <button onClick={() => onPeg(2)} disabled={disabled} className="score__btn">+2</button>
+      <button onClick={() => onPeg(3)} disabled={disabled} className="score__btn">+3</button>
       <button
         onClick={() => ui.openModal("number")}
         disabled={disabled}
-        style={{ padding: "8px 12px" }}
+        className="score__btn"
         title="Open +N modal"
       >
         +N

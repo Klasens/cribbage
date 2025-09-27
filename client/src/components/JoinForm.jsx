@@ -1,6 +1,7 @@
 // client/src/components/JoinForm.jsx
 import React from "react";
 import Button from "../ui/Button";
+import "./join-form.css";
 
 export default function JoinForm({
   roomId, setRoomId,
@@ -10,18 +11,18 @@ export default function JoinForm({
   onReset,
 }) {
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+    <div className="join">
       <input
+        className="join__input"
         placeholder="Room ID (e.g., test)"
         value={roomId}
         onChange={(e) => setRoomId(e.target.value.trim())}
-        style={{ padding: 8, background: "#222", color: "var(--c-text)", border: "1px solid var(--c-border)" }}
       />
       <input
+        className="join__input"
         placeholder="Display Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        style={{ padding: 8, background: "#222", color: "var(--c-text)", border: "1px solid var(--c-border)" }}
       />
       <Button
         onClick={onCreate}

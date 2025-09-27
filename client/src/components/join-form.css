@@ -1,0 +1,15 @@
+.join {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.join__input {
+  padding: 8px;
+  background: #222;
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+}
+

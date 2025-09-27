@@ -1,0 +1,15 @@
+.nmodal { display: grid; gap: 10px; }
+.nmodal__input {
+  padding: 8px;
+  background: #222;
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+}
+.nmodal__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.nmodal__btn { padding: 8px 12px; }
+

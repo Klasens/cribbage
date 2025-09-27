@@ -1,6 +1,8 @@
+// client/src/ui/Modal.jsx
 import React, { useEffect, useMemo, useRef } from "react";
 import Card from "./Card";
 import Button from "./Button";
+import "./modal.css";
 
 export default function Modal({
   open,
@@ -15,14 +17,11 @@ export default function Modal({
 
   useEffect(() => {
     if (!open) return;
-
-    // Save focus to restore on close
     previouslyFocused.current = document.activeElement;
 
     const root = dialogRef.current;
     if (!root) return;
 
-    // Focus the first focusable element within the dialog
     const focusables = root.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
@@ -37,7 +36,6 @@ export default function Modal({
       }
       if (e.key !== "Tab") return;
 
-      // Focus trap
       const list = Array.from(
         root.querySelectorAll(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -72,12 +70,10 @@ export default function Modal({
     };
   }, [open, onClose]);
 
-  // Restore focus to the opener after close
   useEffect(() => {
     if (open) return;
     const el = previouslyFocused.current;
     if (el && typeof el.focus === "function") {
-      // slight delay to avoid race with unmounts
       setTimeout(() => el.focus(), 0);
     }
   }, [open]);
@@ -94,44 +90,22 @@ export default function Modal({
       aria-modal="true"
       aria-labelledby={titleId}
       onClick={handleBackdropClick}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.45)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 50,
-      }}
+      className="modal__backdrop"
     >
       <Card
         as="div"
         ref={dialogRef}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: `min(${width}px, 92vw)`,
-          maxHeight: "80vh",
-          overflow: "hidden",
-          background: "var(--c-bg-elev)",
-          boxShadow: "var(--shadow-2)",
-          padding: 0,
-        }}
+        className="modal__card"
+        style={{ width: `min(${width}px, 92vw)` }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "10px 14px",
-            borderBottom: "1px solid var(--c-border)",
-          }}
-        >
-          <strong id={titleId} style={{ fontSize: 16 }}>
+        <div className="modal__header">
+          <strong id={titleId} className="modal__title">
             {title}
           </strong>
           <Button
             onClick={onClose}
-            style={{ marginLeft: "auto" }}
+            className="modal__close"
             size="sm"
             variant="subtle"
             title="Close (Esc)"
@@ -141,7 +115,7 @@ export default function Modal({
           </Button>
         </div>
 
-        <div style={{ padding: 12, overflowY: "auto", maxHeight: "calc(80vh - 56px)" }}>
+        <div className="modal__body">
           {children}
         </div>
       </Card>

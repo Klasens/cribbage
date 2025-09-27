@@ -1,0 +1,4 @@
+/* Re-export existing rules from index.css for locality; keep source of truth
+   in index.css for now to avoid duplication. This file exists so the layout
+   component can import something feature-local. */
+

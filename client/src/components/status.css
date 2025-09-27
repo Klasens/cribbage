@@ -1,0 +1,8 @@
+.status {
+  margin-top: 12px;
+  font-size: 14px;
+  opacity: 0.85;
+  text-align: left;
+}
+.status__dim { opacity: 0.7; }
+

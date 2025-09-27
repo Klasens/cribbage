@@ -1,0 +1,7 @@
+.score {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+.score__btn { padding: 8px 12px; }
+

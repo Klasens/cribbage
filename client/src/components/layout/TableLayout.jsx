@@ -1,16 +1,12 @@
 // client/src/components/layout/TableLayout.jsx
 import React from "react";
+import "./table-layout.css";
 
 /**
  * Minimal grid wrapper:
- * - left: narrow column (e.g., your hand)
- * - center: primary column (e.g., pegging + pegboard)
- * - right: narrow column (e.g., opponent summary)
- *
- * Responsive behavior in CSS:
- * - ≥1000px: 3 columns
- * - 700–999px: 2 columns (left + center; right below)
- * - <700px: 1 column (left, center, right stacked)
+ * - left: narrow column
+ * - center: primary column
+ * - right: narrow column
  */
 export default function TableLayout({ left, center, right }) {
   return (

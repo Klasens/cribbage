@@ -1,0 +1,35 @@
+.pegbox {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #161616;
+  text-align: left;
+}
+
+.pegbox__title { margin: 0 0 8px; }
+
+.pegbox__gameover,
+.pegbox__done {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pegbox__row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pegbox__label { font-size: 12px; opacity: 0.8; }
+.pegbox__count { font-size: 28px; font-weight: 700; }
+.pegbox__last { font-size: 18px; font-weight: 600; }
+.pegbox__by { font-size: 16px; }
+
+.pegbox__spacer { margin-left: auto; }
+
+.pegbox__reset { padding: 8px 12px; }
+
+.pegbox__dim { opacity: 0.6; }
+

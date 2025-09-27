@@ -1,0 +1,37 @@
+.reveal {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #171a1f;
+  text-align: left;
+}
+.reveal__title { margin: 0 0 8px; }
+.reveal__grid { display: grid; gap: 12px; }
+
+.reveal__block {
+  padding: 8px 10px;
+  border: 1px solid #263041;
+  border-radius: 8px;
+  background: #10141a;
+}
+.reveal__crib {
+  border-color: #3a2b2b;
+  background: #1a1414;
+}
+.reveal__blockHeader {
+  font-size: 12px; opacity: 0.85; margin-bottom: 6px;
+}
+.reveal__cards { display: flex; gap: 8px; flex-wrap: wrap; }
+.reveal__chip {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1b1f26;
+  font-weight: 600;
+  min-width: 48px;
+  text-align: center;
+}
+.reveal__chip--crib { background: #221a1a; }
+.reveal__none { opacity: 0.6; }
+

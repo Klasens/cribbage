@@ -1,0 +1,31 @@
+.modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.modal__card {
+  max-height: 80vh;
+  overflow: hidden;
+  background: var(--c-bg-elev);
+  box-shadow: var(--shadow-2);
+  padding: 0;
+}
+.modal__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--c-border);
+}
+.modal__title { font-size: 16px; }
+.modal__close { margin-left: auto; }
+.modal__body {
+  padding: 12px;
+  overflow-y: auto;
+  max-height: calc(80vh - 56px);
+}
+

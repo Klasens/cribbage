@@ -1,13 +1,9 @@
+// client/src/ui/Card.jsx
 import React from "react";
+import "./card.css";
 
-export default function Card({ as: As = "div", style, ...rest }) {
-  const base = {
-    background: "var(--c-bg-soft)",
-    border: "1px solid var(--c-border)",
-    borderRadius: "var(--r-md)",
-    boxShadow: "var(--shadow-1)",
-    padding: "12px",
-  };
-  return <As style={{ ...base, ...style }} {...rest} />;
+export default function Card({ as: As = "div", className = "", style, ...rest }) {
+  const classes = ["ui-card", className].filter(Boolean).join(" ");
+  return <As className={classes} style={style} {...rest} />;
 }
 

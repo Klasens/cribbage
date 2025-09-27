@@ -1,0 +1,31 @@
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--c-border);
+  font-weight: 600;
+  transition: border-color 150ms, background-color 150ms, color 150ms, opacity 150ms;
+  background: var(--c-bg-soft);
+  color: var(--c-text);
+}
+.ui-btn--sm { font-size: 13px; padding: 6px 10px; }
+.ui-btn--md { font-size: 14px; padding: 8px 12px; }
+
+.ui-btn--primary {
+  background: var(--c-primary)ard  color: var(--c-primary-ink);
+  border-color: transparent;
+}
+.ui-btn--subtle {
+  background: transparent;
+  border-color: var(--c-border);
+}
+
+.ui-btn.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
