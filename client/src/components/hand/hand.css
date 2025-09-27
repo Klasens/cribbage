@@ -1,0 +1,84 @@
+/* Hand area styles (feature-scoped) */
+
+.hand {
+  margin-top: 16px;
+  text-align: left;
+}
+
+.hand__header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.hand__title {
+  margin: 0 0 8px;
+}
+
+.hand__meta {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Grid of cards */
+.hand-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Individual card + actions */
+.hand-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Primary card button */
+.hand-card__btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--c-border);
+  background: #1b1b1b;
+  box-shadow: none;
+  transition: box-shadow 120ms, background 120ms, border-color 120ms;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  min-width: 64px;
+}
+
+.hand-card__btn.is-picked {
+  border-color: #6cf;
+  background: #1e2a33;
+}
+
+.hand-card__btn.is-shown {
+  border-color: #9acd32;
+  background: #223118;
+  box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.35) inset;
+}
+
+.hand-card__btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* "Show" secondary action */
+.hand-card__show {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--c-border);
+  background: #222;
+  font-size: 12px;
+}
+
+.hand-card__show.is-shown {
+  background: #2a3b1f;
+}
+
+/* Footer actions */
+.hand-actions {
+  margin-top: 10px;
+}
+

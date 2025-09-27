@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import HandGrid from "./hand/HandGrid";
 import HandActions from "./hand/HandActions";
+import "./hand/hand.css";
 
 export default function MyHand({
   cards = [],
@@ -44,10 +45,10 @@ export default function MyHand({
   const canShowNow = cribLocked && !peggingComplete && !winnerActive;
 
   return (
-    <div style={{ marginTop: 16, textAlign: "left" }}>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-        <h3 style={{ margin: 0, marginBottom: 8 }}>Your hand</h3>
-        <div style={{ fontSize: 12, opacity: 0.8 }}>
+    <div className="hand">
+      <div className="hand__header">
+        <h3 className="hand__title">Your hand</h3>
+        <div className="hand__meta">
           Crib: <strong>{cribCount}/4</strong> {cribLocked ? "• Locked" : ""}
           {peggingComplete ? " • Pegging complete" : ""}
           {winnerActive ? " • Game over" : ""}

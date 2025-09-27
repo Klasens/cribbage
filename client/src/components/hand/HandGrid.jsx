@@ -11,7 +11,7 @@ export default function HandGrid({
   onShow,
 }) {
   return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+    <div className="hand-grid">
       {cards.map((c, i) => (
         <HandCard
           key={`${c}-${i}`}

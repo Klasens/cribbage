@@ -8,11 +8,10 @@ export default function HandActions({
   selCount = 0,
 }) {
   return (
-    <div style={{ marginTop: 10 }}>
+    <div className="hand-actions">
       <button
         onClick={onSendCrib}
         disabled={!canSend}
-        style={{ padding: "8px 12px" }}
         title={
           winnerActive
             ? "Game over — actions are locked"
