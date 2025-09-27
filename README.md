@@ -29,12 +29,6 @@ No accounts. Manual scoring. Fast to run and share.
 ### Prerequisites
 - Node.js 18+ and npm
 
-### Install & Run (dev)
-See **Commands** below.
-
-### Production build
-See **Commands** below.
-
 ---
 
 ## Scripts
@@ -50,34 +44,4 @@ from the same origin, the Socket.IO client can connect with the default
 `io()` call and no manual URL.
 
 ---
-
-## Deploy Notes
-- Use a single service (Node) that serves both static assets and Socket.IO.
-- Ensure websockets are enabled on your platform.
-- For horizontal scaling later, plan for sticky sessions and a Socket.IO
-  adapter (e.g., Redis) to fan out events across instances.
-
----
-
-## Verify (manual test path)
-1. Open two browser tabs.  
-2. In Tab A: enter a room ID and display name, then **Create**.  
-3. In Tab B: enter the same room ID and a different display name, then **Join**.  
-4. As the dealer (seat 0 initially), click **Deal 6**.  
-5. In each tab, select exactly two cards and click **Send 2 to crib**.  
-6. Observe crib count advance to **4/4**, crib locks, starter card appears.  
-7. In either tab, click **Show** on a card to advance the pegging count;  
-   click **Reset** to set the count back to 0 (trust-based).  
-8. Use **+1/+2/+3/+N** to update scores; confirm scoreboard pegs move.  
-9. After a winner is declared (>=121), **New Game** becomes available.  
-
----
-
-## License
-ISC
-
----
-
-## Commands
-See package.json scripts.
 
