@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ScoreControls from "./components/ScoreControls";
 import JoinForm from "./components/JoinForm";
 import Status from "./components/Status";
@@ -57,9 +57,49 @@ export default function App() {
 
   const winnerActive = state?.winnerSeat != null;
 
+  // Keyboard shortcuts (trust-first UX)
+  useEffect(() => {
+    const onKey = (e) => {
+      // Skip if focused inside an input/textarea/select
+      const tag = (e.target?.tagName || "").toLowerCase();
+      if (["input", "textarea", "select"].includes(tag)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const key = e.key.toLowerCase();
+
+      if (key === "r") {
+        e.preventDefault(); ui.openModal("room");
+      } else if (key === "s") {
+        e.preventDefault(); ui.openModal("seats");
+      } else if (key === "l") {
+        e.preventDefault(); ui.openModal("log");
+      } else if (key === "+") {
+        e.preventDefault(); ui.openModal("number");
+      } else if (key === "0") {
+        if (!peggingComplete && !winnerActive) {
+          e.preventDefault(); resetRun();
+        }
+      } else if (key === "d") {
+        if (joined && isDealer && !winnerActive) {
+          e.preventDefault(); deal();
+        }
+      } else if (key === "n") {
+        if (peggingComplete && !winnerActive) {
+          e.preventDefault(); nextHand();
+        }
+      } else if (key === "g") {
+        if (winnerActive) {
+          e.preventDefault(); newGame();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [ui, joined, isDealer, peggingComplete, winnerActive, deal, resetRun, nextHand, newGame]);
+
   return (
-    <div style={{ padding: 16, fontFamily: "system-ui, sans-serif", color: "#eaeaea", background: "#111", minHeight: "100vh" }}>
-      <h1 style={{ marginBottom: 8, fontSize: 36 }}>Cribbage (MVP)</h1>
+    <div className="app-shell">
+      <h1>Cribbage (MVP)</h1>
 
       <JoinForm
         roomId={roomId}
@@ -121,7 +161,6 @@ export default function App() {
               />
             )}
 
-            {/* Manual scoring buttons restored */}
             <ScoreControls onPeg={peg} disabled={winnerActive} />
 
             {peggingComplete && (
@@ -152,9 +191,6 @@ export default function App() {
         }
       />
 
-      {/* PlayersList removed from page in favor of Seats overlay */}
-
-      {/* Overlays via UI context */}
       <SeatsModal
         open={ui.isOpen("seats")}
         onClose={ui.closeModal}
@@ -188,7 +224,7 @@ export default function App() {
 
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
         <div>Open a 2nd tab to see realtime updates.</div>
-        <div>
+        <div title="Console helpers for quick manual testing">
           Console helpers:{" "}
           <code>api.create(roomId, name)</code>,{" "}
           <code>api.join(roomId, name)</code>,{" "}
@@ -199,6 +235,11 @@ export default function App() {
           <code>api.pegReset(roomId)</code>,{" "}
           <code>api.nextHand(roomId)</code>,{" "}
           <code>api.newGame(roomId)</code>
+        </div>
+        <div style={{ marginTop: 6, opacity: 0.8 }}>
+          Shortcuts: <code>r</code> room, <code>s</code> seats, <code>l</code> log,{" "}
+          <code>+</code> +N, <code>0</code> reset run, <code>d</code> deal,{" "}
+          <code>n</code> next hand, <code>g</code> new game.
         </div>
       </div>
     </div>

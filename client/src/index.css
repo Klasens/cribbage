@@ -4,13 +4,19 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--c-text);
+  background-color: var(--c-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 a {
@@ -24,45 +30,95 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
+  min-height: 100vh;
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+/* App shell grounded in tokens */
+.app-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px;
+  text-align: left;
+  font-family: system-ui, sans-serif;
+  color: var(--c-text);
+  background: var(--c-bg);
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
+.app-shell h1 {
+  margin: 0 0 8px;
+  font-size: 36px;
   line-height: 1.1;
 }
 
+/* Buttons (baseline) */
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid var(--c-border);
   padding: 0.6em 1.2em;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--c-bg-soft);
+  color: var(--c-text);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s, background-color 0.2s, color 0.2s, opacity 0.2s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--c-primary);
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Responsive table layout */
+.table-layout {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+  margin-top: 16px;
+}
+
+/* ≥1000px: 3 columns */
+@media (min-width: 1000px) {
+  .table-layout {
+    grid-template-columns: minmax(220px, 1fr) minmax(380px, 2.2fr) minmax(220px, 1fr);
   }
+}
+
+/* 700–999px: 2 columns, right drops below */
+@media (min-width: 700px) and (max-width: 999px) {
+  .table-layout {
+    grid-template-columns: minmax(260px, 1fr) minmax(380px, 2fr);
+  }
+  .table-layout > .table-cell:nth-child(3) {
+    grid-column: 1 / span 2;
+  }
+}
+
+/* <700px: single column stack */
+@media (max-width: 699px) {
+  .table-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hide the Vite demo artifacts if any remain */
+.logo,
+.card,
+.read-the-docs {
+  display: none !important;
+}
+
+/* Light mode fallback tweaks (tokens take precedence) */
+@media (prefers-color-scheme: light) {
   a:hover {
     color: #747bff;
   }
-  button {
-    background-color: #f9f9f9;
-  }
 }
+
