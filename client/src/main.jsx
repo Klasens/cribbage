@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
+import "./ui/tokens.css"; // ⬅️ tokens
 import { socket, api, EVT, onStateUpdate, onYourHand } from "./lib/socket";
 
 // Diagnostics

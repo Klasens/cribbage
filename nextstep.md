@@ -80,7 +80,7 @@ We’ve shipped realtime rooms, manual scoring, dealing, crib selection with aut
 2. **Trust-first UX** — minimal enforcement; avoid heavy rules engine.
 3. **Server is the source of truth** — client is a renderer/emitter.
 4. **File Writing** — anytime you touch a file, write the file out in full omitting nothing.
-5. **Test Path** — after making changes, outline how we test the changes.
+5. **Test Path** — after making changes, outline how we test the changes in the UI.
 
 ---
 

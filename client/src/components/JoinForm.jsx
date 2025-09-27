@@ -1,5 +1,6 @@
 // client/src/components/JoinForm.jsx
 import React from "react";
+import Button from "../ui/Button";
 
 export default function JoinForm({
   roomId, setRoomId,
@@ -14,37 +15,35 @@ export default function JoinForm({
         placeholder="Room ID (e.g., test)"
         value={roomId}
         onChange={(e) => setRoomId(e.target.value.trim())}
-        style={{ padding: 8, background: "#222", color: "#eaeaea", border: "1px solid #333" }}
+        style={{ padding: 8, background: "#222", color: "var(--c-text)", border: "1px solid var(--c-border)" }}
       />
       <input
         placeholder="Display Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        style={{ padding: 8, background: "#222", color: "#eaeaea", border: "1px solid #333" }}
+        style={{ padding: 8, background: "#222", color: "var(--c-text)", border: "1px solid var(--c-border)" }}
       />
-      <button
+      <Button
         onClick={onCreate}
         disabled={!roomId || !name || joined || roomFull}
         title={roomFull ? "Room is full" : ""}
-        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
       >
         Create
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={onJoin}
         disabled={!roomId || !name || joined || roomFull}
         title={roomFull ? "Room is full" : ""}
-        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6 }}
       >
         Join
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={onReset}
-        style={{ padding: "8px 12px", background: "#222", color: "#eaeaea", border: "1px solid #333", borderRadius: 6, marginLeft: 8 }}
         title="Clear local seat/name and reload"
+        variant="subtle"
       >
         Reset
-      </button>
+      </Button>
     </div>
   );
 }

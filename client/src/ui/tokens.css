@@ -1,0 +1,52 @@
+:root {
+  /* colors (dark-first) */
+  --c-bg: #0f1115;
+  --c-bg-soft: #14171c;
+  --c-bg-elev: #1a1f26;
+
+  --c-border: #2a323c;
+  --c-border-soft: #333;
+
+  --c-text: #eaeaea;
+  --c-text-dim: rgba(234,234,234,0.75);
+
+  --c-primary: #646cff;
+  --c-primary-ink: #e9ebff;
+
+  --c-accent: #6cf;
+
+  --c-success-bg: #1f2a1f;
+  --c-success-ink: #a8e06d;
+
+  --shadow-1: 0 6px 18px rgba(0,0,0,0.35);
+  --shadow-2: 0 12px 30px rgba(0,0,0,0.45);
+
+  /* radii & spacing */
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 10px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+}
+
+/* Light mode fallback (keeps existing index.css light mode behavior) */
+@media (prefers-color-scheme: light) {
+  :root {
+    --c-bg: #ffffff;
+    --c-bg-soft: #f6f7fb;
+    --c-bg-elev: #ffffff;
+
+    --c-border: #dfe5ee;
+    --c-border-soft: #e6eaf2;
+
+    --c-text: #213547;
+    --c-text-dim: rgba(33,53,71,0.7);
+
+    --shadow-1: 0 6px 18px rgba(16,30,54,0.08);
+    --shadow-2: 0 12px 30px rgba(16,30,54,0.12);
+  }
+}
+
