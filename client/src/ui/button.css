@@ -16,7 +16,8 @@
 .ui-btn--md { font-size: 14px; padding: 8px 12px; }
 
 .ui-btn--primary {
-  background: var(--c-primary)ard  color: var(--c-primary-ink);
+  background: var(--c-primary);
+  color: var(--c-primary-ink);
   border-color: transparent;
 }
 .ui-btn--subtle {
