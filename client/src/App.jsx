@@ -9,6 +9,8 @@ import PeggingPanel from "./components/PeggingPanel";
 import LogModal from "./components/LogModal";
 import Pegboard from "./components/Pegboard";
 import RevealPanel from "./components/RevealPanel";
+import OpponentSummary from "./components/OpponentSummary";
+import TableLayout from "./components/layout/TableLayout";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
 
@@ -47,7 +49,7 @@ export default function App() {
   const dealerSeat = state?.dealerSeat ?? null;
   const winnerSeat = state?.winnerSeat ?? null;
 
-  // NEW: public reveal payloads after pegging
+  // Public reveal payloads after pegging
   const revealHands = state?.revealHands ?? null;
   const revealCrib = state?.revealCrib ?? null;
 
@@ -92,52 +94,68 @@ export default function App() {
         winnerActive={winnerActive}
       />
 
-      <MyHand
-        cards={hand}
-        cribLocked={cribLocked}
-        cribCount={cribCount}
-        onSendCrib={sendCrib}
-        onShowCard={showCard}
-        shownBySeat={shownBySeat}
-        mySeatId={mySeatId}
-        peggingComplete={peggingComplete}
-        winnerActive={winnerActive}
+      {/* New: table-style composition */}
+      <TableLayout
+        left={
+          <MyHand
+            cards={hand}
+            cribLocked={cribLocked}
+            cribCount={cribCount}
+            onSendCrib={sendCrib}
+            onShowCard={showCard}
+            shownBySeat={shownBySeat}
+            mySeatId={mySeatId}
+            peggingComplete={peggingComplete}
+            winnerActive={winnerActive}
+          />
+        }
+        center={
+          <div>
+            {joined && (
+              <PeggingPanel
+                runCount={runCount}
+                lastShown={lastShown}
+                lastShownByName={lastShownByName}
+                onResetRun={resetRun}
+                peggingComplete={peggingComplete}
+                winnerActive={winnerActive}
+              />
+            )}
+
+            {/* Public reveal after pegging completes */}
+            {peggingComplete && (
+              <RevealPanel
+                players={state?.players ?? []}
+                revealHands={revealHands}
+                revealCrib={revealCrib}
+                cutCard={cutCard}
+                dealerSeat={dealerSeat}
+              />
+            )}
+
+            <Pegboard
+              players={state?.players ?? []}
+              dealerSeat={dealerSeat}
+              winnerSeat={winnerSeat}
+              peggingComplete={peggingComplete}
+            />
+          </div>
+        }
+        right={
+          <OpponentSummary
+            players={state?.players ?? []}
+            mySeatId={mySeatId}
+            dealerSeat={dealerSeat}
+          />
+        }
       />
 
-      {joined && (
-        <PeggingPanel
-          runCount={runCount}
-          lastShown={lastShown}
-          lastShownByName={lastShownByName}
-          onResetRun={resetRun}
-          peggingComplete={peggingComplete}
-          winnerActive={winnerActive}
-        />
-      )}
-
-      {/* 🔓 Public reveal after pegging completes */}
-      {peggingComplete && (
-        <RevealPanel
-          players={state?.players ?? []}
-          revealHands={revealHands}
-          revealCrib={revealCrib}
-          cutCard={cutCard}
-          dealerSeat={dealerSeat}
-        />
-      )}
-
+      {/* Keep the detailed list below for now (trust-first visibility) */}
       <PlayersList
         players={state?.players ?? []}
         mySeatId={mySeatId}
         full={roomFull}
         dealerSeat={dealerSeat}
-      />
-
-      <Pegboard
-        players={state?.players ?? []}
-        dealerSeat={dealerSeat}
-        winnerSeat={winnerSeat}
-        peggingComplete={peggingComplete}
       />
 
       {joined && mySeatId != null && (
@@ -151,8 +169,7 @@ export default function App() {
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
         <div>Open a 2nd tab to see realtime updates.</div>
         <div>
-          Console helpers:
-          {" "}
+          Console helpers:{" "}
           <code>api.create(roomId, name)</code>,{" "}
           <code>api.join(roomId, name)</code>,{" "}
           <code>api.rejoin(roomId, seat, name)</code>,{" "}

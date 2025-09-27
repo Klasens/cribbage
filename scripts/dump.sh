@@ -17,6 +17,19 @@ shopt -s globstar nullglob
 # Clean output
 : > "$OUT"
 
+# Write rules header at the very top
+{
+  echo "RULES"
+  echo
+  echo "## Build Rules (we’re following these)"
+  echo "1. **Micro-steps only** — land small, testable changes end-to-end."
+  echo "2. **Trust-first UX** — minimal enforcement; avoid heavy rules engine."
+  echo "3. **Server is the source of truth** — client is a renderer/emitter."
+  echo "4. **File Writing** — anytime you touch a file, write the file out in full omitting nothing."
+  echo "5. **Test Path** — after making changes, outline how we test the changes in the UI."
+  echo
+} >> "$OUT"
+
 # Helper to append a file to OUT with a pretty header
 append() {
   local f="$1"
@@ -47,7 +60,6 @@ CLIENT_FILES=(
   "client/src/**/*.jsx"
   "client/src/**/*.css"
 )
-
 
 # Build a flat list of files that actually exist
 FILES=()
