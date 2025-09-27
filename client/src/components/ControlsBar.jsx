@@ -2,6 +2,7 @@
 import React from "react";
 import Button from "../ui/Button";
 import Toolbar from "../ui/Toolbar";
+import { useUI } from "../context/UIContext";
 
 export default function ControlsBar({
   joined,
@@ -10,13 +11,30 @@ export default function ControlsBar({
   onClearLocal,
   onNextHand,
   canNextHand = false,
-  onOpenLog,
   onNewGame,
   canNewGame = false,
   winnerActive = false,
 }) {
+  const ui = useUI();
+
   return (
     <Toolbar>
+      <Button
+        onClick={() => ui.openModal("room")}
+        variant="subtle"
+        title="Room info, crib progress, starter, and log"
+      >
+        Room
+      </Button>
+
+      <Button
+        onClick={() => ui.openModal("seats")}
+        variant="subtle"
+        title="See seats, scores, and dealer"
+      >
+        Seats
+      </Button>
+
       {joined && isDealer && (
         <Button
           onClick={onDeal}
@@ -64,10 +82,6 @@ export default function ControlsBar({
         variant="primary"
       >
         New Game
-      </Button>
-
-      <Button onClick={onOpenLog} variant="subtle" title="Show room log">
-        Log
       </Button>
     </Toolbar>
   );

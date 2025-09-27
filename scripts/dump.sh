@@ -27,6 +27,7 @@ shopt -s globstar nullglob
   echo "3. **Server is the source of truth** — client is a renderer/emitter."
   echo "4. **File Writing** — anytime you touch a file, write the file out in full omitting nothing."
   echo "5. **Test Path** — after making changes, outline how we test the changes in the UI."
+  echo "6. **Commit Format** — write the commit after the changes that has 72 char lines and 3 bullets"
   echo
 } >> "$OUT"
 

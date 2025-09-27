@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import PlayersList from "./components/PlayersList";
+import React from "react";
 import ScoreControls from "./components/ScoreControls";
 import JoinForm from "./components/JoinForm";
 import Status from "./components/Status";
@@ -13,6 +12,10 @@ import OpponentSummary from "./components/OpponentSummary";
 import TableLayout from "./components/layout/TableLayout";
 import { useGameClient } from "./hooks/useGameClient";
 import { useHand } from "./hooks/useHand";
+import { useUI } from "./context/UIContext";
+import SeatsModal from "./components/overlays/SeatsModal";
+import RoomDetailsModal from "./components/overlays/RoomDetailsModal";
+import NumberModal from "./components/overlays/NumberModal";
 
 export default function App() {
   const {
@@ -21,15 +24,13 @@ export default function App() {
     name, setName,
     mySeatId,
     joined, roomFull, isDealer,
-    create, join, peg, pegN,
+    create, join, peg,
     deal, sendCrib, resetLocal, clearLocal,
     showCard, resetRun, nextHand, newGame,
   } = useGameClient();
 
+  const ui = useUI();
   const { hand, clearHand } = useHand();
-
-  // Modal open/close state
-  const [logOpen, setLogOpen] = useState(false);
 
   const handleClearLocal = (all = false) => {
     clearLocal(all);
@@ -49,14 +50,11 @@ export default function App() {
   const dealerSeat = state?.dealerSeat ?? null;
   const winnerSeat = state?.winnerSeat ?? null;
 
-  // Public reveal payloads after pegging
   const revealHands = state?.revealHands ?? null;
   const revealCrib = state?.revealCrib ?? null;
 
-  // NEW: public counts per seat
   const handCounts = state?.handCounts ?? {};
 
-  // Winner present -> hard lock UI, enable "New Game"
   const winnerActive = state?.winnerSeat != null;
 
   return (
@@ -91,13 +89,11 @@ export default function App() {
         onClearLocal={handleClearLocal}
         onNextHand={nextHand}
         canNextHand={peggingComplete && !winnerActive}
-        onOpenLog={() => setLogOpen(true)}
         onNewGame={newGame}
         canNewGame={winnerActive}
         winnerActive={winnerActive}
       />
 
-      {/* New: table-style composition */}
       <TableLayout
         left={
           <MyHand
@@ -125,7 +121,9 @@ export default function App() {
               />
             )}
 
-            {/* Public reveal after pegging completes */}
+            {/* Manual scoring buttons restored */}
+            <ScoreControls onPeg={peg} disabled={winnerActive} />
+
             {peggingComplete && (
               <RevealPanel
                 players={state?.players ?? []}
@@ -154,21 +152,39 @@ export default function App() {
         }
       />
 
-      {/* Keep the detailed list below for now (trust-first visibility) */}
-      <PlayersList
+      {/* PlayersList removed from page in favor of Seats overlay */}
+
+      {/* Overlays via UI context */}
+      <SeatsModal
+        open={ui.isOpen("seats")}
+        onClose={ui.closeModal}
         players={state?.players ?? []}
-        mySeatId={mySeatId}
-        full={roomFull}
         dealerSeat={dealerSeat}
+        mySeatId={mySeatId}
       />
 
-      {joined && mySeatId != null && (
-        <ScoreControls
-          onPeg={peg}
-          onPegN={pegN}
-          disabled={!joined || mySeatId == null || winnerActive}
-        />
-      )}
+      <RoomDetailsModal
+        open={ui.isOpen("room")}
+        onClose={ui.closeModal}
+        roomId={state?.roomId}
+        dealerSeat={dealerSeat}
+        cribCount={cribCount}
+        cribLocked={cribLocked}
+        cutCard={cutCard}
+        onOpenLog={() => ui.openModal("log")}
+      />
+
+      <LogModal
+        open={ui.isOpen("log")}
+        onClose={ui.closeModal}
+        entries={state?.log ?? []}
+      />
+
+      <NumberModal
+        open={ui.isOpen("number")}
+        onClose={ui.closeModal}
+        onSubmit={(n) => peg(n)}
+      />
 
       <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
         <div>Open a 2nd tab to see realtime updates.</div>
@@ -185,12 +201,6 @@ export default function App() {
           <code>api.newGame(roomId)</code>
         </div>
       </div>
-
-      <LogModal
-        open={logOpen}
-        onClose={() => setLogOpen(false)}
-        entries={state?.log ?? []}
-      />
     </div>
   );
 }

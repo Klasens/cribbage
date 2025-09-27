@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
-import "./ui/tokens.css"; // ⬅️ tokens
+import "./ui/tokens.css";
 import { socket, api, EVT, onStateUpdate, onYourHand } from "./lib/socket";
+import { UIProvider } from "./context/UIContext";
 
 // Diagnostics
 socket.on("connect", () => console.log("🔌 Connected to server:", socket.id));
@@ -15,10 +16,10 @@ onStateUpdate(({ state }) => {
   window.lastState = state;
 });
 
-// NEW: listen for your private hand
+// Private hand
 onYourHand(({ cards }) => {
   console.log("🃏 your hand:", cards.join(" "));
-  window.myHand = cards; // handy for quick inspection
+  window.myHand = cards;
 });
 
 // Expose for quick console testing
@@ -28,7 +29,9 @@ window.EVT = EVT;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <UIProvider>
+      <App />
+    </UIProvider>
   </React.StrictMode>
 );
 

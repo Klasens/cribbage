@@ -31,12 +31,6 @@ export function makeActions(ctx) {
     api.peg(state.roomId, mySeatId, delta);
   };
 
-  const pegN = () => {
-    const raw = prompt("Add how many points?");
-    const n = Number(raw);
-    if (Number.isFinite(n) && n !== 0) peg(n);
-  };
-
   const deal = () => {
     if (!state?.roomId) return;
     api.deal(state.roomId);
@@ -90,13 +84,12 @@ export function makeActions(ctx) {
     create,
     join,
     peg,
-    pegN,
     deal,
     sendCrib,
     showCard,
     resetRun,
     nextHand,
-    newGame,    // ⬅️ NEW
+    newGame,
     resetLocal,
     clearLocal,
   };
