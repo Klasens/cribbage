@@ -54,6 +54,9 @@ function register(io, socket, joined) {
     room.state.revealHands = null;
     room.state.revealCrib = null;
 
+    // NEW: clear public hand counts for the new hand
+    room.state.handCounts = {};
+
     const dealerName =
       players.find((p) => p.seatId === nextSeat)?.name ?? `Seat ${nextSeat}`;
 

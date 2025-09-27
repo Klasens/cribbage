@@ -26,6 +26,12 @@ function register(io, socket, joined) {
     room.crib.push(...uniq);
     room.cribBySeat.add(seatId);
 
+    // NEW: publish remaining public count for this seat
+    if (typeof room.state.handCounts !== "object" || !room.state.handCounts) {
+      room.state.handCounts = {};
+    }
+    room.state.handCounts[seatId] = remaining.length;
+
     room.state.cribCount = room.crib.length;
 
     // Lock crib and auto-flip starter when we reach 4

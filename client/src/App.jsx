@@ -53,6 +53,9 @@ export default function App() {
   const revealHands = state?.revealHands ?? null;
   const revealCrib = state?.revealCrib ?? null;
 
+  // NEW: public counts per seat
+  const handCounts = state?.handCounts ?? {};
+
   // Winner present -> hard lock UI, enable "New Game"
   const winnerActive = state?.winnerSeat != null;
 
@@ -146,6 +149,7 @@ export default function App() {
             players={state?.players ?? []}
             mySeatId={mySeatId}
             dealerSeat={dealerSeat}
+            handCounts={handCounts}
           />
         }
       />

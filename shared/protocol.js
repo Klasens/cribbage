@@ -59,6 +59,9 @@ exports.createInitialState = function createInitialState() {
     revealHands: null,     // { [seatId:number]: string[] } | null
     revealCrib: null,      // string[] | null
 
+    // NEW (public): count of cards each seat currently holds (no contents)
+    handCounts: {},        // { [seatId:number]: number }
+
     // Winner metadata
     winnerSeat: null,
     winnerName: null,

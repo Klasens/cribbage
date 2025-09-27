@@ -57,6 +57,9 @@ function register(io, socket, joined) {
     state.revealHands = null;
     state.revealCrib = null;
 
+    // NEW: clear public hand counts
+    state.handCounts = {};
+
     // Log it
     pushLog(room, "new-game", "🔄 New game started — scores reset, dealer is Seat 0");
 

@@ -35,6 +35,9 @@ function register(io, socket, joined) {
     room.state.revealHands = null;
     room.state.revealCrib = null;
 
+    // NEW: reset public hand counts
+    room.state.handCounts = {};
+
     // Build & shuffle deck (objects)
     const deck = shuffle(createDeck());
 
@@ -44,6 +47,9 @@ function register(io, socket, joined) {
       const six = deck.splice(0, 6);
       const handText = six.map(cardText);
       room.hands.set(p.seatId, handText);
+
+      // NEW: publish public count per seat
+      room.state.handCounts[p.seatId] = handText.length;
 
       const set = room.seatSockets.get(p.seatId);
       if (set && set.size) {
