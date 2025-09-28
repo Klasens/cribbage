@@ -1,93 +1,66 @@
-/* 2-lane CribbageBoard (feature-scoped) — framed “chrome” */
+/* 2-lane CribbageBoard */
 
 .cboard {
   position: relative;
-  margin-top: 16px;
+  margin-top: var(--sp-3);
   text-align: left;
-
-  /* Rounded, beveled frame */
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   background:
     linear-gradient(180deg, #10141a, #0f1216) padding-box,
     linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.55)) border-box;
   border: 1px solid transparent;
-  box-shadow:
-    0 12px 30px rgba(0,0,0,0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.03),
-    inset 0 10px 30px rgba(0,0,0,0.35);
-
-  /* Extra bottom padding to make room for the badge */
+  box-shadow: var(--shadow-soft-2);
   padding: 12px 12px 28px 12px;
 }
 
 /* Header */
 .cboard__header {
   display: flex;
-  gap: 12px;
+  gap: var(--sp-2);
   align-items: center;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   opacity: 0.95;
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-2);
 }
-.cboard__title { margin: 0; font-size: 20px; }
+.cboard__title { margin: 0; font-size: var(--fs-title-md); }
 .cboard__meta { opacity: 0.85; }
 .cboard__hint { margin-left: auto; opacity: 0.6; font-style: italic; }
 
 /* Lane wrapper */
-.cboard__grid { display: grid; gap: 12px; }
+.cboard__grid { display: grid; gap: var(--sp-3); }
 .cboard__lane {
   position: relative;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: #101419;
   border: 1px solid #1e2530;
   padding: 10px;
+  box-shadow: var(--shadow-1);
   transition: box-shadow 200ms ease, border-color 200ms ease, background 200ms ease;
 }
 .cboard__lane.is-winner {
   background: linear-gradient(180deg, #12140f, #101419);
   border-color: #8f7a27;
-  box-shadow:
-    0 0 0 2px rgba(255,215,0,0.18),
-    0 8px 30px rgba(0,0,0,0.35);
+  box-shadow: 0 0 0 2px rgba(255,215,0,0.18), var(--shadow-1);
 }
 
 /* Lane header row */
-.cboard__laneHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-/* Left lane (Player 1): label/name on left, score on right */
-.cboard__laneHeader--left {
-  flex-direction: row;
-}
-/* Right lane (Player 2): mirror for visual balance — score on left */
-.cboard__laneHeader--right {
-  flex-direction: row-reverse;
-}
+.cboard__laneHeader { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.cboard__laneHeader--left { flex-direction: row; }
+.cboard__laneHeader--right { flex-direction: row-reverse; }
 
 .cboard__player {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   opacity: 0.9;
   min-width: 68px;
   display: inline-flex;
   gap: 6px;
   align-items: center;
 }
-.cboard__laneLabel {
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-.cboard__divider {
-  opacity: 0.4;
-}
-.cboard__playerName {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.cboard__laneLabel { font-weight: 800; letter-spacing: 0.2px; }
+.cboard__divider { opacity: 0.4; }
+.cboard__playerName { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .cboard__score {
   font-variant-numeric: tabular-nums;
   font-weight: 800;
@@ -96,22 +69,26 @@
   text-align: center;
 }
 
-/* Pip wrap + grid */
+/* Pips */
 .pipWrap { position: relative; }
 .pipGrid {
-  --pip: 16px;          /* pip diameter */
-  --gap: 6px;           /* spacing between pips */
+  --pip: 16px;
+  --gap: 6px;
   display: grid;
   grid-template-columns: repeat(11, var(--pip));
   gap: var(--gap);
   justify-content: start;
   padding: 6px;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   background: #19202a;
   border: 1px solid #233042;
 }
 
-/* Pip (empty hole) */
+/* Compact pips <720px */
+@media (max-width: 719px) {
+  .pipGrid { --pip: 12px; --gap: 4px; padding: 4px; }
+}
+
 .pip {
   position: relative;
   width: var(--pip);
@@ -120,12 +97,11 @@
   background: #0f141b;
   border: 1px solid #2a323c;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.55) inset;
+  transition: filter 120ms ease, border-color 120ms ease;
 }
-
-/* Slightly emphasize every 5th pip (classic cribbage grouping) */
+.pip:hover { filter: brightness(1.08); }
 .pip--five { border-color: #3a4758; background: #121923; }
 
-/* Pip states */
 .pip--back {
   box-shadow:
     0 0 0 1px rgba(0,0,0,0.55) inset,
@@ -148,33 +124,20 @@
 }
 
 /* Peg overlay */
-.cboard__pegLayer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
+.cboard__pegLayer { position: absolute; inset: 0; pointer-events: none; }
 .cboard__pegLayer .peg {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
+  width: 10px; height: 10px; border-radius: 10px;
   box-shadow: 0 0 0 1px #000;
   transform: translate(0, 0);
   will-change: transform;
 }
-.cboard__pegLayer.is-ready .peg {
-  transition: transform 260ms cubic-bezier(.2,.7,.2,1);
-}
+.cboard__pegLayer.is-ready .peg { transition: transform 260ms cubic-bezier(.2,.7,.2,1); }
 
 .peg--front { background: #eaeaea; }
-.peg--frontWinner {
-  background: #f2e29b;
-  box-shadow:
-    0 0 0 1px #000,
-    0 0 10px rgba(255,215,0,0.35);
-}
+.peg--frontWinner { background: #f2e29b; box-shadow: 0 0 0 1px #000, 0 0 10px rgba(255,215,0,0.35); }
 
-/* Centered 121 badge hanging off the frame */
+/* Badge */
 .cboard__badge {
   position: absolute;
   left: 50%;
@@ -182,20 +145,15 @@
   transform: translateX(-50%);
   padding: 4px 10px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   letter-spacing: 0.4px;
-
   color: #f2e29b;
   background: radial-gradient(130% 130% at 50% 30%, #2a2412, #141108);
   border: 1px solid rgba(255,215,0,0.45);
   border-radius: 999px;
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.45),
-    0 0 0 2px rgba(255,215,0,0.15);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 0 2px rgba(255,215,0,0.15);
   user-select: none;
 }
 
-/* Empty board message */
 .cboard__empty { opacity: 0.7; padding: 8px; }
 

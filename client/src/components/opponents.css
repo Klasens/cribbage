@@ -1,38 +1,25 @@
 .opps { text-align: left; }
-.opps__title { margin: 0 0 8px; }
-.opps__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.opps__title { margin: 0 0 var(--sp-2); }
+.opps__list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--sp-3); }
 .opps__item { }
 
-/* Opponent hand visualization */
-.oppHand__title {
-  font-weight: 700;
-  margin-bottom: 6px;
-.opps { text-align: left; }
-.opps__title { margin: 0 0 8px; }
-.opps__list { margin: 0; padding-left: 18px; }
-.opps__item { }
+.oppHand__title { font-weight: 700; margin-bottom: 6px; }
 
-
-  width: 120px;
-  height: 88px;
-}
+.oppHand__stack { position: relative; width: 120px; height: 88px; }
 
 .oppBack {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 56px;
-  height: 80px;
-  border-radius: 10px;
+  left: 0; top: 0;
+  width: 56px; height: 80px;
+  border-radius: var(--r-md);
   background: #1b3b8c;
   border: 1px solid rgba(255,255,255,0.4);
-  box-shadow:
-    0 8px 16px rgba(0,0,0,0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.35);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.35);
   transform-origin: 50% 80%;
+  transition: transform 60ms ease, filter 120ms ease;
 }
+.oppBack:hover { filter: brightness(1.06); }
 
-/* Slight spreading */
 .oppBack:nth-child(1) { left: 6px; top: 6px; }
 .oppBack:nth-child(2) { left: 20px; top: 2px; }
 .oppBack:nth-child(3) { left: 34px; top: 6px; }

@@ -1,58 +1,31 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./pegboard.css";
 
-/**
- * 2-lane CribbageBoard (121 pips per lane) with pip states + smooth pegs.
- * Board chrome: rounded frame, title, and a centered 121 badge.
- * - Server is truth (scores & prevScore from state.players[*]).
- */
-
 const ROWS = 11;
 const COLS = 11;
-const TOTAL = ROWS * COLS; // 121
+const TOTAL = ROWS * COLS;
 
-// Color palette: colorblind-friendly, dark-friendly
 const SEAT_COLORS = ["#3da5d9", "#d17a22", "#8ac926", "#ff70a6"];
-
 function colorForSeat(seatId = 0) {
   const i = Math.abs(Number(seatId)) % SEAT_COLORS.length;
   return SEAT_COLORS[i];
 }
-
-// Clamp score 0..121 → cell index 0..120
 function scoreToIndex(score) {
   const n = Math.floor(Number(score) || 0);
   if (n <= 0) return 0;
   if (n >= 121) return 120;
   return n;
 }
-
-// Choose up to two lanes by seat order for a clean, readable board
 function useTwoLanes(players = []) {
   const sorted = [...players].sort((a, b) => (a.seatId ?? 0) - (b.seatId ?? 0));
   return sorted.slice(0, 2);
 }
-
-/**
- * Read CSS-driven pip metrics from the grid so JS matches CSS.
- * Returns { pip, gap, padL, padT, bdL, bdT } in px.
- */
 function useGridMetrics(gridRef) {
-  const [m, setM] = useState({
-    pip: 16,
-    gap: 6,
-    padL: 6,
-    padT: 6,
-    bdL: 1,
-    bdT: 1,
-  });
-
+  const [m, setM] = useState({ pip: 16, gap: 6, padL: 6, padT: 6, bdL: 1, bdT: 1 });
   useEffect(() => {
     const el = gridRef.current;
     if (!el) return;
-
     const px = (s) => parseFloat(s || "0") || 0;
-
     const read = () => {
       const cs = getComputedStyle(el);
       setM({
@@ -64,17 +37,13 @@ function useGridMetrics(gridRef) {
         bdT: px(cs.borderTopWidth),
       });
     };
-
     read();
     const ro = new ResizeObserver(read);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-
   return m;
 }
-
-/** Convert a 0..120 index into peg center coordinates (px) inside grid. */
 function indexToPoint(idx, { pip, gap, padL, padT, bdL, bdT }) {
   const col = idx % COLS;
   const row = (idx / COLS) | 0;
@@ -82,12 +51,9 @@ function indexToPoint(idx, { pip, gap, padL, padT, bdL, bdT }) {
   const y = bdT + padT + row * (pip + gap) + pip / 2;
   return { x, y };
 }
-
 function Pip({ i, state = "empty", ring }) {
   const five = ((i + 1) % 5) === 0;
-  const cls = ["pip", five ? "pip--five" : "", `pip--${state}`]
-    .filter(Boolean)
-    .join(" ");
+  const cls = ["pip", five ? "pip--five" : "", `pip--${state}`].filter(Boolean).join(" ");
   return <div className={cls} data-i={i} style={ring ? { ["--pip-ring"]: ring } : undefined} />;
 }
 
@@ -104,17 +70,15 @@ function Lane({ laneIndex = 0, player, dealerSeat, winnerSeat }) {
   const gridRef = useRef(null);
   const metrics = useGridMetrics(gridRef);
 
-  // Smooth peg transitions: enable after first paint to avoid initial fly-in
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 0);
     return () => clearTimeout(t);
   }, []);
 
-  // Compute peg centers with slight offsets so two pegs can share one pip
   const baseBack = indexToPoint(backIdx, metrics);
   const baseFront = indexToPoint(frontIdx, metrics);
-  const off = Math.max(3, Math.round(metrics.pip * 0.18)); // adaptive offset
+  const off = Math.max(3, Math.round(metrics.pip * 0.18));
   const backPos = { x: baseBack.x - off, y: baseBack.y + off };
   const frontPos = { x: baseFront.x + off, y: baseFront.y - off };
 
@@ -125,14 +89,15 @@ function Lane({ laneIndex = 0, player, dealerSeat, winnerSeat }) {
     <div className={`cboard__lane${isWinner ? " is-winner" : ""}`}>
       <div className={`cboard__laneHeader cboard__laneHeader--${side}`}>
         <div className="cboard__player">
-          {isDealer ? "👑 " : null}
+          {isDealer ? <span className="ico ico--crown" aria-label="Dealer" /> : null}
           <span className="cboard__laneLabel">{label}</span>
           <span className="cboard__divider">•</span>
           <span className="cboard__playerName" title={`[Seat ${player.seatId}] ${player.name}`}>
             [Seat {player.seatId}] {player.name}
           </span>
+          {isWinner ? <span className="ico ico--trophy" aria-label="Winner" /> : null}
         </div>
-        <div className="cboard__score">{player.score}</div>
+        <div className="cboard__score tnum">{player.score}</div>
       </div>
 
       <div className="pipWrap">
@@ -140,33 +105,21 @@ function Lane({ laneIndex = 0, player, dealerSeat, winnerSeat }) {
           {cells.map((i) => {
             let state = "empty";
             let ring;
-            if (i === backIdx) {
-              state = "back";
-              ring = color;
-            }
-            if (i === frontIdx) {
-              state = "front";
-              if (isWinner) state = "winner";
-            }
+            if (i === backIdx) { state = "back"; ring = color; }
+            if (i === frontIdx) { state = "front"; if (isWinner) state = "winner"; }
             return <Pip key={i} i={i} state={state} ring={ring} />;
           })}
         </div>
 
-        {/* Peg overlay (absolute, animates between pips) */}
         <div className={`cboard__pegLayer${ready ? " is-ready" : ""}`}>
           <span
             className="peg peg--back"
-            style={{
-              background: color,
-              transform: `translate(${backPos.x}px, ${backPos.y}px)`,
-            }}
+            style={{ background: color, transform: `translate(${backPos.x}px, ${backPos.y}px)` }}
             aria-label="previous score"
           />
           <span
             className={`peg peg--front${isWinner ? " peg--frontWinner" : ""}`}
-            style={{
-              transform: `translate(${frontPos.x}px, ${frontPos.y}px)`,
-            }}
+            style={{ transform: `translate(${frontPos.x}px, ${frontPos.y}px)` }}
             aria-label="current score"
           />
         </div>
@@ -210,7 +163,6 @@ export default function Pegboard({
         </div>
       )}
 
-      {/* Centered badge at bottom edge of the board frame */}
       <div className="cboard__badge" title="Points to win">121</div>
     </div>
   );

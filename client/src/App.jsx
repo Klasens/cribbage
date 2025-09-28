@@ -60,7 +60,6 @@ export default function App() {
   // Keyboard shortcuts (trust-first UX)
   useEffect(() => {
     const onKey = (e) => {
-      // Skip if focused inside an input/textarea/select
       const tag = (e.target?.tagName || "").toLowerCase();
       if (["input", "textarea", "select"].includes(tag)) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -97,6 +96,8 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [ui, joined, isDealer, peggingComplete, winnerActive, deal, resetRun, nextHand, newGame]);
 
+  const playersCount = state?.players?.length ?? 0;
+
   return (
     <div className="app-shell">
       <h1>Cribbage (MVP)</h1>
@@ -132,6 +133,8 @@ export default function App() {
         onNewGame={newGame}
         canNewGame={winnerActive}
         winnerActive={winnerActive}
+        playersCount={playersCount}
+        seatsTotal={4}
       />
 
       <TableLayout

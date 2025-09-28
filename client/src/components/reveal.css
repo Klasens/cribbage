@@ -1,31 +1,28 @@
 .reveal {
-  margin-top: 16px;
+  margin-top: var(--sp-3);
   padding: 12px;
-  border: 1px solid #333;
-  border-radius: 8px;
-  background: #171a1f;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-bg-elev);
   text-align: left;
+  box-shadow: var(--shadow-soft-1);
 }
-.reveal__title { margin: 0 0 8px; }
-.reveal__grid { display: grid; gap: 12px; }
+.reveal__title { margin: 0 0 var(--sp-2); }
+.reveal__grid { display: grid; gap: var(--sp-3); }
 
 .reveal__block {
   padding: 8px 10px;
   border: 1px solid #263041;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   background: #10141a;
+  box-shadow: var(--shadow-1);
 }
-.reveal__crib {
-  border-color: #3a2b2b;
-  background: #1a1414;
-}
-.reveal__blockHeader {
-  font-size: 12px; opacity: 0.85; margin-bottom: 6px;
-}
+.reveal__crib { border-color: #3a2b2b; background: #1a1414; }
+.reveal__blockHeader { font-size: var(--fs-caption); opacity: 0.85; margin-bottom: 6px; }
 .reveal__cards { display: flex; gap: 8px; flex-wrap: wrap; }
 .reveal__chip {
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border: 1px solid #333;
   background: #1b1f26;
   font-weight: 600;

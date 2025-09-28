@@ -18,18 +18,30 @@
   --c-success-bg: #1f2a1f;
   --c-success-ink: #a8e06d;
 
+  /* shadows */
   --shadow-1: 0 6px 18px rgba(0,0,0,0.35);
   --shadow-2: 0 12px 30px rgba(0,0,0,0.45);
+  --shadow-soft-1: 0 8px 20px rgba(16, 30, 54, 0.12);
+  --shadow-soft-2: 0 16px 40px rgba(16, 30, 54, 0.18);
 
   /* radii & spacing */
   --r-xs: 6px;
   --r-sm: 8px;
-  --r-md: 10px;
+  --r-md: 10px; /* preferred default */
+  --r-lg: 12px; /* for primary panels */
 
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
   --sp-4: 16px;
+  --sp-5: 20px;
+
+  /* typography scale */
+  --fs-caption: 12px;
+  --fs-body: 14px;
+  --fs-title-sm: 16px;
+  --fs-title-md: 20px;
+  --fs-title-lg: 28px;
 }
 
 /* Light mode fallback (keeps existing index.css light mode behavior) */
@@ -47,6 +59,8 @@
 
     --shadow-1: 0 6px 18px rgba(16,30,54,0.08);
     --shadow-2: 0 12px 30px rgba(16,30,54,0.12);
+    --shadow-soft-1: 0 10px 24px rgba(16, 30, 54, 0.12);
+    --shadow-soft-2: 0 18px 46px rgba(16, 30, 54, 0.16);
   }
 }
 

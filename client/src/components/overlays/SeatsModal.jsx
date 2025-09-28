@@ -1,4 +1,3 @@
-// client/src/components/overlays/SeatsModal.jsx
 import React from "react";
 import Modal from "../../ui/Modal";
 import Chip from "../../ui/Chip";
@@ -29,7 +28,11 @@ export default function SeatsModal({
                 <div className="seats__score">
                   <Chip>{p.score}</Chip>
                 </div>
-                {isDealer ? <Chip tone="success" style={{ marginLeft: 6 }}>Dealer</Chip> : null}
+                {isDealer ? (
+                  <Chip tone="success" style={{ marginLeft: 6 }}>
+                    <span aria-hidden className="ico ico--crown" /> Dealer
+                  </Chip>
+                ) : null}
               </li>
             );
           })}

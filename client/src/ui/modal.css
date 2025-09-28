@@ -11,8 +11,10 @@
   max-height: 80vh;
   overflow: hidden;
   background: var(--c-bg-elev);
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-soft-2);
   padding: 0;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-border);
 }
 .modal__header {
   display: flex;
@@ -21,7 +23,7 @@
   padding: 10px 14px;
   border-bottom: 1px solid var(--c-border);
 }
-.modal__title { font-size: 16px; }
+.modal__title { font-size: var(--fs-title-sm); }
 .modal__close { margin-left: auto; }
 .modal__body {
   padding: 12px;

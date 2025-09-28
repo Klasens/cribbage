@@ -1,27 +1,16 @@
 .pegbox {
-  margin-top: 16px;
+  margin-top: var(--sp-3);
   padding: 14px;
-  border: 1px solid #e6eaf2;
-  border-radius: 12px;
-  background: #ffffff;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-bg-elev);
   text-align: center;
-  box-shadow: 0 8px 20px rgba(16, 30, 54, 0.08);
+  box-shadow: var(--shadow-soft-1);
 }
-@media (prefers-color-scheme: dark) {
-  .pegbox {
-    background: #14171c;
-    border-color: #2a323c;
-    box-shadow: var(--shadow-1);
-  }
-}
-
-.pegbox__title { margin: 0 0 8px; }
+.pegbox__title { margin: 0 0 var(--sp-2); }
 
 .pegbox__gameover,
-.pegbox__done {
-  font-size: 16px;
-  font-weight: 600;
-}
+.pegbox__done { font-size: 16px; font-weight: 600; }
 
 .pegbox__row {
   display: grid;
@@ -30,41 +19,26 @@
   align-items: center;
 }
 
-.pegbox__col {
-  display: grid;
-  justify-items: center;
-}
-
+.pegbox__col { display: grid; justify-items: center; }
 .pegbox__col--count { min-width: 60px; }
 
-.pegbox__label {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-top: 2px;
-}
-
-.pegbox__count {
-  font-size: 40px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.pegbox__value {
-  font-size: 18px;
-  font-weight: 700;
-}
+.pegbox__label { font-size: var(--fs-caption); opacity: 0.7; margin-top: 2px; }
+.pegbox__count { font-size: 40px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.pegbox__value { font-size: 18px; font-weight: 700; }
 
 .pegbox__spacer { width: 1px; }
 
+/* Reset button styled like pill */
 .pegbox__reset {
   padding: 8px 12px;
   border-radius: 999px;
   background: var(--c-bg-soft);
   border: 1px solid var(--c-border);
+  transition: border-color 150ms, background-color 150ms, transform 60ms;
 }
-.pegbox__reset:hover {
-  border-color: var(--c-primary);
-}
+.pegbox__reset:hover { border-color: var(--c-primary); }
+.pegbox__reset:active { transform: translateY(1px); }
+.pegbox__reset:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .pegbox__dim { opacity: 0.6; }
 

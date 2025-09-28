@@ -5,10 +5,10 @@
   gap: 8px;
   cursor: pointer;
   user-select: none;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   border: 1px solid var(--c-border);
   font-weight: 600;
-  transition: border-color 150ms, background-color 150ms, color 150ms, opacity 150ms;
+  transition: border-color 150ms, background-color 150ms, color 150ms, opacity 150ms, transform 60ms;
   background: var(--c-bg-soft);
   color: var(--c-text);
 }
@@ -19,14 +19,22 @@
   background: var(--c-primary);
   color: var(--c-primary-ink);
   border-color: transparent;
+  box-shadow: var(--shadow-soft-1);
 }
+.ui-btn--primary:hover { box-shadow: var(--shadow-soft-2); }
+
 .ui-btn--subtle {
   background: transparent;
   border-color: var(--c-border);
 }
 
-.ui-btn.is-disabled {
+.ui-btn:is(:hover, :focus-visible) { border-color: var(--c-primary); }
+.ui-btn:active { transform: translateY(1px); }
+
+.ui-btn.is-disabled,
+.ui-btn[disabled] {
   cursor: not-allowed;
   opacity: 0.6;
+  box-shadow: none;
 }
 

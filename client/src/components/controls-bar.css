@@ -1,17 +1,27 @@
 /* ControlsBar tweaks scoped atop Toolbar defaults. */
 
-/* Slight opacity for subtle buttons in toolbar context */
 .ui-toolbar .ui-btn--subtle {
   background: transparent;
   border-color: var(--c-border);
   opacity: 0.95;
 }
-.ui-toolbar .ui-btn--subtle:hover {
-  opacity: 1;
-}
+.ui-toolbar .ui-btn--subtle:hover { opacity: 1; }
 
-/* Make primary pill pop a bit more */
-.ui-toolbar .ui-btn--primary {
-  box-shadow: 0 2px 10px rgba(100, 108, 255, 0.25);
+/* More presence for primary action */
+.ui-toolbar .ui-btn--primary { box-shadow: 0 2px 10px rgba(100, 108, 255, 0.25); }
+
+/* Pill “menu” affordances (caret + count badge) */
+.pillMenu { position: relative; }
+.pillCaret { margin-left: 6px; opacity: 0.8; font-size: 12px; }
+.pillBadge {
+  margin-left: 8px;
+  padding: 0 8px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg-soft);
+  font-weight: 800;
+  font-size: 12px;
 }
 

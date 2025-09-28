@@ -29,36 +29,46 @@ export default function PeggingPanel({
       {done ? (
         <div className="pegbox__done">✅ Pegging complete — count hands.</div>
       ) : (
-        <div className="pegbox__row">
-          <div className="pegbox__col pegbox__col--count" aria-live="polite">
-            <div className="pegbox__count">{runCount}</div>
-            <div className="pegbox__label">Count</div>
-          </div>
-
-          <div className="pegbox__col">
-            <div className="pegbox__value">
-              {lastShown ?? <span className="pegbox__dim">—</span>}
+        <>
+          <div className="pegbox__row">
+            <div className="pegbox__col pegbox__col--count" aria-live="polite">
+              <div className="pegbox__count">{runCount}</div>
+              <div className="pegbox__label">Count</div>
             </div>
-            <div className="pegbox__label">Last Shown</div>
-          </div>
 
-          <div className="pegbox__col">
-            <div className="pegbox__value">
-              {lastShownByName ?? <span className="pegbox__dim">Player</span>}
+            <div className="pegbox__col">
+              <div className="pegbox__value">
+                {lastShown ?? <span className="pegbox__dim">—</span>}
+              </div>
+              <div className="pegbox__label">Last Shown</div>
             </div>
-            <div className="pegbox__label">By</div>
+
+            <div className="pegbox__col">
+              <div className="pegbox__value">
+                {lastShownByName ?? <span className="pegbox__dim">Player</span>}
+              </div>
+              <div className="pegbox__label">By</div>
+            </div>
+
+            <div className="pegbox__spacer" />
+
+            <button
+              onClick={onResetRun}
+              title="Reset the count back to 0 (trust-based)"
+              className="pegbox__reset"
+            >
+              Reset
+            </button>
           </div>
 
-          <div className="pegbox__spacer" />
-
-          <button
-            onClick={onResetRun}
-            title="Reset the count back to 0 (trust-based)"
-            className="pegbox__reset"
-          >
-            Reset
-          </button>
-        </div>
+          {/* Compact keyboard hints */}
+          <div className="pegbox__hints caption" aria-hidden>
+            Shortcuts: <kbd>0</kbd> reset · <kbd>d</kbd> deal ·{" "}
+            <kbd>n</kbd> next hand · <kbd>g</kbd> new game ·{" "}
+            <kbd>r</kbd> room · <kbd>s</kbd> seats · <kbd>l</kbd> log ·{" "}
+            <kbd>+</kbd> +N
+          </div>
+        </>
       )}
     </div>
   );

@@ -15,18 +15,10 @@
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+a { font-weight: 500; color: #646cff; text-decoration: inherit; }
+a:hover { color: #535bf2; }
 
 body {
   margin: 0;
@@ -36,11 +28,11 @@ body {
   color: var(--c-text);
 }
 
-/* App shell grounded in tokens */
+/* App shell — consistent gutters & max-width */
 .app-shell {
-  max-width: 1280px;
+  max-width: 1160px;
   margin: 0 auto;
-  padding: 16px;
+  padding: var(--sp-4);
   text-align: left;
   font-family: system-ui, sans-serif;
   color: var(--c-text);
@@ -48,15 +40,40 @@ body {
   min-height: 100vh;
 }
 
+/* Typography pass */
 .app-shell h1 {
-  margin: 0 0 8px;
-  font-size: 36px;
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-title-lg);
   line-height: 1.1;
+  letter-spacing: -0.2px;
 }
+h2 { font-size: var(--fs-title-md); margin: 0 0 var(--sp-2); }
+h3 { font-size: var(--fs-title-sm); margin: 0 0 var(--sp-2); }
+.caption { font-size: var(--fs-caption); opacity: 0.75; }
+.tnum { font-variant-numeric: tabular-nums; }
 
-/* Buttons (baseline) */
+/* Iconography (crown/trophy/menu/seats/log) */
+.ico { display: inline-block; width: 16px; height: 16px; }
+.ico--crown, .ico--trophy {
+  filter: drop-shadow(0 0 6px rgba(255,215,0,0.18));
+}
+.ico--crown::before {
+  content: "👑";
+  display: inline-block;
+  transform: translateY(1px);
+}
+.ico--trophy::before {
+  content: "🏆";
+  display: inline-block;
+  transform: translateY(1px);
+}
+.ico--menu::before { content: "👥"; }
+.ico--seats::before { content: "🪑"; }
+.ico--log::before { content: "🧾"; }
+
+/* Buttons — unified states */
 button {
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border: 1px solid var(--c-border);
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -65,60 +82,42 @@ button {
   background-color: var(--c-bg-soft);
   color: var(--c-text);
   cursor: pointer;
-  transition: border-color 0.25s, background-color 0.2s, color 0.2s, opacity 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s, opacity 0.2s, transform 0.06s;
 }
-button:hover {
-  border-color: var(--c-primary);
-}
+button:hover { border-color: var(--c-primary); }
+button:active { transform: translateY(1px); }
 button:focus,
-button:focus-visible {
-  outline: 2px solid var(--c-accent);
-  outline-offset: 2px;
-}
+button:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Responsive table layout */
+/* Responsive table layout
+   - ≥900px: 3 columns (hands flank the centered board)
+   - 720–899px: 2 columns (right column stacks under board)
+   - <720px: single column stack */
 .table-layout {
   display: grid;
-  gap: 16px;
+  gap: var(--sp-4);
   align-items: start;
-  margin-top: 16px;
+  margin-top: var(--sp-4);
 }
-
-/* ≥1000px: 3 columns */
-@media (min-width: 1000px) {
+@media (min-width: 900px) {
   .table-layout {
-    grid-template-columns: minmax(220px, 1fr) minmax(380px, 2.2fr) minmax(220px, 1fr);
+    grid-template-columns: minmax(220px, 1fr) minmax(440px, 2fr) minmax(220px, 1fr);
   }
 }
-
-/* 700–999px: 2 columns, right drops below */
-@media (min-width: 700px) and (max-width: 999px) {
+@media (min-width: 720px) and (max-width: 899px) {
   .table-layout {
-    grid-template-columns: minmax(260px, 1fr) minmax(380px, 2fr);
+    grid-template-columns: minmax(260px, 1fr) minmax(420px, 1.6fr);
   }
-  .table-layout > .table-cell:nth-child(3) {
-    grid-column: 1 / span 2;
-  }
+  .table-layout > .table-cell:nth-child(3) { grid-column: 1 / span 2; }
+}
+@media (max-width: 719px) {
+  .table-layout { grid-template-columns: 1fr; }
 }
 
-/* <700px: single column stack */
-@media (max-width: 699px) {
-  .table-layout {
-    grid-template-columns: 1fr;
-  }
-}
+/* Hide Vite demo leftovers */
+.logo, .card, .read-the-docs { display: none !important; }
 
-/* Hide the Vite demo artifacts if any remain */
-.logo,
-.card,
-.read-the-docs {
-  display: none !important;
-}
-
-/* Light mode fallback tweaks (tokens take precedence) */
-@media (prefers-color-scheme: light) {
-  a:hover {
-    color: #747bff;
-  }
-}
+/* Light mode hover nuance */
+@media (prefers-color-scheme: light) { a:hover { color: #747bff; } }
 

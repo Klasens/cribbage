@@ -1,34 +1,29 @@
 .ui-toolbar {
   margin-top: 12px;
   display: flex;
-  gap: 8px;
+  gap: var(--sp-2);
   flex-wrap: wrap;
   align-items: center;
-
-  /* Three-zone layout like the screenshot */
   justify-content: space-between;
 }
 
-/* Each group holds its own row of pills */
+/* Groups */
 .ui-toolbar__group {
   display: flex;
-  gap: 8px;
+  gap: var(--sp-2);
   align-items: center;
   flex-wrap: wrap;
 }
 
-/* Center group stays centered even as left/right grow */
-.ui-toolbar__center {
-  margin-left: auto;
-  margin-right: auto;
-}
+/* Center group stays centered even as edges grow */
+.ui-toolbar__center { margin-left: auto; margin-right: auto; }
 
-/* Pill buttons inside toolbar */
+/* Pills */
 .ui-toolbar .ui-btn {
-  border-radius: 999px; /* pill */
+  border-radius: 999px;
   padding-inline: 14px;
   height: 34px;
-  gap: 8px; /* icon+label spacing */
+  gap: 8px;
   line-height: 1;
 }
 

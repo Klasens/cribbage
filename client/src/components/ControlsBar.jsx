@@ -15,6 +15,9 @@ export default function ControlsBar({
   onNewGame,
   canNewGame = false,
   winnerActive = false,
+  // NEW: counts for pill menu labels
+  playersCount = 0,
+  seatsTotal = 4,
 }) {
   const ui = useUI();
 
@@ -22,22 +25,16 @@ export default function ControlsBar({
     <Toolbar>
       {/* LEFT group */}
       <div className="ui-toolbar__group ui-toolbar__left">
+        {/* Room Controls pill menu */}
         <Button
           onClick={() => ui.openModal("room")}
           variant="subtle"
           title="Room info, crib progress, starter, and log"
+          className="pillMenu"
         >
-          <span aria-hidden>🏠</span>
-          <span>Room</span>
-        </Button>
-
-        <Button
-          onClick={() => ui.openModal("seats")}
-          variant="subtle"
-          title="See seats, scores, and dealer"
-        >
-          <span aria-hidden>🎭</span>
-          <span>Seats</span>
+          <span aria-hidden className="ico ico--menu" />
+          <span>Room Controls</span>
+          <span aria-hidden className="pillCaret">▾</span>
         </Button>
       </div>
 
@@ -57,10 +54,6 @@ export default function ControlsBar({
             <span>Deal 6</span>
           </Button>
         )}
-      </div>
-
-      {/* RIGHT group */}
-      <div className="ui-toolbar__group ui-toolbar__right">
         <Button
           onClick={() => onClearLocal(false)}
           title="Clear saved seat/name for this room (no reload)"
@@ -69,7 +62,6 @@ export default function ControlsBar({
           <span aria-hidden>🧹</span>
           <span>Clear Local</span>
         </Button>
-
         <Button
           onClick={onNextHand}
           disabled={!canNextHand || winnerActive}
@@ -84,7 +76,6 @@ export default function ControlsBar({
           <span aria-hidden>⏭️</span>
           <span>Next Hand</span>
         </Button>
-
         <Button
           onClick={onNewGame}
           disabled={!canNewGame}
@@ -95,8 +86,38 @@ export default function ControlsBar({
           }
           variant="primary"
         >
-          <span aria-hidden>🔄</span>
+          <span aria-hidden>🏁</span>
           <span>New Game</span>
+        </Button>
+      </div>
+
+      {/* RIGHT group */}
+      <div className="ui-toolbar__group ui-toolbar__right">
+        {/* Table Seats pill menu with count */}
+        <Button
+          onClick={() => ui.openModal("seats")}
+          variant="subtle"
+          title="See seats, scores, and dealer"
+          className="pillMenu"
+        >
+          <span aria-hidden className="ico ico--seats" />
+          <span>Table Seats</span>
+          <span className="pillBadge tnum" aria-label="players seated">
+            {playersCount}/{seatsTotal}
+          </span>
+          <span aria-hidden className="pillCaret">▾</span>
+        </Button>
+
+        {/* Log pill menu */}
+        <Button
+          onClick={() => ui.openModal("log")}
+          variant="subtle"
+          title="Open the room event log"
+          className="pillMenu"
+        >
+          <span aria-hidden className="ico ico--log" />
+          <span>Log</span>
+          <span aria-hidden className="pillCaret">▾</span>
         </Button>
       </div>
     </Toolbar>
