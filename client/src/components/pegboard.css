@@ -19,22 +19,12 @@
   opacity: 0.95;
   margin-bottom: 8px;
 }
-.cboard__title {
-  margin: 0;
-  font-size: 20px;
-}
+.cboard__title { margin: 0; font-size: 20px; }
 .cboard__meta { opacity: 0.85; }
-.cboard__hint {
-  margin-left: auto;
-  opacity: 0.6;
-  font-style: italic;
-}
+.cboard__hint { margin-left: auto; opacity: 0.6; font-style: italic; }
 
 /* Lane wrapper */
-.cboard__grid {
-  display: grid;
-  gap: 12px;
-}
+.cboard__grid { display: grid; gap: 12px; }
 .cboard__lane {
   position: relative;
   border-radius: 10px;
@@ -66,11 +56,7 @@
   gap: 6px;
   align-items: center;
 }
-.cboard__playerName {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.cboard__playerName { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cboard__score {
   margin-left: auto;
   font-variant-numeric: tabular-nums;
@@ -78,7 +64,8 @@
   color: #eaeaea;
 }
 
-/* 11×11 pip grid (121 pips) */
+/* Pip wrap + grid */
+.pipWrap { position: relative; }
 .pipGrid {
   --pip: 16px;          /* pip diameter */
   --gap: 6px;           /* spacing between pips */
@@ -104,41 +91,57 @@
 }
 
 /* Slightly emphasize every 5th pip (classic cribbage grouping) */
-.pip--five {
-  border-color: #3a4758;
-  background: #121923;
+.pip--five { border-color: #3a4758; background: #121923; }
+
+/* Pip states */
+.pip--back {
+  /* Subtle accent ring using seat color */
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.55) inset,
+    0 0 0 2px var(--pip-ring, #3da5d9);
+  border-color: color-mix(in oklab, var(--pip-ring, #3da5d9) 50%, #2a323c);
+}
+.pip--front {
+  border-color: #b7c3d6;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.55) inset,
+    0 0 0 2px rgba(215,225,240,0.45),
+    0 0 10px rgba(190,205,230,0.25);
+}
+.pip--winner {
+  border-color: #c7b36a;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.55) inset,
+    0 0 0 2px rgba(255,215,0,0.45),
+    0 0 14px rgba(255,215,0,0.28);
+  background: radial-gradient(120% 120% at 50% 50%, #1c1b12, #12140f);
 }
 
-/* Pegs drawn inside a pip */
-.peg {
+/* Peg overlay */
+.cboard__pegLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cboard__pegLayer .peg {
   position: absolute;
   width: 10px;
   height: 10px;
   border-radius: 10px;
   box-shadow: 0 0 0 1px #000;
-  /* center by default; offsets below create the two-peg look */
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(0, 0);
+  will-change: transform;
+}
+/* Enable transitions only after initial mount */
+.cboard__pegLayer.is-ready .peg {
+  transition: transform 260ms cubic-bezier(.2,.7,.2,1);
 }
 
-.peg--back {
-  /* Seat color */
-  /* Offset slightly bottom-left */
-  left: 36%;
-  top: 64%;
-}
-
-.peg--front {
-  background: #eaeaea;
-  /* Offset slightly top-right */
-  left: 64%;
-  top: 36%;
-}
-
-/* Empty state */
-.cboard__empty {
-  opacity: 0.7;
-  padding: 8px;
+.peg--front { background: #eaeaea; }
+.peg--frontWinner {
+  background: #f2e29b;
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 10px rgba(255,215,0,0.35);
 }
 
