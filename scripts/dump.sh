@@ -48,15 +48,14 @@ write_rules_header() {
   local out="$1"
   : > "$out"
   {
+
     echo "RULES"
     echo
     echo "## Build Rules (we’re following these)"
-    echo "1. **Micro-steps only** — land small, testable changes end-to-end."
-    echo "2. **Trust-first UX** — minimal enforcement; avoid heavy rules engine."
-    echo "3. **Server is the source of truth** — client is a renderer/emitter."
-    echo "4. **File Writing** — anytime you touch a file, write the file out in full omitting nothing."
-    echo "5. **Test Path** — after making changes, outline how we test the changes in the UI."
-    echo "6. **Commit Format** — write the commit after the changes that has 72 char lines and 3 bullets"
+    echo "1. **Server is truth** — UI only renders state, never owns game logic."
+    echo "2. **File Writing** — if a file changes, output the full file in full."
+    echo "3. **Test Path** — describe how to check the UI update in browser."
+    echo "4. **Commit Format** — 72-char subject, then 3 concise bullets."
     echo
   } >> "$out"
 }
