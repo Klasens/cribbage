@@ -1,12 +1,23 @@
-/* 2-lane CribbageBoard (feature-scoped) */
+/* 2-lane CribbageBoard (feature-scoped) — framed “chrome” */
 
 .cboard {
+  position: relative;
   margin-top: 16px;
   text-align: left;
-  border: 1px solid #333;
-  background: #0f1216;
-  border-radius: 10px;
-  padding: 12px;
+
+  /* Rounded, beveled frame */
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, #10141a, #0f1216) padding-box,
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.55)) border-box;
+  border: 1px solid transparent;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.03),
+    inset 0 10px 30px rgba(0,0,0,0.35);
+
+  /* Extra bottom padding to make room for the badge */
+  padding: 12px 12px 28px 12px;
 }
 
 /* Header */
@@ -144,4 +155,29 @@
     0 0 0 1px #000,
     0 0 10px rgba(255,215,0,0.35);
 }
+
+/* Centered 121 badge hanging off the frame */
+.cboard__badge {
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+
+  color: #f2e29b;
+  background: radial-gradient(130% 130% at 50% 30%, #2a2412, #141108);
+  border: 1px solid rgba(255,215,0,0.45);
+  border-radius: 999px;
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.45),
+    0 0 0 2px rgba(255,215,0,0.15);
+  user-select: none;
+}
+
+/* Empty board message */
+.cboard__empty { opacity: 0.7; padding: 8px; }
 

@@ -3,10 +3,8 @@ import "./pegboard.css";
 
 /**
  * 2-lane CribbageBoard (121 pips per lane) with pip states + smooth pegs.
- * - Server is truth (scores & prevScore come from state.players[*]).
- * - We render only the first two seats by seatId to keep the board clear.
- * - Back peg = prevScore (fallback to score); Front peg = current score.
- * - Pegs animate between pips; pip cells show state (empty/back/front/winner).
+ * Board chrome: rounded frame, title, and a centered 121 badge.
+ * - Server is truth (scores & prevScore from state.players[*]).
  */
 
 const ROWS = 11;
@@ -204,6 +202,9 @@ export default function Pegboard({
           ))}
         </div>
       )}
+
+      {/* Centered badge at bottom edge of the board frame */}
+      <div className="cboard__badge" title="Points to win">121</div>
     </div>
   );
 }
