@@ -59,20 +59,41 @@
   gap: 8px;
   margin-bottom: 8px;
 }
+/* Left lane (Player 1): label/name on left, score on right */
+.cboard__laneHeader--left {
+  flex-direction: row;
+}
+/* Right lane (Player 2): mirror for visual balance — score on left */
+.cboard__laneHeader--right {
+  flex-direction: row-reverse;
+}
+
 .cboard__player {
   font-size: 12px;
   opacity: 0.9;
   min-width: 68px;
-  display: flex;
+  display: inline-flex;
   gap: 6px;
   align-items: center;
 }
-.cboard__playerName { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cboard__laneLabel {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.cboard__divider {
+  opacity: 0.4;
+}
+.cboard__playerName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .cboard__score {
-  margin-left: auto;
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: 800;
   color: #eaeaea;
+  min-width: 42px;
+  text-align: center;
 }
 
 /* Pip wrap + grid */
@@ -106,7 +127,6 @@
 
 /* Pip states */
 .pip--back {
-  /* Subtle accent ring using seat color */
   box-shadow:
     0 0 0 1px rgba(0,0,0,0.55) inset,
     0 0 0 2px var(--pip-ring, #3da5d9);
@@ -123,7 +143,6 @@
   border-color: #c7b36a;
   box-shadow:
     0 0 0 1px rgba(0,0,0,0.55) inset,
-    0 0 0 2px rgba(255,215,0,0.45),
     0 0 14px rgba(255,215,0,0.28);
   background: radial-gradient(120% 120% at 50% 50%, #1c1b12, #12140f);
 }
@@ -143,7 +162,6 @@
   transform: translate(0, 0);
   will-change: transform;
 }
-/* Enable transitions only after initial mount */
 .cboard__pegLayer.is-ready .peg {
   transition: transform 260ms cubic-bezier(.2,.7,.2,1);
 }

@@ -4,5 +4,31 @@
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
+
+  /* Three-zone layout like the screenshot */
+  justify-content: space-between;
+}
+
+/* Each group holds its own row of pills */
+.ui-toolbar__group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Center group stays centered even as left/right grow */
+.ui-toolbar__center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Pill buttons inside toolbar */
+.ui-toolbar .ui-btn {
+  border-radius: 999px; /* pill */
+  padding-inline: 14px;
+  height: 34px;
+  gap: 8px; /* icon+label spacing */
+  line-height: 1;
 }
 

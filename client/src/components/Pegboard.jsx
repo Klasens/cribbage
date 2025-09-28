@@ -84,7 +84,6 @@ function indexToPoint(idx, { pip, gap, padL, padT, bdL, bdT }) {
 }
 
 function Pip({ i, state = "empty", ring }) {
-  // ring = optional CSS color for state accent (e.g., seat color for "back")
   const five = ((i + 1) % 5) === 0;
   const cls = ["pip", five ? "pip--five" : "", `pip--${state}`]
     .filter(Boolean)
@@ -92,7 +91,7 @@ function Pip({ i, state = "empty", ring }) {
   return <div className={cls} data-i={i} style={ring ? { ["--pip-ring"]: ring } : undefined} />;
 }
 
-function Lane({ player, dealerSeat, winnerSeat }) {
+function Lane({ laneIndex = 0, player, dealerSeat, winnerSeat }) {
   const color = colorForSeat(player.seatId);
   const backIdx = scoreToIndex(
     typeof player.prevScore === "number" ? player.prevScore : player.score || 0
@@ -119,12 +118,19 @@ function Lane({ player, dealerSeat, winnerSeat }) {
   const backPos = { x: baseBack.x - off, y: baseBack.y + off };
   const frontPos = { x: baseFront.x + off, y: baseFront.y - off };
 
+  const side = laneIndex === 0 ? "left" : "right";
+  const label = `Player ${laneIndex + 1}`;
+
   return (
     <div className={`cboard__lane${isWinner ? " is-winner" : ""}`}>
-      <div className="cboard__laneHeader">
+      <div className={`cboard__laneHeader cboard__laneHeader--${side}`}>
         <div className="cboard__player">
           {isDealer ? "👑 " : null}
-          [Seat {player.seatId}] <strong className="cboard__playerName">{player.name}</strong>
+          <span className="cboard__laneLabel">{label}</span>
+          <span className="cboard__divider">•</span>
+          <span className="cboard__playerName" title={`[Seat ${player.seatId}] ${player.name}`}>
+            [Seat {player.seatId}] {player.name}
+          </span>
         </div>
         <div className="cboard__score">{player.score}</div>
       </div>
@@ -192,9 +198,10 @@ export default function Pegboard({
         <div className="cboard__empty">No players yet.</div>
       ) : (
         <div className="cboard__grid">
-          {lanes.map((p) => (
+          {lanes.map((p, idx) => (
             <Lane
               key={p.seatId}
+              laneIndex={idx}
               player={p}
               dealerSeat={dealerSeat}
               winnerSeat={winnerSeat}
