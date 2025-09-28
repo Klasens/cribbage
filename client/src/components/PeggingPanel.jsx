@@ -1,4 +1,3 @@
-// client/src/components/PeggingPanel.jsx
 import React from "react";
 import "./pegging.css";
 
@@ -31,19 +30,27 @@ export default function PeggingPanel({
         <div className="pegbox__done">✅ Pegging complete — count hands.</div>
       ) : (
         <div className="pegbox__row">
-          <div>
-            <div className="pegbox__label">Count (0–31)</div>
+          <div className="pegbox__col pegbox__col--count" aria-live="polite">
             <div className="pegbox__count">{runCount}</div>
+            <div className="pegbox__label">Count</div>
           </div>
-          <div>
-            <div className="pegbox__label">Last shown</div>
-            <div className="pegbox__last">{lastShown ?? <span className="pegbox__dim">—</span>}</div>
+
+          <div className="pegbox__col">
+            <div className="pegbox__value">
+              {lastShown ?? <span className="pegbox__dim">—</span>}
+            </div>
+            <div className="pegbox__label">Last Shown</div>
           </div>
-          <div>
+
+          <div className="pegbox__col">
+            <div className="pegbox__value">
+              {lastShownByName ?? <span className="pegbox__dim">Player</span>}
+            </div>
             <div className="pegbox__label">By</div>
-            <div className="pegbox__by">{lastShownByName ?? <span className="pegbox__dim">—</span>}</div>
           </div>
+
           <div className="pegbox__spacer" />
+
           <button
             onClick={onResetRun}
             title="Reset the count back to 0 (trust-based)"

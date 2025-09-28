@@ -44,16 +44,14 @@ export default function MyHand({
 
   const canShowNow = cribLocked && !peggingComplete && !winnerActive;
 
+  const showPickHint = !winnerActive && !cribLocked && sel.length < 2;
+
   return (
     <div className="hand">
       <div className="hand__header">
-        <h3 className="hand__title">Your hand</h3>
-        <div className="hand__meta">
-          Crib: <strong>{cribCount}/4</strong> {cribLocked ? "• Locked" : ""}
-          {peggingComplete ? " • Pegging complete" : ""}
-          {winnerActive ? " • Game over" : ""}
-        </div>
+        <h3 className="hand__title">Your Hand</h3>
       </div>
+      {showPickHint && <div className="hand__hint">Select 2 cards</div>}
 
       <HandGrid
         cards={cards}
@@ -72,6 +70,12 @@ export default function MyHand({
         winnerActive={winnerActive}
         selCount={sel.length}
       />
+
+      <div className="hand__meta" style={{ marginTop: 8 }}>
+        Crib: <strong>{cribCount}/4</strong> {cribLocked ? "• Locked" : ""}
+        {peggingComplete ? " • Pegging complete" : ""}
+        {winnerActive ? " • Game over" : ""}
+      </div>
     </div>
   );
 }

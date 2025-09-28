@@ -12,6 +12,12 @@
 }
 
 .hand__title {
+  margin: 0 0 2px;
+}
+
+.hand__hint {
+  font-size: 12px;
+  opacity: 0.7;
   margin: 0 0 8px;
 }
 
@@ -23,7 +29,7 @@
 /* Grid of cards */
 .hand-grid {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -32,37 +38,71 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  transition: transform 120ms ease;
 }
 
-/* Primary card button */
+/* Primary card button as a “card” */
 .hand-card__btn {
-  padding: 6px 10px;
-  border-radius: 8px;
+  width: 64px;
+  height: 96px;
+  padding: 6px;
+  border-radius: 10px;
   border: 1px solid var(--c-border);
-  background: #1b1b1b;
-  box-shadow: none;
-  transition: box-shadow 120ms, background 120ms, border-color 120ms;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+  background: #f7f8fc;
+  color: #1b1b1b;
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.6);
+  transition: box-shadow 120ms, background 120ms, border-color 120ms, transform 120ms;
   cursor: pointer;
-  min-width: 64px;
+}
+@media (prefers-color-scheme: dark) {
+  .hand-card__btn {
+    background: #e9ecf8;
+    color: #1a1a1a;
+  }
+}
+
+.hand-card__btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.22),
+    inset 0 0 0 1px rgba(255,255,255,0.6);
 }
 
 .hand-card__btn.is-picked {
   border-color: #6cf;
-  background: #1e2a33;
+  box-shadow:
+    0 0 0 2px rgba(102, 204, 255, 0.35) inset,
+    0 10px 22px rgba(0,0,0,0.24);
 }
 
 .hand-card__btn.is-shown {
   border-color: #9acd32;
-  background: #223118;
-  box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.35) inset;
+  box-shadow:
+    0 0 0 2px rgba(154, 205, 50, 0.35) inset,
+    0 10px 22px rgba(0,0,0,0.24);
 }
 
 .hand-card__btn:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.7;
 }
+
+/* Face layout: rank top-left; suit below (stacked) */
+.card-face {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  font-weight: 800;
+  line-height: 1;
+}
+.card-face.is-red { color: #cc2b2b; }
+.card-rank { font-size: 20px; }
+.card-suit { font-size: 18px; margin-top: -2px; }
 
 /* "Show" secondary action */
 .hand-card__show {
@@ -70,9 +110,9 @@
   border-radius: 6px;
   border: 1px solid var(--c-border);
   background: #222;
+  color: var(--c-text);
   font-size: 12px;
 }
-
 .hand-card__show.is-shown {
   background: #2a3b1f;
 }

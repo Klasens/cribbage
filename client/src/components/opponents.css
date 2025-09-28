@@ -1,5 +1,50 @@
 .opps { text-align: left; }
 .opps__title { margin: 0 0 8px; }
+.opps__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.opps__item { }
+
+/* Opponent hand visualization */
+.oppHand__title {
+  font-weight: 700;
+  margin-bottom: 6px;
+.opps { text-align: left; }
+.opps__title { margin: 0 0 8px; }
 .opps__list { margin: 0; padding-left: 18px; }
 .opps__item { }
+
+
+  width: 120px;
+  height: 88px;
+}
+
+.oppBack {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56px;
+  height: 80px;
+  border-radius: 10px;
+  background: #1b3b8c;
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow:
+    0 8px 16px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+  transform-origin: 50% 80%;
+}
+
+/* Slight spreading */
+.oppBack:nth-child(1) { left: 6px; top: 6px; }
+.oppBack:nth-child(2) { left: 20px; top: 2px; }
+.oppBack:nth-child(3) { left: 34px; top: 6px; }
+.oppBack:nth-child(4) { left: 48px; top: 2px; }
+.oppBack:nth-child(5) { left: 62px; top: 6px; }
+.oppBack:nth-child(6) { left: 76px; top: 2px; }
+
+.oppHand__count {
+  margin-top: 6px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
 

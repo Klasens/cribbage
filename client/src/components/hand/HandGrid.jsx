@@ -16,6 +16,7 @@ export default function HandGrid({
         <HandCard
           key={`${c}-${i}`}
           card={c}
+          idx={i}
           picked={sel.includes(c)}
           shown={shownSet.has(c)}
           disabled={disabled}
