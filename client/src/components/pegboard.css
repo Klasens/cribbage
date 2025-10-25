@@ -1,16 +1,16 @@
-/* 2-lane CribbageBoard */
+/* Phase 3 — Light tabletop restyle for the 2-lane CribbageBoard */
 
 .cboard {
   position: relative;
   margin-top: var(--sp-3);
   text-align: left;
-  border-radius: var(--r-lg);
-  background:
-    linear-gradient(180deg, #10141a, #0f1216) padding-box,
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.55)) border-box;
-  border: 1px solid transparent;
-  box-shadow: var(--shadow-soft-2);
-  padding: 12px 12px 28px 12px;
+  border-radius: 14px;
+  border: 1px solid #c59a6b; /* brown edge */
+  background: #fff6dc; /* cream board */
+  box-shadow:
+    0 10px 30px rgba(165, 120, 60, 0.12),
+    var(--shadow-1);
+  padding: 14px 14px 32px 14px;
 }
 
 /* Header */
@@ -23,31 +23,61 @@
   opacity: 0.95;
   margin-bottom: var(--sp-2);
 }
-.cboard__title { margin: 0; font-size: var(--fs-title-md); }
-.cboard__meta { opacity: 0.85; }
-.cboard__hint { margin-left: auto; opacity: 0.6; font-style: italic; }
+.cboard__title {
+  margin: 0;
+  font-size: var(--fs-title-md);
+}
+.cboard__meta {
+  opacity: 0.8;
+}
+.cboard__hint {
+  margin-left: auto;
+  opacity: 0.65;
+  font-style: italic;
+}
 
 /* Lane wrapper */
-.cboard__grid { display: grid; gap: var(--sp-3); }
+.cboard__grid {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+/* Lane card (light inset panel on cream board) */
 .cboard__lane {
   position: relative;
-  border-radius: var(--r-md);
-  background: #101419;
-  border: 1px solid #1e2530;
+  border-radius: 12px;
+  background: #fffaf0; /* lighter cream for lanes */
+  border: 1px solid #e8d8bf;
   padding: 10px;
-  box-shadow: var(--shadow-1);
-  transition: box-shadow 200ms ease, border-color 200ms ease, background 200ms ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 0 rgba(165, 120, 60, 0.06);
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    background 200ms ease;
 }
 .cboard__lane.is-winner {
-  background: linear-gradient(180deg, #12140f, #101419);
-  border-color: #8f7a27;
-  box-shadow: 0 0 0 2px rgba(255,215,0,0.18), var(--shadow-1);
+  background: #fff8e0;
+  border-color: #d7c27a;
+  box-shadow:
+    0 0 0 2px rgba(215, 194, 122, 0.25),
+    var(--shadow-1);
 }
 
 /* Lane header row */
-.cboard__laneHeader { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.cboard__laneHeader--left { flex-direction: row; }
-.cboard__laneHeader--right { flex-direction: row-reverse; }
+.cboard__laneHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cboard__laneHeader--left {
+  flex-direction: row;
+}
+.cboard__laneHeader--right {
+  flex-direction: row-reverse;
+}
 
 .cboard__player {
   font-size: var(--fs-caption);
@@ -56,37 +86,53 @@
   display: inline-flex;
   gap: 6px;
   align-items: center;
+  color: #6b4e2e; /* warm ink on cream */
 }
-.cboard__laneLabel { font-weight: 800; letter-spacing: 0.2px; }
-.cboard__divider { opacity: 0.4; }
-.cboard__playerName { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cboard__laneLabel {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.cboard__divider {
+  opacity: 0.45;
+}
+.cboard__playerName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .cboard__score {
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  color: #eaeaea;
+  color: #2b2b2b;
   min-width: 42px;
   text-align: center;
 }
 
 /* Pips */
-.pipWrap { position: relative; }
+.pipWrap {
+  position: relative;
+}
 .pipGrid {
-  --pip: 16px;
-  --gap: 6px;
+  --pip: 14px; /* denser grid than before */
+  --gap: 5px;
   display: grid;
   grid-template-columns: repeat(11, var(--pip));
   gap: var(--gap);
   justify-content: start;
   padding: 6px;
-  border-radius: var(--r-sm);
-  background: #19202a;
-  border: 1px solid #233042;
+  border-radius: 10px;
+  background: #fff3e0; /* pale cream insets */
+  border: 1px solid #ecd9b9;
 }
 
 /* Compact pips <720px */
 @media (max-width: 719px) {
-  .pipGrid { --pip: 12px; --gap: 4px; padding: 4px; }
+  .pipGrid {
+    --pip: 12px;
+    --gap: 4px;
+    padding: 4px;
+  }
 }
 
 .pip {
@@ -94,48 +140,70 @@
   width: var(--pip);
   height: var(--pip);
   border-radius: 50%;
-  background: #0f141b;
-  border: 1px solid #2a323c;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.55) inset;
-  transition: filter 120ms ease, border-color 120ms ease;
+  background: #f6e7c9;
+  border: 1px solid #e3cfa6;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03) inset;
+  transition:
+    filter 120ms ease,
+    border-color 120ms ease;
 }
-.pip:hover { filter: brightness(1.08); }
-.pip--five { border-color: #3a4758; background: #121923; }
+.pip:hover {
+  filter: brightness(1.04);
+}
+.pip--five {
+  border-color: #ddc799;
+  background: #f8edd3;
+}
 
 .pip--back {
   box-shadow:
-    0 0 0 1px rgba(0,0,0,0.55) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.05) inset,
     0 0 0 2px var(--pip-ring, #3da5d9);
-  border-color: color-mix(in oklab, var(--pip-ring, #3da5d9) 50%, #2a323c);
+  border-color: color-mix(in oklab, var(--pip-ring, #3da5d9) 40%, #e3cfa6);
 }
 .pip--front {
-  border-color: #b7c3d6;
+  border-color: #b7a66f;
   box-shadow:
-    0 0 0 1px rgba(0,0,0,0.55) inset,
-    0 0 0 2px rgba(215,225,240,0.45),
-    0 0 10px rgba(190,205,230,0.25);
+    0 0 0 1px rgba(0, 0, 0, 0.05) inset,
+    0 0 0 2px rgba(205, 175, 90, 0.35),
+    0 0 8px rgba(205, 175, 90, 0.2);
 }
 .pip--winner {
   border-color: #c7b36a;
   box-shadow:
-    0 0 0 1px rgba(0,0,0,0.55) inset,
-    0 0 14px rgba(255,215,0,0.28);
-  background: radial-gradient(120% 120% at 50% 50%, #1c1b12, #12140f);
+    0 0 0 1px rgba(0, 0, 0, 0.05) inset,
+    0 0 14px rgba(255, 215, 0, 0.28);
+  background: #fff3c4;
 }
 
 /* Peg overlay */
-.cboard__pegLayer { position: absolute; inset: 0; pointer-events: none; }
+.cboard__pegLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 .cboard__pegLayer .peg {
   position: absolute;
-  width: 10px; height: 10px; border-radius: 10px;
-  box-shadow: 0 0 0 1px #000;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
   transform: translate(0, 0);
   will-change: transform;
 }
-.cboard__pegLayer.is-ready .peg { transition: transform 260ms cubic-bezier(.2,.7,.2,1); }
+.cboard__pegLayer.is-ready .peg {
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
 
-.peg--front { background: #eaeaea; }
-.peg--frontWinner { background: #f2e29b; box-shadow: 0 0 0 1px #000, 0 0 10px rgba(255,215,0,0.35); }
+.peg--front {
+  background: #3a3a3a;
+} /* darker for contrast on light board */
+.peg--frontWinner {
+  background: #b48a1f;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 0 10px rgba(255, 215, 0, 0.35);
+}
 
 /* Badge */
 .cboard__badge {
@@ -147,13 +215,59 @@
   font-weight: 800;
   font-size: var(--fs-caption);
   letter-spacing: 0.4px;
-  color: #f2e29b;
-  background: radial-gradient(130% 130% at 50% 30%, #2a2412, #141108);
-  border: 1px solid rgba(255,215,0,0.45);
+  color: #8e6c1f;
+  background: radial-gradient(130% 130% at 50% 30%, #fff1c0, #ffe79d);
+  border: 1px solid rgba(180, 138, 31, 0.45);
   border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 0 2px rgba(255,215,0,0.15);
+  box-shadow:
+    0 6px 18px rgba(165, 120, 60, 0.25),
+    0 0 0 2px rgba(180, 138, 31, 0.12);
   user-select: none;
 }
 
-.cboard__empty { opacity: 0.7; padding: 8px; }
+.cboard__empty {
+  opacity: 0.7;
+  padding: 8px;
+}
 
+/* ----- Dark-mode readability fallback ----- */
+@media (prefers-color-scheme: dark) {
+  .cboard {
+    background: #10141a;
+    border-color: #2a2a2a;
+    box-shadow: var(--shadow-1);
+  }
+  .cboard__lane {
+    background: #101419;
+    border-color: #1e2530;
+  }
+  .pipGrid {
+    background: #19202a;
+    border-color: #233042;
+  }
+  .pip {
+    background: #0f141b;
+    border-color: #2a323c;
+  }
+  .pip--five {
+    border-color: #3a4758;
+    background: #121923;
+  }
+  .peg--front {
+    background: #eaeaea;
+  }
+  .cboard__player {
+    color: #eaeaea;
+  }
+  .cboard__score {
+    color: #eaeaea;
+  }
+  .cboard__badge {
+    color: #f2e29b;
+    background: radial-gradient(130% 130% at 50% 30%, #2a2412, #141108);
+    border-color: rgba(255, 215, 0, 0.45);
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.45),
+      0 0 0 2px rgba(255, 215, 0, 0.15);
+  }
+}

@@ -138,7 +138,7 @@ export default function Pegboard({
   const showNote = (players?.length || 0) > 2;
 
   return (
-    <div className="cboard">
+    <div className="cboard cboard--tabletop">
       <div className="cboard__header">
         <h2 className="cboard__title">Cribbage Board</h2>
         <div className="cboard__meta">
