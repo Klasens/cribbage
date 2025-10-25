@@ -12,6 +12,7 @@ export default function HandActions({
       <button
         onClick={onSendCrib}
         disabled={!canSend}
+        className="hand-actions__send"
         title={
           winnerActive
             ? "Game over — actions are locked"

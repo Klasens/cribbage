@@ -30,6 +30,9 @@ export default function HandCard({
 
   return (
     <div className="hand-card" style={{ transform: `rotate(${tilt}deg)` }}>
+      {/* felt base shadow */}
+      <span aria-hidden className="hand-card__felt" />
+
       <button
         onClick={() => onToggle?.(card)}
         disabled={disabled}

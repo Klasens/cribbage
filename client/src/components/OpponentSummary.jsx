@@ -1,4 +1,3 @@
-// client/src/components/OpponentSummary.jsx
 import React from "react";
 import "./opponents.css";
 
@@ -34,7 +33,7 @@ export default function OpponentSummary({
             <li key={p.seatId} className="opps__item">
               <div className="oppHand">
                 <div className="oppHand__title">
-                  {isDealer ? "👑 " : ""}
+                  {isDealer ? <span className="ico ico--crown" aria-label="Dealer" /> : null}
                   {p.name}'s Hand
                 </div>
                 <div className="oppHand__stack" aria-label={`${count} cards`}>
@@ -42,12 +41,12 @@ export default function OpponentSummary({
                     <span
                       key={`${p.seatId}-${i}`}
                       className="oppBack"
-                      style={{ transform: `rotate(${(i % 2 ? -8 : 6)}deg)` }}
+                      style={{ transform: `rotate(${(i % 2 ? -9 : 7)}deg)` }}
                       aria-hidden
                     />
                   ))}
                 </div>
-                <div className="oppHand__count">{count}</div>
+                <div className="oppHand__count tnum"><strong>{count}</strong></div>
               </div>
             </li>
           );

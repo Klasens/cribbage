@@ -50,8 +50,10 @@ export default function MyHand({
     <div className="hand">
       <div className="hand__header">
         <h3 className="hand__title">Your Hand</h3>
+        <div className={`hand__hint${showPickHint ? " is-active" : ""}`}>
+          Select 2 cards
+        </div>
       </div>
-      {showPickHint && <div className="hand__hint">Select 2 cards</div>}
 
       <HandGrid
         cards={cards}
