@@ -1,18 +1,29 @@
-/* ControlsBar tweaks scoped atop Toolbar defaults. */
+/* ControlsBar tweaks atop Toolbar defaults (Phase 2 polish). */
 
 .ui-toolbar .ui-btn--subtle {
-  background: transparent;
+  background: #ffffff;
   border-color: var(--c-border);
-  opacity: 0.95;
+  opacity: 0.98;
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.02);
 }
-.ui-toolbar .ui-btn--subtle:hover { opacity: 1; }
+.ui-toolbar .ui-btn--subtle:hover {
+  opacity: 1;
+}
 
 /* More presence for primary action */
-.ui-toolbar .ui-btn--primary { box-shadow: 0 2px 10px rgba(100, 108, 255, 0.25); }
+.ui-toolbar .ui-btn--primary {
+  box-shadow: 0 6px 18px rgba(124, 134, 255, 0.28);
+}
 
 /* Pill “menu” affordances (caret + count badge) */
-.pillMenu { position: relative; }
-.pillCaret { margin-left: 6px; opacity: 0.8; font-size: 12px; }
+.pillMenu {
+  position: relative;
+}
+.pillCaret {
+  margin-left: 6px;
+  opacity: 0.75;
+  font-size: 12px;
+}
 .pillBadge {
   margin-left: 8px;
   padding: 0 8px;
@@ -24,4 +35,3 @@
   font-weight: 800;
   font-size: 12px;
 }
-

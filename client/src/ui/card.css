@@ -2,7 +2,6 @@
   background: var(--c-bg-elev);
   border: 1px solid var(--c-border);
   border-radius: var(--r-lg);
-  box-shadow: var(--shadow-soft-1);
+  box-shadow: var(--shadow-1);
   padding: 12px;
 }
-

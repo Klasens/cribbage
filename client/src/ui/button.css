@@ -5,36 +5,78 @@
   gap: 8px;
   cursor: pointer;
   user-select: none;
-  border-radius: var(--r-md);
+  border-radius: 999px; /* pill by default */
   border: 1px solid var(--c-border);
-  font-weight: 600;
-  transition: border-color 150ms, background-color 150ms, color 150ms, opacity 150ms, transform 60ms;
+  font-weight: 700;
+  transition:
+    border-color 150ms,
+    background-color 150ms,
+    color 150ms,
+    opacity 150ms,
+    transform 60ms,
+    box-shadow 150ms;
   background: var(--c-bg-soft);
   color: var(--c-text);
+  height: 36px; /* match toolbar/input height */
+  padding-inline: 14px;
+  line-height: 1;
 }
-.ui-btn--sm { font-size: 13px; padding: 6px 10px; }
-.ui-btn--md { font-size: 14px; padding: 8px 12px; }
 
+.ui-btn--sm {
+  font-size: 13px;
+  height: 32px;
+  padding-inline: 10px;
+}
+.ui-btn--md {
+  font-size: 14px;
+  height: 36px;
+  padding-inline: 14px;
+}
+
+/* Primary pill */
 .ui-btn--primary {
   background: var(--c-primary);
   color: var(--c-primary-ink);
   border-color: transparent;
-  box-shadow: var(--shadow-soft-1);
+  box-shadow: 0 6px 18px rgba(124, 134, 255, 0.28);
 }
-.ui-btn--primary:hover { box-shadow: var(--shadow-soft-2); }
+.ui-btn--primary:hover {
+  box-shadow: 0 10px 26px rgba(124, 134, 255, 0.34);
+}
+.ui-btn--primary:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--c-primary) 65%, #ffffff);
+  outline-offset: 2px;
+}
 
+/* Subtle pill */
 .ui-btn--subtle {
-  background: transparent;
+  background: #ffffff;
   border-color: var(--c-border);
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.02);
+}
+.ui-btn--subtle:hover {
+  background: #fff;
+  border-color: color-mix(in oklab, var(--c-border) 50%, var(--c-primary));
 }
 
-.ui-btn:is(:hover, :focus-visible) { border-color: var(--c-primary); }
-.ui-btn:active { transform: translateY(1px); }
+/* Danger (kept for parity if needed later) */
+.ui-btn--danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+/* States */
+.ui-btn:is(:hover, :focus-visible) {
+  border-color: var(--c-primary);
+}
+.ui-btn:active {
+  transform: translateY(1px);
+}
 
 .ui-btn.is-disabled,
 .ui-btn[disabled] {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.55;
   box-shadow: none;
 }
-

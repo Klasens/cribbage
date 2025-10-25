@@ -15,10 +15,18 @@
 
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+  box-sizing: border-box;
+}
 
-a { font-weight: 500; color: #646cff; text-decoration: inherit; }
-a:hover { color: #535bf2; }
+a {
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+}
+a:hover {
+  filter: brightness(0.9);
+}
 
 body {
   margin: 0;
@@ -40,22 +48,42 @@ body {
   min-height: 100vh;
 }
 
-/* Typography pass */
+/* Typography */
 .app-shell h1 {
   margin: 0 0 var(--sp-2);
   font-size: var(--fs-title-lg);
   line-height: 1.1;
   letter-spacing: -0.2px;
+  font-weight: 800;
+  color: #111827;
 }
-h2 { font-size: var(--fs-title-md); margin: 0 0 var(--sp-2); }
-h3 { font-size: var(--fs-title-sm); margin: 0 0 var(--sp-2); }
-.caption { font-size: var(--fs-caption); opacity: 0.75; }
-.tnum { font-variant-numeric: tabular-nums; }
+h2 {
+  font-size: var(--fs-title-md);
+  margin: 0 0 var(--sp-2);
+  font-weight: 800;
+}
+h3 {
+  font-size: var(--fs-title-sm);
+  margin: 0 0 var(--sp-2);
+  font-weight: 700;
+}
+.caption {
+  font-size: var(--fs-caption);
+  opacity: 0.72;
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
 
 /* Iconography (crown/trophy/menu/seats/log) */
-.ico { display: inline-block; width: 16px; height: 16px; }
-.ico--crown, .ico--trophy {
-  filter: drop-shadow(0 0 6px rgba(255,215,0,0.18));
+.ico {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.ico--crown,
+.ico--trophy {
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.18));
 }
 .ico--crown::before {
   content: "👑";
@@ -67,33 +95,53 @@ h3 { font-size: var(--fs-title-sm); margin: 0 0 var(--sp-2); }
   display: inline-block;
   transform: translateY(1px);
 }
-.ico--menu::before { content: "👥"; }
-.ico--seats::before { content: "🪑"; }
-.ico--log::before { content: "🧾"; }
+.ico--menu::before {
+  content: "👥";
+}
+.ico--seats::before {
+  content: "🪑";
+}
+.ico--log::before {
+  content: "🧾";
+}
 
-/* Buttons — unified states */
+/* Buttons — unified states (base for native <button> usage) */
 button {
   border-radius: var(--r-md);
   border: 1px solid var(--c-border);
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  padding: 8px 12px;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   background-color: var(--c-bg-soft);
   color: var(--c-text);
   cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s, color 0.2s, opacity 0.2s, transform 0.06s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s,
+    color 0.2s,
+    opacity 0.2s,
+    transform 0.06s,
+    box-shadow 0.2s;
 }
-button:hover { border-color: var(--c-primary); }
-button:active { transform: translateY(1px); }
+button:hover {
+  border-color: var(--c-primary);
+}
+button:active {
+  transform: translateY(1px);
+}
 button:focus,
-button:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
-button:disabled { opacity: 0.6; cursor: not-allowed; }
+button:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--c-primary) 60%, #ffffff);
+  outline-offset: 2px;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
 /* Responsive table layout
-   - ≥900px: 3 columns (hands flank the centered board)
-   - 720–899px: 2 columns (right column stacks under board)
-   - <720px: single column stack */
+   (owned by TableLayout now, but keep as defaults for safety) */
 .table-layout {
   display: grid;
   gap: var(--sp-4);
@@ -102,22 +150,36 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 @media (min-width: 900px) {
   .table-layout {
-    grid-template-columns: minmax(220px, 1fr) minmax(440px, 2fr) minmax(220px, 1fr);
+    grid-template-columns: minmax(220px, 1fr) minmax(440px, 2fr) minmax(
+        220px,
+        1fr
+      );
   }
 }
 @media (min-width: 720px) and (max-width: 899px) {
   .table-layout {
     grid-template-columns: minmax(260px, 1fr) minmax(420px, 1.6fr);
   }
-  .table-layout > .table-cell:nth-child(3) { grid-column: 1 / span 2; }
+  .table-layout > .table-cell:nth-child(3) {
+    grid-column: 1 / span 2;
+  }
 }
 @media (max-width: 719px) {
-  .table-layout { grid-template-columns: 1fr; }
+  .table-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Hide Vite demo leftovers */
-.logo, .card, .read-the-docs { display: none !important; }
+.logo,
+.card,
+.read-the-docs {
+  display: none !important;
+}
 
 /* Light mode hover nuance */
-@media (prefers-color-scheme: light) { a:hover { color: #747bff; } }
-
+@media (prefers-color-scheme: light) {
+  a:hover {
+    filter: brightness(0.92);
+  }
+}

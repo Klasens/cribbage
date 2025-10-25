@@ -16,14 +16,34 @@
 }
 
 /* Center group stays centered even as edges grow */
-.ui-toolbar__center { margin-left: auto; margin-right: auto; }
+.ui-toolbar__center {
+  margin-left: auto;
+  margin-right: auto;
+}
 
-/* Pills */
+/* Pills — bump height to 36px via button.css; keep spacing */
 .ui-toolbar .ui-btn {
   border-radius: 999px;
   padding-inline: 14px;
-  height: 34px;
+  height: 36px;
   gap: 8px;
   line-height: 1;
 }
 
+/* Count badges & carets tuned for the comp */
+.pillBadge {
+  margin-left: 8px;
+  padding: 0 8px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg-soft);
+  font-weight: 800;
+  font-size: 12px;
+}
+.pillCaret {
+  margin-left: 6px;
+  opacity: 0.75;
+  font-size: 12px;
+}
