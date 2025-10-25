@@ -1,4 +1,48 @@
-/* Re-export existing rules from index.css for locality; keep source of truth
-   in index.css for now to avoid duplication. This file exists so the layout
-   component can import something feature-local. */
+/* Phase 1: own the page grid here so the center dominates and hands hug edges.
+   These rules intentionally override the global .table-layout rules in index.css. */
 
+.table-layout {
+  display: grid;
+  gap: var(--sp-4);
+  align-items: start;
+  margin-top: var(--sp-4);
+}
+
+/* ≥1100px: 3 columns.
+   - Left/Right hands: narrow but flexible.
+   - Center: wide and weighted. */
+@media (min-width: 1100px) {
+  .table-layout {
+    grid-template-columns:
+      minmax(240px, 1fr)
+      minmax(640px, 2.6fr)
+      minmax(240px, 1fr);
+  }
+}
+
+/* 840–1099px: collapse to two columns; right stacks under center. */
+@media (min-width: 840px) and (max-width: 1099px) {
+  .table-layout {
+    grid-template-columns:
+      minmax(300px, 1fr)
+      minmax(520px, 1.8fr);
+  }
+  .table-layout > .table-cell--right {
+    grid-column: 1 / span 2;
+  }
+}
+
+/* <840px: single column stack. */
+@media (max-width: 839px) {
+  .table-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Explicit cell hooks (future phases may use these for spacing tweaks) */
+.table-cell--left {
+}
+.table-cell--center {
+}
+.table-cell--right {
+}

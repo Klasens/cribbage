@@ -27,8 +27,8 @@ export const EVT = {
   NEW_GAME: "game:new",
 };
 
-// export const socket = io("http://localhost:3000");
-export const socket = io();
+export const socket = io("http://localhost:3000");
+// export const socket = io();
 
 export function onStateUpdate(fn) {
   socket.on(EVT.STATE_UPDATE, fn);
@@ -62,15 +62,11 @@ export const api = {
   // Pegging run (manual)
   pegShow: (roomId, seatId, cardText) =>
     socket.emit(EVT.PEG_SHOW, { roomId, seatId, cardText }),
-  pegReset: (roomId) =>
-    socket.emit(EVT.PEG_RESET, { roomId }),
+  pegReset: (roomId) => socket.emit(EVT.PEG_RESET, { roomId }),
 
   // Next Hand (rotate dealer, reset per-hand state)
-  nextHand: (roomId) =>
-    socket.emit(EVT.NEXT_HAND, { roomId }),
+  nextHand: (roomId) => socket.emit(EVT.NEXT_HAND, { roomId }),
 
   // New Game (full reset to fresh game)
-  newGame: (roomId) =>
-    socket.emit(EVT.NEW_GAME, { roomId }),
+  newGame: (roomId) => socket.emit(EVT.NEW_GAME, { roomId }),
 };
-

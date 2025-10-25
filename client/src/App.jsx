@@ -153,6 +153,14 @@ export default function App() {
         }
         center={
           <div>
+            {/* Phase 1: Board first, then pegging panel directly beneath */}
+            <Pegboard
+              players={state?.players ?? []}
+              dealerSeat={dealerSeat}
+              winnerSeat={winnerSeat}
+              peggingComplete={peggingComplete}
+            />
+
             {joined && (
               <PeggingPanel
                 runCount={runCount}
@@ -164,6 +172,7 @@ export default function App() {
               />
             )}
 
+            {/* Score controls can remain accessible near the center */}
             <ScoreControls onPeg={peg} disabled={winnerActive} />
 
             {peggingComplete && (
@@ -175,13 +184,6 @@ export default function App() {
                 dealerSeat={dealerSeat}
               />
             )}
-
-            <Pegboard
-              players={state?.players ?? []}
-              dealerSeat={dealerSeat}
-              winnerSeat={winnerSeat}
-              peggingComplete={peggingComplete}
-            />
           </div>
         }
         right={
