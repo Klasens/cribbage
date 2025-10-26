@@ -17,3 +17,14 @@
 .join__input::placeholder {
   color: var(--c-text-dim);
 }
+
+/* Mobile: let inputs stretch so pills don't wrap awkwardly */
+@media (max-width: 640px) {
+  .join {
+    gap: 6px;
+  }
+  .join__input {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+}

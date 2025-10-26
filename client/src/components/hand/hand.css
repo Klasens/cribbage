@@ -54,7 +54,7 @@
   z-index: 0;
 }
 
-/* Playing card */
+/* Playing card (base size for desktop) */
 .hand-card__btn {
   position: relative;
   z-index: 1;
@@ -166,6 +166,16 @@
 /* Footer actions */
 .hand-actions {
   margin-top: var(--sp-2);
+  /* Keep the action reachable on phones */
+  position: sticky;
+  bottom: 0;
+  padding: 6px 0 2px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    var(--c-bg) 40%,
+    var(--c-bg) 100%
+  );
 }
 .hand-actions__send {
   border-radius: 999px;
@@ -180,4 +190,55 @@
   color: var(--c-text);
   border: 1px solid var(--c-border);
   box-shadow: none;
+}
+
+/* ======= Responsive scaling ======= */
+
+/* Slightly denser at <=1024px */
+@media (max-width: 1024px) {
+  .hand-grid {
+    gap: 12px;
+  }
+  .hand-card__btn {
+    width: 68px;
+    height: 98px;
+  }
+  .card-rank {
+    font-size: 20px;
+  }
+  .card-suit {
+    font-size: 16px;
+  }
+}
+
+/* Tablet / two-column range */
+@media (max-width: 840px) {
+  .hand-grid {
+    gap: 12px;
+  }
+  .hand-card__btn {
+    width: 64px;
+    height: 92px;
+  }
+}
+
+/* Phones */
+@media (max-width: 640px) {
+  .hand-grid {
+    gap: 10px;
+  }
+  .hand-card__btn {
+    width: 60px;
+    height: 86px;
+    border-radius: 9px;
+  }
+  .card-rank {
+    font-size: 18px;
+  }
+  .card-suit {
+    font-size: 15px;
+  }
+  .hand__header {
+    gap: 6px;
+  }
 }

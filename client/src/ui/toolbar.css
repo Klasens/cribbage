@@ -47,3 +47,19 @@
   opacity: 0.75;
   font-size: 12px;
 }
+
+/* Prevent crowding on very narrow widths */
+@media (max-width: 640px) {
+  .ui-toolbar {
+    gap: 8px;
+  }
+  .ui-toolbar__center {
+    width: 100%;
+    justify-content: center;
+    order: 2;
+  }
+  .ui-toolbar__left,
+  .ui-toolbar__right {
+    flex: 1 1 auto;
+  }
+}

@@ -14,6 +14,7 @@
 .opps__item {
 }
 
+/* Card back stack */
 .oppHand__title {
   font-weight: 700;
   margin-bottom: 6px;
@@ -82,4 +83,46 @@
   font-variant-numeric: tabular-nums;
   opacity: 0.95;
   letter-spacing: 0.2px;
+}
+
+/* ===== Responsive density ===== */
+
+/* Two-column opponent tiles on phones */
+@media (max-width: 640px) {
+  .opps__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .oppHand__stack {
+    width: 104px;
+    height: 80px;
+  }
+  .oppBack {
+    width: 52px;
+    height: 74px;
+  }
+  .oppBack:nth-child(1) {
+    left: 6px;
+    top: 10px;
+  }
+  .oppBack:nth-child(2) {
+    left: 20px;
+    top: 4px;
+  }
+  .oppBack:nth-child(3) {
+    left: 32px;
+    top: 10px;
+  }
+  .oppBack:nth-child(4) {
+    left: 46px;
+    top: 4px;
+  }
+  .oppBack:nth-child(5) {
+    left: 58px;
+    top: 10px;
+  }
+  .oppBack:nth-child(6) {
+    left: 70px;
+    top: 4px;
+  }
 }

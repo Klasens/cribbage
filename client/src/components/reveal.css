@@ -7,28 +7,92 @@
   text-align: left;
   box-shadow: var(--shadow-soft-1);
 }
-.reveal__title { margin: 0 0 var(--sp-2); }
-.reveal__grid { display: grid; gap: var(--sp-3); }
 
-.reveal__block {
-  padding: 8px 10px;
-  border: 1px solid #263041;
-  border-radius: var(--r-md);
-  background: #10141a;
-  box-shadow: var(--shadow-1);
+.reveal__title {
+  margin: 0 0 var(--sp-2);
 }
-.reveal__crib { border-color: #3a2b2b; background: #1a1414; }
-.reveal__blockHeader { font-size: var(--fs-caption); opacity: 0.85; margin-bottom: 6px; }
-.reveal__cards { display: flex; gap: 8px; flex-wrap: wrap; }
+.reveal__grid {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+/* ---------- LIGHT (default) ---------- */
+.reveal__block {
+  padding: 10px 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-bg-soft);
+  box-shadow: 0 1px 0 var(--c-border-soft) inset;
+}
+.reveal__crib {
+  background: color-mix(in oklab, var(--c-bg-soft) 85%, #ffd9c7);
+  border-color: color-mix(in oklab, var(--c-border) 70%, #e8b9a6);
+}
+
+.reveal__blockHeader {
+  font-size: var(--fs-caption);
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+
+.reveal__cards {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .reveal__chip {
   padding: 6px 10px;
   border-radius: var(--r-md);
-  border: 1px solid #333;
-  background: #1b1f26;
-  font-weight: 600;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg-elev);
+  color: var(--c-text);
+  font-weight: 700;
   min-width: 48px;
   text-align: center;
+  box-shadow: 0 1px 0 var(--c-border-soft) inset;
 }
-.reveal__chip--crib { background: #221a1a; }
-.reveal__none { opacity: 0.6; }
+.reveal__chip--crib {
+  background: color-mix(in oklab, var(--c-bg-elev) 85%, #ffe8de);
+  border-color: color-mix(in oklab, var(--c-border) 70%, #f0c6b5);
+}
 
+.reveal__none {
+  opacity: 0.6;
+}
+
+/* ---------- DARK OVERRIDES ---------- */
+@media (prefers-color-scheme: dark) {
+  .reveal__block {
+    border: 1px solid #263041;
+    background: #10141a;
+    box-shadow: var(--shadow-1);
+  }
+  .reveal__crib {
+    border-color: #3a2b2b;
+    background: #1a1414;
+  }
+  .reveal__chip {
+    border: 1px solid #333;
+    background: #1b1f26;
+    color: #eaeaea;
+    box-shadow: none;
+  }
+  .reveal__chip--crib {
+    background: #221a1a;
+    border-color: #3a2b2b;
+  }
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 840px) {
+  .reveal__grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .reveal__chip {
+    min-width: 42px;
+    padding: 5px 8px;
+  }
+}

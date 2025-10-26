@@ -135,6 +135,21 @@
   }
 }
 
+/* Extra compact pips <640px */
+@media (max-width: 640px) {
+  .pipGrid {
+    --pip: 11px;
+    --gap: 3px;
+    padding: 4px;
+  }
+  .cboard {
+    padding: 12px 12px 28px 12px;
+  }
+  .cboard__badge {
+    bottom: -10px;
+  }
+}
+
 .pip {
   position: relative;
   width: var(--pip);

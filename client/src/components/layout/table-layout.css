@@ -17,6 +17,7 @@
       minmax(240px, 1fr)
       minmax(640px, 2.6fr)
       minmax(240px, 1fr);
+    gap: 18px;
   }
 }
 
@@ -26,16 +27,18 @@
     grid-template-columns:
       minmax(300px, 1fr)
       minmax(520px, 1.8fr);
+    gap: 16px;
   }
   .table-layout > .table-cell--right {
     grid-column: 1 / span 2;
   }
 }
 
-/* <840px: single column stack. */
+/* <840px: single column */
 @media (max-width: 839px) {
   .table-layout {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
 
