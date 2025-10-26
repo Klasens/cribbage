@@ -38,7 +38,7 @@ body {
 
 /* App shell — consistent gutters & max-width */
 .app-shell {
-  max-width: 1160px;
+  max-width: 1600px; /* ⬅️ widen page to allow a wider board */
   margin: 0 auto;
   padding: var(--sp-4);
   text-align: left;

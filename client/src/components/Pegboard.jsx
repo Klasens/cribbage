@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./pegboard.css";
 
-const ROWS = 11;
-const COLS = 11;
+const ROWS = 4;
+const COLS = 31;
 const TOTAL = ROWS * COLS;
 
 const SEAT_COLORS = ["#3da5d9", "#d17a22", "#8ac926", "#ff70a6"];

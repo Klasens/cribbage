@@ -6,6 +6,10 @@
   background: var(--c-bg-elev);
   text-align: left;
   box-shadow: var(--shadow-soft-1);
+
+  /* ⬅️ keep “hand counting” panel within the viewport */
+  max-height: 40vh;
+  overflow: auto;
 }
 
 .reveal__title {
@@ -63,6 +67,11 @@
 
 /* ---------- DARK OVERRIDES ---------- */
 @media (prefers-color-scheme: dark) {
+  .reveal {
+    /* keep behavior in dark mode as well */
+    max-height: 40vh;
+    overflow: auto;
+  }
   .reveal__block {
     border: 1px solid #263041;
     background: #10141a;
@@ -91,6 +100,9 @@
   }
 }
 @media (max-width: 640px) {
+  .reveal {
+    max-height: 50vh; /* a bit taller on phones */
+  }
   .reveal__chip {
     min-width: 42px;
     padding: 5px 8px;

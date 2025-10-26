@@ -1,5 +1,3 @@
-/* Phase 3 — Light tabletop restyle for the 2-lane CribbageBoard */
-
 .cboard {
   position: relative;
   margin-top: var(--sp-3);
@@ -48,7 +46,7 @@
   border-radius: 12px;
   background: #fffaf0; /* lighter cream for lanes */
   border: 1px solid #e8d8bf;
-  padding: 10px;
+  padding: 5px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.75),
     0 1px 0 rgba(165, 120, 60, 0.06);
@@ -113,16 +111,17 @@
 .pipWrap {
   position: relative;
 }
+
 .pipGrid {
-  --pip: 14px; /* denser grid than before */
+  --pip: 14px;
   --gap: 5px;
   display: grid;
-  grid-template-columns: repeat(11, var(--pip));
+  grid-template-columns: repeat(31, var(--pip)); /* was 11 */
   gap: var(--gap);
   justify-content: start;
   padding: 6px;
   border-radius: 10px;
-  background: #fff3e0; /* pale cream insets */
+  background: #fff3e0;
   border: 1px solid #ecd9b9;
 }
 
