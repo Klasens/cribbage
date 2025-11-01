@@ -1,38 +1,56 @@
+// FILE: server/rooms.js
 // server/rooms.js
-const { createInitialState } = require("../shared/protocol");
+const { createState, getPublicState } = require("./game/state");
 
 const MAX_PLAYERS = 4;
-const MAX_LOG = 200; // cap log length to avoid unbounded growth
+const MAX_LOG = 200;
 
 /** rooms: Map<string, {
- *    state,
+ *    state,                   // authoritative game state (public+private)
  *    sockets:Set<string>,
  *    seatSockets:Map<number, Set<string>>,
- *    hands: Map<number,string[]>,
- *    crib: string[],
- *    cribBySeat: Set<number>,
- *    deck: Array<{r:string,s:string}>
+ *    // Legacy views kept for existing handlers (point at private state)
+ *    hands: Map<number,string[]>,   // alias of state._hands
+ *    crib: string[],                // alias of state._crib
+ *    cribBySeat: Set<number>,       // alias of state._cribBySeat
+ *    deck: Array<{r:string,s:string}>, // alias of state._deck
  * }>
  */
 const rooms = new Map();
 
 function ensureRoom(roomId) {
   if (!rooms.has(roomId)) {
-    const state = createInitialState();
-    state.roomId = roomId;
-
-    // NEW: log entries and per-room sequence for stable unique IDs
-    state.log = [];
-    state.logSeq = 0;
+    const state = createState(roomId);
 
     rooms.set(roomId, {
       state,
       sockets: new Set(),
-      seatSockets: new Map(), // seatId -> Set(socketId)
-      hands: new Map(), // seatId -> string[]
-      crib: [], // running crib pile as card text
-      cribBySeat: new Set(), // seats that already submitted their 2 cards
-      deck: [], // remaining deck after deal (objects), used to flip starter
+      seatSockets: new Map(),
+      // Legacy aliases so existing socket handlers keep working:
+      get hands() {
+        return state._hands;
+      },
+      set hands(v) {
+        state._hands = v;
+      },
+      get crib() {
+        return state._crib;
+      },
+      set crib(v) {
+        state._crib = v;
+      },
+      get cribBySeat() {
+        return state._cribBySeat;
+      },
+      set cribBySeat(v) {
+        state._cribBySeat = v;
+      },
+      get deck() {
+        return state._deck;
+      },
+      set deck(v) {
+        state._deck = v;
+      },
     });
   }
   return rooms.get(roomId);
@@ -56,7 +74,8 @@ function unbindSocket(room, socketId) {
 function broadcastState(io, roomId) {
   const room = rooms.get(roomId);
   if (!room) return;
-  io.to(roomId).emit("state:update", { state: room.state });
+  const pub = getPublicState(room.state);
+  io.to(roomId).emit("state:update", { state: pub });
 }
 
 function normName(name) {
@@ -72,25 +91,16 @@ function addPlayer(state, rawName) {
   if (roomIsFull(state)) return null;
   const name = normName(rawName);
   const seatId = state.players.length; // 0..3
-  // Track prevScore for leapfrog pegs
   state.players.push({ seatId, name, score: 0, prevScore: 0 });
   if (state.dealerSeat === null) state.dealerSeat = 0;
   return seatId;
 }
 
-/**
- * NEW: pushLog — add a server-assigned unique log entry
- * @param {object} room
- * @param {string} kind short category (e.g., 'winner', 'next-hand', 'deal')
- * @param {string} text human text for UI
- * @param {object} extra optional extra fields to store with entry
- * @returns {object|undefined} the created entry
- */
 function pushLog(room, kind, text, extra = {}) {
   if (!room || !room.state) return;
   const now = Date.now();
   const seq = (room.state.logSeq = (room.state.logSeq || 0) + 1);
-  const id = `${now}-${seq}`; // <= unique even if same ms; stable and string
+  const id = `${now}-${seq}`;
   const entry = { id, ts: now, kind, text, ...extra };
   const list = Array.isArray(room.state.log) ? room.state.log : [];
   const next = [...list, entry];
@@ -109,7 +119,5 @@ module.exports = {
   normName,
   roomIsFull,
   addPlayer,
-  // NEW export:
   pushLog,
 };
-
