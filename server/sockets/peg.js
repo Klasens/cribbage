@@ -1,6 +1,9 @@
 // server/sockets/peg.js
 const { EVT } = require("../../shared/protocol");
 const { rooms, broadcastState, pushLog } = require("../rooms");
+const {
+  evaluatePeggingEvent,
+} = require("../engine/pegging/evaluatePeggingEvent");
 
 /** Map a "cardText" like "A♣", "10♦", "J♠" to pegging value. */
 function pegValue(cardText) {
@@ -27,12 +30,12 @@ function allSeatsShownFour(room) {
 }
 
 function register(io, socket, joined) {
-  // Show a card to increment runCount (trust-based)
+  // Show a card (validated: reject >31; +2 for hitting 15 or 31)
   socket.on(EVT.PEG_SHOW, ({ roomId, seatId, cardText }) => {
     const room = rooms.get(roomId);
     if (!room) return;
-    if (!room.state.cribLocked) return;       // only after crib locks
-    if (room.state.peggingComplete) return;   // already done
+    if (!room.state.cribLocked) return; // only after crib locks
+    if (room.state.peggingComplete) return; // already done
     if (room.state.winnerSeat != null) return; // freeze if game over
     if (joined.roomId !== roomId || joined.seatId !== seatId) return;
 
@@ -40,14 +43,34 @@ function register(io, socket, joined) {
     const val = pegValue(cardTxt);
     if (val <= 0) return;
 
-    // Increment and clamp to 31
-    const next = Math.min(31, (room.state.runCount || 0) + val);
-    room.state.runCount = next;
+    const prevSeq = Array.isArray(room.state.pegPile) ? room.state.pegPile : [];
+    const result = evaluatePeggingEvent(prevSeq, cardTxt);
+
+    // Always surface evaluator logs
+    for (const line of result.logs) pushLog(room, "peg", line);
+
+    if (!result.ok) {
+      // Reject: DO NOT mutate state
+      // Optionally notify the requester explicitly
+      if (socket && EVT.PEG_REJECTED) {
+        socket.emit(EVT.PEG_REJECTED, {
+          roomId,
+          seatId,
+          cardText: cardTxt,
+          reason: result.reason,
+          total: result.total,
+        });
+      }
+      // Broadcast logs so observers see the rejection
+      broadcastState(io, roomId);
+      return;
+    }
+
+    // Accept: mutate run state using evaluator totals/sequence
+    room.state.runCount = result.total;
 
     // Track pile + lastShown + who showed it
-    room.state.pegPile = Array.isArray(room.state.pegPile)
-      ? [...room.state.pegPile, cardTxt]
-      : [cardTxt];
+    room.state.pegPile = result.newSeq;
     room.state.lastShown = cardTxt;
     room.state.lastShownBySeat = seatId;
 
@@ -64,15 +87,34 @@ function register(io, socket, joined) {
       room.state.shownBySeat[seatId] = [...list, cardTxt];
     }
 
-    // Log the show
-    pushLog(room, "peg-show", `${displayName} showed ${cardTxt} (count ${next})`);
+    // Auto-score +2 for hitting 15 or 31 (if awarded by evaluator)
+    if (result.points > 0) {
+      // Maintain per-seat score bucket
+      room.state.scores = room.state.scores || {};
+      room.state.scores[seatId] =
+        (room.state.scores[seatId] || 0) + result.points;
+
+      const bonusLabel =
+        result.hit31 && result.hit15 ? "15 & 31" : result.hit31 ? "31" : "15";
+      pushLog(
+        room,
+        "score",
+        `${displayName} +${result.points} for ${bonusLabel}.`,
+      );
+    }
+
+    // Additional human-friendly log for the show
+    pushLog(
+      room,
+      "peg-show",
+      `${displayName} showed ${cardTxt} (count ${result.total})`,
+    );
 
     // If everyone has shown 4 cards, pegging is complete.
     if (allSeatsShownFour(room)) {
       room.state.peggingComplete = true;
 
       // 🔓 Publicly reveal all hands + crib for manual counting.
-      // Convert Map -> plain object for serialization.
       const revealHands = {};
       for (const [seat, cards] of room.hands.entries()) {
         revealHands[seat] = Array.isArray(cards) ? [...cards] : [];
@@ -88,7 +130,11 @@ function register(io, socket, joined) {
       room.state.lastShownByName = null;
       room.state.shownBySeat = {};
 
-      pushLog(room, "peg-complete", "Pegging complete — count hands (revealed)");
+      pushLog(
+        room,
+        "peg-complete",
+        "Pegging complete — count hands (revealed)",
+      );
     }
 
     broadcastState(io, roomId);
@@ -98,7 +144,7 @@ function register(io, socket, joined) {
   socket.on(EVT.PEG_RESET, ({ roomId }) => {
     const room = rooms.get(roomId);
     if (!room) return;
-    if (room.state.peggingComplete) return;    // nothing to reset once done
+    if (room.state.peggingComplete) return; // nothing to reset once done
     if (room.state.winnerSeat != null) return; // freeze if game over
 
     room.state.runCount = 0;
@@ -114,4 +160,3 @@ function register(io, socket, joined) {
 }
 
 module.exports = { register };
-

@@ -1,28 +1,106 @@
 // FILE: server/game/reducer.js
-// Pure reducer: (state, action) => newState
-// Step 1 scaffold: implement identity behavior; wire later.
+// Pure reducer over the authoritative game state.
+// NOTE: Step 3 adds signatures & guard-rails only; cases will be filled in
+// in later steps. For now, we return the same state to avoid any behavior
+// change until sockets are wired to dispatch.
+//
+// State shape: see server/game/state.js (public + private fields).
 
-const { ACT } = require("./actions");
+const { TYPES } = require("./actions"); // ⬅️ fixed path
+const { createState } = require("./state");
 
 /**
- * Shallow clone helper for state; we only clone when we actually modify
- * something in subsequent steps. For now, step 1 returns state unchanged.
+ * @param {ReturnType<typeof createState>} state
+ * @param {{ type:string, payload?:any }} action
+ * @returns {ReturnType<typeof createState>}
  */
 function reduce(state, action) {
-  if (!action || typeof action.type !== "string") return state;
+  if (!state || typeof state !== "object") {
+    throw new Error("reduce(): invalid state");
+  }
+  if (!action || typeof action.type !== "string") {
+    return state;
+  }
+
   switch (action.type) {
-    case ACT.DEAL:
-    case ACT.CRIB_SELECT:
-    case ACT.CUT_STARTER:
-    case ACT.PEG_SHOW:
-    case ACT.PEG_RESET:
-    case ACT.PEG_COMPLETE:
-    case ACT.REVEAL:
-    case ACT.NEXT_HAND:
-    case ACT.SCOREBOARD_ADD:
-    case ACT.NEW_GAME:
-      // No-op until we fill logic in step 6/7; return state as-is.
+    // ===== Lifecycle =====
+    case TYPES.NEW_GAME: {
+      // payload: {}
+      // Reset scores & per-hand/private fields; dealer -> 0 if players exist.
+      // (Implemented in Step 4)
       return state;
+    }
+    case TYPES.NEXT_HAND: {
+      // payload: {}
+      // Rotate dealer clockwise among active seats; clear per-hand fields.
+      // (Implemented in Step 4)
+      return state;
+    }
+
+    // ===== Deal & crib =====
+    case TYPES.DEAL: {
+      // payload: { dealerSeat:number }
+      // Shuffle new deck, deal 6 each -> state._hands, publish handCounts.
+      // (Implemented in Step 5)
+      return state;
+    }
+    case TYPES.CRIB_SELECT: {
+      // payload: { seatId:number, cards:[string,string] }
+      // Validate cards ∈ player's hand; move to _crib; lock at 4; update counts.
+      // (Implemented in Step 5)
+      return state;
+    }
+    case TYPES.CUT_STARTER: {
+      // payload: { card:string }
+      // Flip and set public cutCard; transition phase to 'peg'.
+      // (Implemented in Step 5)
+      return state;
+    }
+
+    // ===== Pegging (run-to-31) =====
+    case TYPES.PEG_SHOW: {
+      // payload: { seatId:number, card:string }
+      // Increment runCount; track pile and shownBySeat; complete → reveal.
+      // (Implemented in Step 6)
+      return state;
+    }
+    case TYPES.PEG_RESET: {
+      // payload: { reason?:string }
+      // Zero runCount; keep shownBySeat for checkmarks.
+      // (Implemented in Step 6)
+      return state;
+    }
+
+    // ===== Scoreboard =====
+    case TYPES.SCORE_ADD: {
+      // payload: { seatId:number, delta:number }
+      // Add delta; set prevScore; if >=121, dispatch SET_WINNER.
+      // (Implemented in Step 7)
+      return state;
+    }
+
+    // ===== Reveal & winner =====
+    case TYPES.PEG_COMPLETE_REVEAL: {
+      // payload: { revealHands:Record<number,string[]>, revealCrib:string[] }
+      // Publish reveals, then clear transient pegging run fields.
+      // (Implemented in Step 6)
+      return state;
+    }
+    case TYPES.SET_WINNER: {
+      // payload: { seatId:number }
+      // Freeze table interaction; winnerSeat/winnerName populated.
+      // (Implemented in Step 7)
+      return state;
+    }
+
+    // ===== Players =====
+    case TYPES.PLAYER_ADD: {
+      // payload: { seatId:number, name:string }
+      // Append to players[]; only used for state bootstrapping/testing.
+      // (Implemented in Step 8, optional)
+      return state;
+    }
+
     default:
       return state;
   }
