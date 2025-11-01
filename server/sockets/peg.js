@@ -4,6 +4,8 @@ const { rooms, broadcastState, pushLog } = require("../rooms");
 const {
   evaluatePeggingEvent,
 } = require("../engine/pegging/evaluatePeggingEvent");
+const { addPoints } = require("./scoring");
+const { scoreHandFifteens } = require("../engine/hands/scoreFifteens");
 
 /** Map a "cardText" like "A♣", "10♦", "J♠" to pegging value. */
 function pegValue(cardText) {
@@ -27,6 +29,68 @@ function allSeatsShownFour(room) {
     if (new Set(list).size < 4) return false; // de-duped
   }
   return seats.length > 0;
+}
+
+/**
+ * Auto-score all hands + crib after pegging completes.
+ * Scores fifteens (2 pts each) for each player's 4-card hand + cut.
+ * Scores crib (dealer only) with cut card.
+ */
+function autoScoreHands(room) {
+  if (!room || !room.state) return;
+  if (!room.state.cutCard) return; // need starter
+
+  const cutCard = room.state.cutCard;
+  const dealerSeat = room.state.dealerSeat;
+
+  // Score each player's hand
+  for (const [seatId, handCards] of room.hands.entries()) {
+    if (!Array.isArray(handCards) || handCards.length === 0) continue;
+
+    const result = scoreHandFifteens(handCards, cutCard, { isCrib: false });
+    if (result.points > 0) {
+      const player = room.state.players.find((p) => p.seatId === seatId);
+      const playerName = player ? player.name : `Seat ${seatId}`;
+
+      addPoints(room, seatId, result.points);
+
+      // Log with detail breakdown
+      const details =
+        Array.isArray(result.detail) && result.detail.length > 0
+          ? ` (${result.detail.join(", ")})`
+          : "";
+      pushLog(
+        room,
+        "hand-score",
+        `${playerName} scores ${result.points} from hand${details}`,
+      );
+    }
+  }
+
+  // Score crib (dealer only)
+  if (
+    Number.isInteger(dealerSeat) &&
+    Array.isArray(room.crib) &&
+    room.crib.length > 0
+  ) {
+    const result = scoreHandFifteens(room.crib, cutCard, { isCrib: true });
+    if (result.points > 0) {
+      const dealer = room.state.players.find((p) => p.seatId === dealerSeat);
+      const dealerName = dealer ? dealer.name : `Seat ${dealerSeat}`;
+
+      addPoints(room, dealerSeat, result.points);
+
+      const details =
+        Array.isArray(result.detail) && result.detail.length > 0
+          ? ` (${result.detail.join(", ")})`
+          : "";
+      pushLog(
+        room,
+        "crib-score",
+        `${dealerName} scores ${result.points} from crib${details}`,
+      );
+    }
+  }
 }
 
 function register(io, socket, joined) {
@@ -87,13 +151,9 @@ function register(io, socket, joined) {
       room.state.shownBySeat[seatId] = [...list, cardTxt];
     }
 
-    // Auto-score +2 for hitting 15 or 31 (if awarded by evaluator)
+    // Award +2 for hitting 15 or 31 (use shared helper)
     if (result.points > 0) {
-      // Maintain per-seat score bucket
-      room.state.scores = room.state.scores || {};
-      room.state.scores[seatId] =
-        (room.state.scores[seatId] || 0) + result.points;
-
+      addPoints(room, seatId, result.points);
       const bonusLabel =
         result.hit31 && result.hit15 ? "15 & 31" : result.hit31 ? "31" : "15";
       pushLog(
@@ -133,8 +193,11 @@ function register(io, socket, joined) {
       pushLog(
         room,
         "peg-complete",
-        "Pegging complete — count hands (revealed)",
+        "Pegging complete — counting hands automatically",
       );
+
+      // Auto-score all hands + crib (fifteens only for now)
+      autoScoreHands(room);
     }
 
     broadcastState(io, roomId);

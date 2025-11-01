@@ -1,12 +1,15 @@
 // Minimal hand scoring: counts 15s in hand + cut.
-// Cards are strings like "A","2","...","10","J","Q","K"
+// Cards are strings like "5♣", "10♦", "K♠"
 // Returns { points, detail: string[] }
 
 function rankToPip(cardText) {
-  const t = String(cardText).trim().toUpperCase();
-  if (t === "A") return 1;
-  if (t === "J" || t === "Q" || t === "K") return 10;
-  const n = Number(t);
+  const s = String(cardText).trim();
+  // Extract rank (everything except the last character which is the suit)
+  const rank = s.slice(0, -1).toUpperCase();
+  if (!rank) return 0;
+  if (rank === "A") return 1;
+  if (rank === "J" || rank === "Q" || rank === "K") return 10;
+  const n = Number(rank);
   if (!Number.isNaN(n)) return Math.min(n, 10);
   return 10;
 }
