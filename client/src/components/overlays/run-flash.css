@@ -1,0 +1,106 @@
+/* Full-screen green flash for 15 and 31.
+   Pointer-events disabled so it never blocks play. */
+
+.runflash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999; /* above everything */
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.runflash__inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  animation: rf-fadeout 900ms ease forwards;
+}
+
+.runflash__text {
+  font-weight: 1000;
+  font-variation-settings: "wght" 1000;
+  letter-spacing: 1px;
+  /* Large, responsive size that scales with viewport */
+  font-size: clamp(72px, 16vw, 220px);
+  color: #0aa84f; /* rich green */
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.06),
+    0 18px 40px rgba(0, 128, 64, 0.35);
+  transform: scale(0.86);
+  animation: rf-pop 900ms cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
+}
+
+/* Soft radial burst behind the number */
+.runflash__burst {
+  position: absolute;
+  width: min(80vw, 1200px);
+  height: min(80vw, 1200px);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(12, 180, 84, 0.25),
+    rgba(12, 180, 84, 0) 72%
+  );
+  filter: blur(2px);
+  transform: scale(0.7);
+  animation: rf-burst 900ms ease-out forwards;
+}
+
+/* Animations */
+@keyframes rf-pop {
+  0% {
+    transform: scale(0.86);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  55% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1.06);
+    opacity: 0;
+  }
+}
+@keyframes rf-burst {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+@keyframes rf-fadeout {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .runflash__inner,
+  .runflash__text,
+  .runflash__burst {
+    animation-duration: 0ms !important;
+    animation: none !important;
+  }
+  .runflash__text {
+    opacity: 0.9;
+    transform: none;
+  }
+}

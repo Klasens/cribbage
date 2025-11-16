@@ -2,7 +2,17 @@
 // prevSeq: array of prior cardText strings like ["5♣","10♦"]
 // cardText: next card string like "K♠"
 // Returns:
-//   { ok, newSeq, total, points, logs: string[], reason?: "EXCEEDS_31", hit15, hit31 }
+//   {
+//     ok,
+//     newSeq,
+//     total,
+//     points,
+//     logs: string[],
+//     reason?: "EXCEEDS_31",
+//     hit15,
+//     hit31,
+//     runLength, // length of trailing run scored this play (0 if none)
+//   }
 
 function cardToPegVal(cardText) {
   if (!cardText || typeof cardText !== "string") return 0;
@@ -18,6 +28,71 @@ function cardToPegVal(cardText) {
 
 function sumPeg(seq) {
   return seq.reduce((acc, txt) => acc + cardToPegVal(txt), 0);
+}
+
+// ----- Helpers for run detection -----
+
+function rankIndex(cardText) {
+  if (!cardText || typeof cardText !== "string") return 0;
+  const rank = cardText.slice(0, -1).trim().toUpperCase();
+  if (!rank) return 0;
+  if (rank === "A") return 1;
+  if (rank === "J") return 11;
+  if (rank === "Q") return 12;
+  if (rank === "K") return 13;
+  const n = Number(rank);
+  if (Number.isFinite(n)) return Math.max(1, Math.min(13, n));
+  return 0;
+}
+
+/**
+ * Detect the longest trailing run (len ≥ 3) in seq, ending at the last card.
+ * Mirrors pegging rules: we walk backwards from the last card, stopping once we
+ * see a duplicate rank; within that tail, any set of distinct, consecutive
+ * ranks scores the run length.
+ *
+ * @param {string[]} seq - full pegging sequence, oldest → newest
+ * @returns {{ length: number, cards: string[] }}
+ */
+function detectRun(seq) {
+  const n = seq.length;
+  if (n < 3) return { length: 0, cards: [] };
+
+  const ranks = seq.map(rankIndex);
+
+  let bestLen = 0;
+  let bestStart = -1;
+
+  const seen = new Set();
+  let minR = Infinity;
+  let maxR = -Infinity;
+
+  // Walk backwards from the most recent card
+  for (let i = n - 1; i >= 0; i--) {
+    const r = ranks[i];
+    if (seen.has(r)) break; // duplicate rank kills longer runs
+    seen.add(r);
+
+    if (r < minR) minR = r;
+    if (r > maxR) maxR = r;
+
+    const len = n - i;
+    if (len < 3) continue;
+
+    if (maxR - minR + 1 === len) {
+      bestLen = len;
+      bestStart = i;
+    }
+  }
+
+  if (bestLen >= 3 && bestStart >= 0) {
+    return {
+      length: bestLen,
+      cards: seq.slice(bestStart),
+    };
+  }
+
+  return { length: 0, cards: [] };
 }
 
 function evaluatePeggingEvent(prevSeq, cardText) {
@@ -40,6 +115,7 @@ function evaluatePeggingEvent(prevSeq, cardText) {
       reason: "EXCEEDS_31",
       hit15: false,
       hit31: false,
+      runLength: 0,
     };
   }
 
@@ -61,6 +137,15 @@ function evaluatePeggingEvent(prevSeq, cardText) {
     logs.push(`PEG: +2 for reaching 31.`);
   }
 
+  // Runs: longest trailing run ending on this card
+  const { length: runLength, cards: runCards } = detectRun(newSeq);
+  if (runLength >= 3) {
+    points += runLength;
+    logs.push(
+      `PEG: +${runLength} for run of ${runLength}: ${runCards.join(" - ")}.`,
+    );
+  }
+
   return {
     ok: true,
     newSeq,
@@ -70,6 +155,7 @@ function evaluatePeggingEvent(prevSeq, cardText) {
     reason: undefined,
     hit15,
     hit31,
+    runLength,
   };
 }
 

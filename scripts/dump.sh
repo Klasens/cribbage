@@ -2,53 +2,41 @@
 set -euo pipefail
 
 # Usage:
-#   scripts/dump.sh                    # full codebase → ../cribbage_dump.txt
-#   scripts/dump.sh --frontend         # FE-only      → ../cribbage_dump_frontend.txt
-#   scripts/dump.sh --backend          # BE-only      → ../cribbage_dump_backend.txt
-#   scripts/dump.sh --split            # FE + BE      → ../cribbage_dump_frontend.txt and ..._backend.txt
+#   scripts/dump.sh server/engine/pegging
+#
+# This will create a file like:
+#   ../cribbage_dump_server_engine_pegging.txt
 #
 # Notes:
-# - "TOP" + "shared" are included in both FE and BE so each dump stands alone.
+# - Paths are relative to the repo root.
+# - node_modules, .git, dist, client/public, and package-lock.json are skipped.
 
-MODE="${1:---full}"
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <folder-relative-to-repo-root>" >&2
+  exit 1
+fi
 
 ROOT="$(cd "$(dirname "$0")/.."; pwd)"
-OUT_FULL="$ROOT/../cribbage_dump.txt"
-OUT_FE="$ROOT/../cribbage_dump_frontend.txt"
-OUT_BE="$ROOT/../cribbage_dump_backend.txt"
-
 cd "$ROOT"
+
+FOLDER="${1%/}"   # strip trailing slash if present
+
+if [[ ! -d "$FOLDER" ]]; then
+  echo "Error: folder '$FOLDER' does not exist under $ROOT" >&2
+  exit 1
+fi
+
+# Normalize folder name for the output filename: replace / with _
+SAFE_NAME="${FOLDER//\//_}"
+OUT_FILE="$ROOT/../cribbage_dump_${SAFE_NAME}.txt"
+
 shopt -s globstar nullglob
-
-# ---------- file sets ----------
-TOP_FILES=(
-  "package.json"
-  "PLAN.md"
-  "README.md"
-)
-
-SHARED_FILES=(
-  "shared/**/*.js"
-)
-
-SERVER_FILES=(
-  "server/**/*.js"
-)
-
-CLIENT_FILES=(
-  "client/index.html"
-  "client/vite.config.js"
-  "client/src/**/*.js"
-  "client/src/**/*.jsx"
-  "client/src/**/*.css"
-)
 
 # ---------- helpers ----------
 write_rules_header() {
   local out="$1"
   : > "$out"
   {
-
     echo "RULES"
     echo
     echo "## Build Rules (we’re following these)"
@@ -89,12 +77,14 @@ collect_and_filter() {
   printf "%s\n" "${kept[@]}"
 }
 
-dump_set() {
-  # args: out_file; patterns...
-  local out="$1"; shift
+dump_folder() {
+  local folder="$1"
+  local out="$2"
+
   write_rules_header "$out"
 
-  mapfile -t filtered < <(collect_and_filter "$@")
+  # collect all files under the folder, recursively
+  mapfile -t filtered < <(collect_and_filter "$folder"/**/*)
 
   {
     echo "========== FILE TREE (filtered) =========="
@@ -106,40 +96,9 @@ dump_set() {
     append_file "$out" "$f"
   done
 
-  echo "Wrote ${#filtered[@]} files to: $out"
+  echo "Wrote ${#filtered[@]} files from '$folder' to: $out"
 }
 
 # ---------- execution ----------
-case "$MODE" in
-  --frontend)
-    dump_set "$OUT_FE" \
-      "${TOP_FILES[@]}" \
-      "${SHARED_FILES[@]}" \
-      "${CLIENT_FILES[@]}"
-    ;;
-  --backend)
-    dump_set "$OUT_BE" \
-      "${TOP_FILES[@]}" \
-      "${SHARED_FILES[@]}" \
-      "${SERVER_FILES[@]}"
-    ;;
-  --split)
-    dump_set "$OUT_FE" \
-      "${TOP_FILES[@]}" \
-      "${SHARED_FILES[@]}" \
-      "${CLIENT_FILES[@]}"
-    dump_set "$OUT_BE" \
-      "${TOP_FILES[@]}" \
-      "${SHARED_FILES[@]}" \
-      "${SERVER_FILES[@]}"
-    ;;
-  --full|*)
-    # default: everything into one file
-    dump_set "$OUT_FULL" \
-      "${TOP_FILES[@]}" \
-      "${SHARED_FILES[@]}" \
-      "${SERVER_FILES[@]}" \
-      "${CLIENT_FILES[@]}"
-    ;;
-esac
+dump_folder "$FOLDER" "$OUT_FILE"
 

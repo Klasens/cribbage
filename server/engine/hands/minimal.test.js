@@ -1,19 +1,76 @@
-/* Run: node server/engine/hands/minimal.test.js */
+/* Run: node server/engine/pegging/minimal.test.js */
 const assert = require("assert");
-const { scoreHandFifteens } = require("./minimal");
+const { evaluatePeggingEvent, canPlay, legalPegPlays } = require("./minimal");
 
-(function testOnlyFifteens() {
-  // Classic 5-5-5-J with 5 cut → many fifteens (pairs/runs ignored here)
-  const hand = ["5H", "5D", "5C", "JH"];
-  const cut = "5S";
-  const s = scoreHandFifteens(hand, cut);
-  // In full rules it's 16 pts for fifteens; minimal should still reflect those fifteens.
-  assert.ok(s.breakdown.fifteens >= 16);
+(function testCanPlayAndLegals() {
+  assert.strictEqual(canPlay("K♣", 20), true); // 20 + 10 = 30
+  assert.strictEqual(canPlay("K♣", 22), false); // 22 + 10 = 32 > 31
 
-  // Another hand with at least one fifteen: 7-8 in hand with a cut face  → e.g., 7 + 8 = 15 with a face 10 doesn't combine; use a better example:
-  const h2 = ["2S", "3D", "10C", "QH"]; // with cut 0 that makes 15 via 2+3+10
-  const cut2 = "KD";
-  const s2 = scoreHandFifteens(h2, cut2);
-  assert.ok(s2.total >= 2);
+  // At count=20, 5 (→25), 10 (→30), and K (→30) are all legal.
+  const legals = legalPegPlays(["5H", "10S", "K♦"], 20).map((c) => c.rank);
+  assert.deepStrictEqual(legals, ["5", "10", "K"]);
 })();
-console.log("✓ hands/minimal tests passed");
+
+(function testFifteenAndThirtyOneOnly() {
+  // Fifteen for 2
+  let prev = ["5H"]; // 5
+  let res = evaluatePeggingEvent(prev, "10C"); // → 15
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.count, 15);
+  assert.strictEqual(res.points, 2);
+  assert.ok(res.events.fifteen);
+
+  // A legal non-scoring play (no pairs/runs in minimal rules besides 15/31/runs)
+  prev = ["4S", "5D"]; // 9
+  res = evaluatePeggingEvent(prev, "3H"); // → 12, 0 pts
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.points, 0);
+
+  // Thirty-one for 2
+  prev = ["10S", "9H", "2♦"]; // 21
+  res = evaluatePeggingEvent(prev, "10C"); // → 31
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.count, 31);
+  assert.strictEqual(res.points, 2);
+  assert.ok(res.events.thirtyOne);
+
+  // Over 31 → invalid
+  prev = ["10S", "9H", "A♦"]; // 20
+  res = evaluatePeggingEvent(prev, "J♣"); // → 30 (valid, 0 pts)
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.count, 30);
+  assert.strictEqual(res.points, 0);
+
+  res = evaluatePeggingEvent(["10S", "9H", "A♦"], "Q♣"); // 20 + 10 = 30 (still valid)
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.count, 30);
+
+  // Actually force invalid (>31)
+  res = evaluatePeggingEvent(["10S", "10H", "2♦"], "K♣"); // 22 + 10 = 32 → invalid
+  assert.strictEqual(res.valid, false);
+})();
+
+(function testRuns() {
+  // Simple 3-card run 2-3-4 → 3 points
+  let prev = ["2S", "3H"];
+  let res = evaluatePeggingEvent(prev, "4D");
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.points, 3);
+  assert.strictEqual(res.events.run, 3);
+
+  // Extend to 4-card run 2-3-4-5 → 4 points
+  prev = ["2S", "3H", "4D"];
+  res = evaluatePeggingEvent(prev, "5C");
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.points, 4);
+  assert.strictEqual(res.events.run, 4);
+
+  // Non-run tail should not score
+  prev = ["2S", "4H"];
+  res = evaluatePeggingEvent(prev, "7D"); // 2,4,7 is not a run
+  assert.strictEqual(res.valid, true);
+  assert.strictEqual(res.points, 0);
+  assert.ok(!("run" in res.events));
+})();
+
+console.log("✓ pegging/minimal tests passed");

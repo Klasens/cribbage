@@ -17,6 +17,9 @@ import SeatsModal from "./components/overlays/SeatsModal";
 import RoomDetailsModal from "./components/overlays/RoomDetailsModal";
 import NumberModal from "./components/overlays/NumberModal";
 
+// NEW: run-to-15/31 full-screen flash overlay
+import RunFlash from "./components/overlays/RunFlash";
+
 export default function App() {
   const {
     state,
@@ -100,6 +103,13 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      {/* Full-screen flash for 15 and 31 */}
+      <RunFlash
+        runCount={runCount}
+        peggingComplete={peggingComplete}
+        winnerActive={winnerActive}
+      />
+
       <h1>Cribbage (MVP)</h1>
 
       <JoinForm
