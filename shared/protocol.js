@@ -69,6 +69,9 @@ exports.createInitialState = function createInitialState() {
     // Room log
     log: [],      // [{ id, ts, kind, text, ...extra }]
     logSeq: 0,    // monotonic per-room sequence to ensure unique ids
+
+    // Last scoring event during pegging (for UI animations)
+    lastScoringEvent: null, // { points, label, timestamp } | null
   };
 };
 

@@ -159,10 +159,10 @@ function register(io, socket, joined) {
       const labels = [];
       if (result.hit15) labels.push("15");
       if (result.hit31) labels.push("31");
-      if (result.pairLength === 2) labels.push("pair");
-      if (result.pairLength === 3) labels.push("pair royal");
-      if (result.pairLength === 4) labels.push("double pair royal");
-      if (result.runLength >= 3) labels.push(`run of ${result.runLength}`);
+      if (result.pairLength === 2) labels.push("Pair");
+      if (result.pairLength === 3) labels.push("Pair Royal");
+      if (result.pairLength === 4) labels.push("Double Pair Royal");
+      if (result.runLength >= 3) labels.push(`Run of ${result.runLength}`);
       
       const bonusLabel = labels.length > 0 ? labels.join(" + ") : "scoring play";
       pushLog(
@@ -170,6 +170,13 @@ function register(io, socket, joined) {
         "score",
         `${displayName} +${result.points} for ${bonusLabel}.`,
       );
+
+      // Set last scoring event for UI animation
+      room.state.lastScoringEvent = {
+        points: result.points,
+        label: bonusLabel,
+        timestamp: Date.now(),
+      };
     }
 
     // Additional human-friendly log for the show

@@ -49,6 +49,7 @@ export default function App() {
   const lastShownByName = state?.lastShownByName ?? null;
   const shownBySeat = state?.shownBySeat ?? {};
   const peggingComplete = !!state?.peggingComplete;
+  const lastScoringEvent = state?.lastScoringEvent ?? null;
 
   const dealerSeat = state?.dealerSeat ?? null;
   const winnerSeat = state?.winnerSeat ?? null;
@@ -103,9 +104,9 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {/* Full-screen flash for 15 and 31 */}
+      {/* Full-screen flash for pegging scores */}
       <RunFlash
-        runCount={runCount}
+        lastScoringEvent={lastScoringEvent}
         peggingComplete={peggingComplete}
         winnerActive={winnerActive}
       />

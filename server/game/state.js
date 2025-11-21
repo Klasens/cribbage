@@ -39,6 +39,9 @@ function createState(roomId = "") {
     log: [],
     logSeq: 0,
 
+    // Last scoring event during pegging (for UI animations)
+    lastScoringEvent: null, // { points, label, timestamp } | null
+
     // ---------- PRIVATE (server-only) ----------
     _phase: "idle", // 'idle'|'deal'|'crib'|'cut'|'peg'|'reveal'|'score'
     _hands: new Map(), // seatId -> string[]
@@ -85,6 +88,8 @@ function getPublicState(state) {
 
     log: Array.isArray(state.log) ? state.log : [],
     logSeq: state.logSeq ?? 0,
+
+    lastScoringEvent: state.lastScoringEvent || null,
   };
 }
 
