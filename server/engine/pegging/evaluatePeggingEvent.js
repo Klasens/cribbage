@@ -12,6 +12,7 @@
 //     hit15,
 //     hit31,
 //     runLength, // length of trailing run scored this play (0 if none)
+//     pairLength, // length of trailing pairs scored this play (0 if none)
 //   }
 
 function cardToPegVal(cardText) {
@@ -95,6 +96,43 @@ function detectRun(seq) {
   return { length: 0, cards: [] };
 }
 
+/**
+ * Count consecutive pairs from the end of the sequence.
+ * Returns { length: number, points: number }
+ * - 2 consecutive same rank → length 2, points 2
+ * - 3 consecutive same rank → length 3, points 6
+ * - 4 consecutive same rank → length 4, points 12
+ *
+ * @param {string[]} seq - full pegging sequence, oldest → newest
+ * @returns {{ length: number, points: number }}
+ */
+function detectPairs(seq) {
+  const n = seq.length;
+  if (n < 2) return { length: 0, points: 0 };
+
+  // Get rank of the most recent card
+  const lastRank = rankIndex(seq[n - 1]);
+  let count = 1;
+
+  // Walk backwards counting consecutive matching ranks
+  for (let i = n - 2; i >= 0; i--) {
+    const rank = rankIndex(seq[i]);
+    if (rank !== lastRank) break;
+    count++;
+    if (count === 4) break; // Max 4 of a kind
+  }
+
+  // Convert count to points
+  // 2 cards = 1 pair = 2 pts
+  // 3 cards = 3 pairs = 6 pts
+  // 4 cards = 6 pairs = 12 pts
+  if (count === 2) return { length: 2, points: 2 };
+  if (count === 3) return { length: 3, points: 6 };
+  if (count === 4) return { length: 4, points: 12 };
+
+  return { length: 0, points: 0 };
+}
+
 function evaluatePeggingEvent(prevSeq, cardText) {
   const before = sumPeg(prevSeq);
   const v = cardToPegVal(cardText);
@@ -116,6 +154,7 @@ function evaluatePeggingEvent(prevSeq, cardText) {
       hit15: false,
       hit31: false,
       runLength: 0,
+      pairLength: 0,
     };
   }
 
@@ -137,6 +176,22 @@ function evaluatePeggingEvent(prevSeq, cardText) {
     logs.push(`PEG: +2 for reaching 31.`);
   }
 
+  // Pairs: consecutive cards of same rank
+  const { length: pairLength, points: pairPoints } = detectPairs(newSeq);
+  if (pairLength > 0) {
+    points += pairPoints;
+    const pairLabel =
+      pairLength === 4
+        ? "double pair royal"
+        : pairLength === 3
+        ? "pair royal"
+        : "pair";
+    const rankLabel = rankIndex(cardText);
+    logs.push(
+      `PEG: +${pairPoints} for ${pairLabel} (${pairLength} ${rankLabel}'s).`,
+    );
+  }
+
   // Runs: longest trailing run ending on this card
   const { length: runLength, cards: runCards } = detectRun(newSeq);
   if (runLength >= 3) {
@@ -156,7 +211,8 @@ function evaluatePeggingEvent(prevSeq, cardText) {
     hit15,
     hit31,
     runLength,
+    pairLength,
   };
 }
 
-module.exports = { evaluatePeggingEvent, sumPeg, cardToPegVal };
+module.exports = { evaluatePeggingEvent, sumPeg, cardToPegVal, detectPairs };

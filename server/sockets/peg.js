@@ -151,11 +151,20 @@ function register(io, socket, joined) {
       room.state.shownBySeat[seatId] = [...list, cardTxt];
     }
 
-    // Award +2 for hitting 15 or 31 (use shared helper)
+    // Award points for 15s, 31s, pairs, and runs
     if (result.points > 0) {
       addPoints(room, seatId, result.points);
-      const bonusLabel =
-        result.hit31 && result.hit15 ? "15 & 31" : result.hit31 ? "31" : "15";
+      
+      // Build label for what was scored
+      const labels = [];
+      if (result.hit15) labels.push("15");
+      if (result.hit31) labels.push("31");
+      if (result.pairLength === 2) labels.push("pair");
+      if (result.pairLength === 3) labels.push("pair royal");
+      if (result.pairLength === 4) labels.push("double pair royal");
+      if (result.runLength >= 3) labels.push(`run of ${result.runLength}`);
+      
+      const bonusLabel = labels.length > 0 ? labels.join(" + ") : "scoring play";
       pushLog(
         room,
         "score",
