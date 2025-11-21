@@ -32,6 +32,39 @@ function allSeatsShownFour(room) {
 }
 
 /**
+ * Determine if a GO situation exists:
+ * - All other players cannot play without exceeding 31
+ * - Returns true if the current player should get +1 for GO
+ */
+function isGoSituation(room, currentSeatId) {
+  const currentCount = room.state.runCount;
+  const players = room.state.players || [];
+
+  // Check each player except the one who just played
+  for (const player of players) {
+    if (player.seatId === currentSeatId) continue;
+
+    // Get remaining cards for this seat
+    const hand = room.hands.get(player.seatId) || [];
+    const shown = room.state.shownBySeat[player.seatId] || [];
+    
+    // Calculate remaining cards (cards in hand that haven't been shown)
+    const remainingCards = hand.filter(card => !shown.includes(card));
+
+    // Check if any remaining card can be played
+    for (const card of remainingCards) {
+      const val = pegValue(card);
+      if (currentCount + val <= 31) {
+        return false; // Someone can still play
+      }
+    }
+  }
+
+  // No one else can play - it's a GO
+  return true;
+}
+
+/**
  * Auto-score all hands + crib after pegging completes.
  * Scores fifteens (2 pts each) for each player's 4-card hand + cut.
  * Scores crib (dealer only) with cut card.
@@ -179,6 +212,37 @@ function register(io, socket, joined) {
       };
     }
 
+    // Check for GO (only if count < 31, since 31 already scores +2)
+    let goAwarded = false;
+    if (result.total < 31 && isGoSituation(room, seatId)) {
+      addPoints(room, seatId, 1);
+      pushLog(room, "score", `${displayName} +1 for GO.`);
+      
+      // Set scoring event for UI animation
+      room.state.lastScoringEvent = {
+        points: 1,
+        label: "GO",
+        timestamp: Date.now(),
+      };
+      goAwarded = true;
+    }
+
+    // Check for Last Card (only if count < 31 and all cards played)
+    // Last Card is when all 16 cards (4 per player in 4-player) are played
+    let lastCardAwarded = false;
+    if (result.total < 31 && !goAwarded && allSeatsShownFour(room)) {
+      addPoints(room, seatId, 1);
+      pushLog(room, "score", `${displayName} +1 for last card.`);
+      
+      // Set scoring event for UI animation
+      room.state.lastScoringEvent = {
+        points: 1,
+        label: "Last Card",
+        timestamp: Date.now(),
+      };
+      lastCardAwarded = true;
+    }
+
     // Additional human-friendly log for the show
     pushLog(
       room,
@@ -225,6 +289,23 @@ function register(io, socket, joined) {
     if (!room) return;
     if (room.state.peggingComplete) return; // nothing to reset once done
     if (room.state.winnerSeat != null) return; // freeze if game over
+
+    // Award GO point to last player before reset (only if not already at 31)
+    if (room.state.lastShownBySeat != null && room.state.runCount < 31) {
+      const lastSeat = room.state.lastShownBySeat;
+      const lastPlayer = room.state.players.find(p => p.seatId === lastSeat);
+      const lastName = lastPlayer ? lastPlayer.name : `Seat ${lastSeat}`;
+      
+      addPoints(room, lastSeat, 1);
+      pushLog(room, "score", `${lastName} +1 for GO before reset.`);
+      
+      // Set scoring event for UI animation
+      room.state.lastScoringEvent = {
+        points: 1,
+        label: "GO",
+        timestamp: Date.now(),
+      };
+    }
 
     room.state.runCount = 0;
     room.state.pegPile = [];
